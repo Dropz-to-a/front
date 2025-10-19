@@ -1,24 +1,21 @@
-// src/components/Auth/AuthGuard.tsx
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { useAppSelector } from "../../store";
 
-/**
- * 🔒 AuthGuard: 로그인 보호용 라우트
- *  - localStorage에 token이 없으면 로그인 페이지로 리다이렉트
- *  - 로그인 상태면 children 렌더링
- */
 interface AuthGuardProps {
     children: React.ReactNode;
 }
 
+/**
+ * 로그인 필요 페이지 보호
+ */
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
-    const token = localStorage.getItem("token");
+    const token = useAppSelector((s) => s.auth.token);
     const location = useLocation();
 
     if (!token) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
-
     return <>{children}</>;
 };
 

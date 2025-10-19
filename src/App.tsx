@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import './index.css'
 
 function App() {
@@ -9,3 +10,18 @@ function App() {
 }
 
 export default App
+=======
+// App.jsx 파일
+import './index.css';
+import AppRouter from './routes/AppRouter';
+
+function App() {
+  return (
+    <>
+      <AppRouter/>
+    </>
+  );
+}
+
+export default App;
+>>>>>>> main

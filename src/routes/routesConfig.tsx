@@ -4,6 +4,9 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
 import About from "../pages/About";
+import Jobs from "../pages/Jobs";
+import DetailJobs from "../pages/DetailJobs";
+import Profile from "../pages/Profile";
 
 export type RouteItem = {
     path: string;
@@ -16,6 +19,10 @@ export const publicRoutes: RouteItem[] = [
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/about", element: <About /> },
+    { path: "/jobs", element: <Jobs /> },
+    { path: "/jobs/:id", element: <DetailJobs /> },
+    { path: "/profile", element: <Profile /> },
+
 ];
 
 export const privateRoutes: RouteItem[] = [

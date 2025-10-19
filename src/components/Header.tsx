@@ -20,11 +20,13 @@ const Header = () => {
             {/* 메뉴 링크 */}
             <nav style={{ display: 'flex', gap: '15px' , color: 'white' }}>
                 <Link to="/">홈</Link>
-                <Link to="/about">About</Link>
-                <Link to="/contact">Contact</Link>
+                <Link to="/about">소개</Link>
+                <Link to="/jobs">공고</Link>
+                <Link to="/pay">페이</Link>
+                <Link to="/start">가입하기</Link>
             </nav>
         </header>
-    );
+    );  
 };
 
 export default Header;

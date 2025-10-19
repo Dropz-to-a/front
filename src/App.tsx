@@ -1,5 +1,4 @@
-// App.jsx 파일
-import './index.css' // Import Tailwind CSS styles
+import './index.css'
 
 function App() {
   return (

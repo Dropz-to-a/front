@@ -14,12 +14,12 @@ const Header = () => {
         >
             {/* 로고 영역 */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <img src="/logo.svg" alt="Logo" style={{ width: '90px', height: '30px' }} />
+                <img src="/logo.svg" alt="Logo" style={{ width: '150px', height: '40px' }} />
             </div>
 
             {/* 메뉴 링크 */}
             <nav style={{ display: 'flex', gap: '15px' , color: 'white' }}>
-                <Link to="/">Home</Link>
+                <Link to="/">홈</Link>
                 <Link to="/about">About</Link>
                 <Link to="/contact">Contact</Link>
             </nav>

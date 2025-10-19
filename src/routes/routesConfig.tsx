@@ -3,6 +3,7 @@ import Start from "../pages/Start";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
+import About from "../pages/About";
 
 export type RouteItem = {
     path: string;
@@ -10,12 +11,13 @@ export type RouteItem = {
 };
 
 export const publicRoutes: RouteItem[] = [
-    { path: "/", element: <Start /> },
+    { path: "/", element: <Home /> },
+    { path: "/start", element: <Start /> },
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
-    { path: "/home", element: <Home /> },
+    { path: "/about", element: <About /> },
 ];
 
 export const privateRoutes: RouteItem[] = [
-    { path: "/home", element: <Home /> },
+    { path: "/", element: <Home /> },
 ];

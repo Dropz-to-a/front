@@ -47,14 +47,15 @@ const Start: React.FC = () => {
 
           {/* 슬로건 */}
           <div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight relative">
-              일자리 추천부터{" "}
-              <span className="relative inline-block">
+            <h1 className="text-5xl md:text-6xl lg:text-6xl font-extrabold leading-tight relative">
+            일자리 추천부터{" "}  
+            <span className="relative inline-block">
+
                 <img
                   src={TextBg}
                   alt=""
-                  className="absolute left-1/2 -translate-x-1/2 bottom-[-12px] w-[180px] max-w-none h-auto z-0 pointer-events-none select-none"
-                />
+                  className="absolute left-1/2 -translate-x-1/2 bottom-[-12px] w-[180px] lg:w-[150px] max-w-none h-auto z-0 pointer-events-none select-none"
+              />
                 <span className="relative text-white font-extrabold z-10">취업</span>
               </span>{" "}
               까지
@@ -69,7 +70,7 @@ const Start: React.FC = () => {
           <span
             aria-hidden
             className="
-              absolute bottom-12 left-12 md:left-20
+              absolute bottom-2 left-12 md:left-20
               -rotate-6
               text-[100px] md:text-[130px] lg:text-[160px]
               drop-shadow-[0_14px_30px_rgba(0,0,0,0.2)]

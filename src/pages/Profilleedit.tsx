@@ -5,6 +5,7 @@ import {
     Calendar, Award
 } from 'lucide-react';
 import Header from '../components/Header';
+import { Link } from 'react-router';
 
 interface Preferences {
     jobType: string;
@@ -186,9 +187,9 @@ const ProfileEdit = () => {
 
                     {/* 하단 버튼 */}
                     <div className="flex justify-end gap-3 border-t pt-6">
-                        <button className="flex items-center gap-1.5 px-5 py-2.5 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-50">
+                        <Link to="/profile" className="flex items-center gap-1.5 px-5 py-2.5 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-50">
                             <X className="w-4 h-4" /> 취소
-                        </button>
+                        </Link>
                         <button
                             onClick={handleSave}
                             disabled={isSaving}

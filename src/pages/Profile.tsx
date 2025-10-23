@@ -39,12 +39,38 @@ const Profile = () => {
   };
 
 
-  const achievements = [
-    { icon: '📈', title: '성과 중심 마케터', desc: '진행한 캠페인 평균 ROAS 320% 달성' },
-    { icon: '💡', title: '창의적 기획자', desc: '신규 브랜드 론칭 및 콘텐츠 전략 수립 경험' },
-    { icon: '🤝', title: '팀 협업 리더십', desc: '프로젝트 팀 리드 및 부서 간 협업 주도' },
-    { icon: '🏅', title: '우수 사원 선정', desc: '2023년 상반기 마케팅 부문 우수 사원 수상' }
+  const experiences = [
+    {
+      company: 'ABC 마케팅 에이전시',
+      position: '브랜드 전략 매니저',
+      period: '2022.03 - 현재',
+      achievements: [
+        '브랜드 캠페인 기획 및 실행 (ROAS 320%)',
+        '5개 주요 파트너사 콘텐츠 마케팅 총괄',
+        '신규 클라이언트 온보딩 프로세스 개선',
+      ],
+    },
+    {
+      company: 'XYZ 미디어랩',
+      position: '디지털 마케팅 담당',
+      period: '2019.01 - 2022.02',
+      achievements: [
+        'SNS 광고 퍼포먼스 최적화 및 KPI 달성',
+        '구글 애널리틱스 기반 데이터 분석 리포트 제작',
+        '협력업체와 공동 캠페인 진행 (월간 예산 3천만원 규모)',
+      ],
+    },
+    {
+      company: '스타트업 HUB',
+      position: '마케팅 인턴',
+      period: '2018.06 - 2018.12',
+      achievements: [
+        'SNS 콘텐츠 제작 및 게시물 기획 지원',
+        '브랜드 인지도 향상 캠페인 참여',
+      ],
+    },
   ];
+
 
 
   const stats = [
@@ -61,7 +87,7 @@ const Profile = () => {
 
       {/* Profile Avatar Overlapping Header */}
       <div className="max-w-7xl mx-auto px-4 mt-3 relative">
-        <div className="bg-white rounded-3xl shadow-2xl p-6">
+        <div className="bg-white rounded-3xl shadow-md  p-6">
           <div className="flex flex-col md:flex-row gap-4 items-start">
             {/* Avatar */}
             <div className="relative group">
@@ -147,22 +173,34 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Achievements */}
+        {/* Experience */}
         <div className="bg-white rounded-2xl shadow-md p-6">
           <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-1.5">
-            <Award className="w-6 h-6 text-yellow-500" />
-            업적 및 배지
+            <Briefcase className="w-6 h-6 text-blue-600" />
+            주요 경력
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {achievements.map((achievement, idx) => (
-              <div key={idx} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200 hover:scale-105 transition-transform">
-                <div className="text-4xl mb-2">{achievement.icon}</div>
-                <h4 className="font-bold text-gray-800 mb-0.5 text-base">{achievement.title}</h4>
-                <p className="text-xs text-gray-600">{achievement.desc}</p>
+
+          <div className="space-y-4">
+            {experiences.map((exp, idx) => (
+              <div
+                key={idx}
+                className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200 hover:shadow-md transition-all"
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className="font-bold text-gray-800 text-base">{exp.position}</h4>
+                  <span className="text-xs text-gray-500">{exp.period}</span>
+                </div>
+                <p className="text-sm font-medium text-blue-700">{exp.company}</p>
+                <ul className="list-disc list-inside text-xs text-gray-600 mt-2 space-y-1">
+                  {exp.achievements.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
         </div>
+
 
         {/* Preferences */}
         <div className="bg-white rounded-2xl shadow-md p-6">

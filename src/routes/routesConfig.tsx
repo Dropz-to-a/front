@@ -8,6 +8,7 @@ import Jobs from "../pages/Jobs";
 import DetailJobs from "../pages/DetailJobs";
 import Profile from "../pages/Profile";
 import Pay from "../pages/Pay";
+import Contracts from "../pages/Contracts";
 import Profileedit from "../pages/Profilleedit";
 
 export type RouteItem = {
@@ -26,6 +27,7 @@ export const publicRoutes: RouteItem[] = [
     { path: "/profile", element: <Profile /> },
     { path: "/Profilleedit", element: <Profileedit /> },
     { path: "/pay", element: <Pay /> },
+    { path: "/contracts", element: <Contracts /> },
 ];
 
 export const privateRoutes: RouteItem[] = [

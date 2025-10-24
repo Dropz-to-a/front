@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+.highlighted {
+    color: #22d3ee;
+    font-weight: bold;
+}

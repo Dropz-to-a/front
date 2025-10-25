@@ -10,7 +10,7 @@ const About = () => {
         <section className="py-20 bg-gradient-to-b from-indigo-50 to-white">
           <div className="max-w-6xl px-6 mx-auto text-center">
             <h1 className="text-4xl font-extrabold sm:text-5xl">
-              <span className="text-indigo-600">JobMatch Manager</span>란?
+              <span className="text-indigo-600">JOBIT</span>이란?
             </h1>
             <p className="max-w-2xl mx-auto mt-4 text-lg text-gray-600">
               공정한 계약과 안전한 협업을 위한 일자리 매칭 플랫폼입니다.

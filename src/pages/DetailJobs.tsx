@@ -225,6 +225,7 @@ export default function DetailJobs() {
                 </div>
 
                 {/* 우측: 고정 지원 박스 */}
+                {/* 우측: 고정 지원 박스 */}
                 <aside className="lg:sticky lg:top-6 h-max space-y-4">
                     <div className="rounded-2xl border border-gray-200 bg-white p-5">
                         <div className="space-y-2 text-sm text-gray-600">
@@ -260,11 +261,12 @@ export default function DetailJobs() {
                             )}
                         </div>
 
+                        {/* ✅ 지원 버튼 */}
                         <div className="mt-5">
                             {job.applyUrl ? (
-                                <a
-                                    href={job.applyUrl}
-                                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+                                <Link
+                                    to={`/jobs/${id}/completed`} // ✅ 올바른 경로
+                                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition"
                                 >
                                     지원하기
                                     <svg
@@ -276,7 +278,7 @@ export default function DetailJobs() {
                                     >
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                     </svg>
-                                </a>
+                                </Link>
                             ) : (
                                 <button
                                     disabled
@@ -285,14 +287,21 @@ export default function DetailJobs() {
                                     상세 준비중
                                 </button>
                             )}
-                        </div>      
+                        </div>
                     </div>
 
-                    {/* 고객센터 박스 (선택) */}
+                    {/* 고객센터 박스 */}
                     <div className="rounded-2xl border border-gray-200 bg-white p-5 text-sm text-gray-600">
-                        지원 관련 문의: <a className="text-indigo-600 hover:underline" href="mailto:hr@jobmatch.local">hr@jobmatch.local</a>
+                        지원 관련 문의:{" "}
+                        <a
+                            className="text-indigo-600 hover:underline"
+                            href="mailto:hr@jobmatch.local"
+                        >
+                            hr@jobmatch.local
+                        </a>
                     </div>
                 </aside>
+
             </div>
 
             {/* 오류 안내 */}

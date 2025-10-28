@@ -23,7 +23,8 @@ type Job = {
 };
 
 /** ====== 샘플 데이터 (원하는 대로 교체) ====== */
-const JOBS_DATA: Job[] = [
+// eslint-disable-next-line react-refresh/only-export-components
+export const JOBS_DATA : Job[] = [
     {
         id: "tving-1",
         company: "TVING",

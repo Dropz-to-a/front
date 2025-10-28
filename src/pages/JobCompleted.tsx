@@ -78,6 +78,7 @@ export default function JobCompleted() {
                 <div className="flex flex-col sm:flex-row gap-4 mt-10 animate-fadeInDelay">
                     <Link
                         to={`/jobs/${id}`}
+                        state={{ job }}
                         className="flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
                     >
                         <FileText className="w-5 h-5" />

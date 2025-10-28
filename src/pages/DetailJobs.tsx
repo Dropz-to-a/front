@@ -104,6 +104,8 @@ export default function DetailJobs() {
 
     if (!job) {
         return (
+            <div>
+            <Header/>
             <main className="mx-auto w-full max-w-6xl px-4 py-16 text-center">
                 <p className="text-gray-600">공고 정보를 찾을 수 없어요.</p>
                 <button
@@ -113,6 +115,7 @@ export default function DetailJobs() {
                     돌아가기
                 </button>
             </main>
+            </div>
         );
     }
 

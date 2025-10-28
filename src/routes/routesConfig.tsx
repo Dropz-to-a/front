@@ -10,6 +10,7 @@ import Profile from "../pages/Profile";
 import Pay from "../pages/Pay";
 import Contracts from "../pages/Contracts";
 import Profileedit from "../pages/Profilleedit";
+import JobCompleted from "../pages/JobCompleted";
 
 export type RouteItem = {
     path: string;
@@ -28,6 +29,7 @@ export const publicRoutes: RouteItem[] = [
     { path: "/Profilleedit", element: <Profileedit /> },
     { path: "/pay", element: <Pay /> },
     { path: "/contracts", element: <Contracts /> },
+    { path: "/jobs/:id/completed", element: <JobCompleted /> },
 ];
 
 export const privateRoutes: RouteItem[] = [

@@ -264,11 +264,25 @@ export default function DetailJobs() {
                             )}
                         </div>
 
-                        {/* ✅ 지원 버튼 */}
+                        {/*지원 버튼 */}
                         <div className="mt-5">
                             {job.applyUrl ? (
                                 <Link
-                                    to={`/jobs/${id}/completed`} // ✅ 올바른 경로
+                                    to={`/jobs/${id}/completed`}
+                                    onClick={() => {
+                                        // 기존 데이터 불러오기
+                                        const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
+
+                                        // 이미 지원한 공고인지 확인
+                                        const already = appliedJobs.find((item: { id: string; date: string }) => item.id === id);
+                                        if (!already) {
+                                            appliedJobs.push({
+                                                id,
+                                                date: new Date().toLocaleString("ko-KR"), // ✅ 지원 시각 저장
+                                            });
+                                            localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
+                                        }
+                                    }}
                                     className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition"
                                 >
                                     지원하기
@@ -282,6 +296,7 @@ export default function DetailJobs() {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </Link>
+
                             ) : (
                                 <button
                                     disabled

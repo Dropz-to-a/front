@@ -1,27 +1,12 @@
-<<<<<<< HEAD
 import './index.css'
-
-function App() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-bold text-blue-600 underline">tlqkf</h1>
-    </div>
-  )
-}
-
-export default App
-=======
-// App.jsx 파일
-import './index.css';
-import AppRouter from './routes/AppRouter';
+import AppRouter from './routes/AppRouter'
 
 function App() {
   return (
     <>
-      <AppRouter/>
+      <AppRouter />
     </>
-  );
+  )
 }
 
-export default App;
->>>>>>> main
+export default App

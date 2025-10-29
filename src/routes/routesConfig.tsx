@@ -9,7 +9,7 @@ import DetailJobs from '../pages/DetailJobs'
 import Profile from '../pages/Profile'
 import Pay from '../pages/Pay'
 import Contracts from '../pages/Contracts'
-import Profileedit from '../pages/Profilleedit'
+import Profileedit from '../pages/ProfileEdit'
 import JobCompleted from '../pages/JobCompleted'
 import JobCompletedAdmin from '../pages/JobCompletedAdmin'
 import MyApplications from '../pages/MyApplications'
@@ -36,7 +36,8 @@ export const publicRoutes: RouteItem[] = [
   { path: '/contracts', element: <Contracts /> },
   { path: '/jobs/:id/completed', element: <JobCompleted /> },
   { path: '/jobs/:id/completed/admin', element: <JobCompletedAdmin /> },
-  { path: '/my-applications', element: <MyApplications /> },
+    { path: '/my-applications', element: <MyApplications /> },
+  { path: '/jobedit', element: <JobEdit /> },
   // Footer 페이지
   { path: '/contact', element: <Contact /> },
   { path: '/privacy', element: <Privacy /> },

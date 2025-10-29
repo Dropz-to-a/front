@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 
 /** ====== 타입 ====== */
-type Job = {
+export type Job = {
     id: string;
     company: string;
     title: string;

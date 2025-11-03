@@ -1,10 +1,20 @@
 import HighLight from '../assets/highlight.png'
 import HighLight2 from '../assets/highlight2.png'
 
-import { type FC } from 'react'
+import type { FC } from 'react'
+import { useLocation } from 'react-router'
+
 import LoginForm from '../components/LoginForm'
+import CompanyRegister from '../pages/CompanyRegister'
 
 const Register: FC = () => {
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const type = params.get('type')
+
+  if (type === 'company') {
+    return <CompanyRegister />
+  }
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="flex w-6/9 rounded-3xl h-7/9">

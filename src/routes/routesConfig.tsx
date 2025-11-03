@@ -11,6 +11,10 @@ import MyApplications from '../pages/MyApplications'
 import Contact from '../pages/Contact'
 import Privacy from '../pages/Privacy'
 import Terms from '../pages/Terms'
+import Home from '../pages/Home'
+import Start from '../pages/Start'
+import Login from '../pages/Login'
+import Register from '../pages/Register'
 
 export type RouteItem = {
   path: string

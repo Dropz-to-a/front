@@ -23,25 +23,25 @@ const Home = () => {
 
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen text-gray-900 bg-white">
       <Header />
 
       {/* Hero + 빠른 진입 (병합 섹션) */}
       <section className="w-full bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
+        <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="grid items-start gap-10 lg:grid-cols-2">
             {/* 좌측: Hero */}
             <div className="max-w-xl">
-              <p className="inline-flex items-center gap-2 rounded-full bg-gray-100 text-gray-700 px-3 py-1 text-xs font-semibold">
+              <p className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-full">
                 🔒 임금 보호 · 공정 계약 · AI 매칭
               </p>
 
-              <h1 className="mt-4 text-3xl sm:text-4xl font-extrabold leading-tight">
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl">
                 실패 없는 매칭,
                 <span className="text-indigo-600"> 안전한 계약</span>
               </h1>
 
-              <p className="mt-3 text-base sm:text-lg text-gray-600">
+              <p className="mt-3 text-base text-gray-600 sm:text-lg">
                 AI 추천과 에스크로 정산으로, 공정한 일자리를 경험하세요.
               </p>
 
@@ -54,7 +54,7 @@ const Home = () => {
                   ref={inputRef}
                   type="text"
                   placeholder="예) 프론트엔드 인턴, 주 3일, 원격"
-                  className="flex-1 px-4 py-3 rounded-l-xl outline-none transition-all"
+                  className="flex-1 px-4 py-3 transition-all outline-none rounded-l-xl"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                 />
@@ -67,23 +67,23 @@ const Home = () => {
               </form>
 
               {/* CTA */}
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 mt-5">
                 <Link
                   to="/jobs"
-                  className="px-5 py-3 rounded-xl bg-gray-900 text-white font-semibold hover:bg-black transition"
+                  className="px-5 py-3 font-semibold text-white transition bg-gray-900 rounded-xl hover:bg-black"
                 >
                   일자리 둘러보기
                 </Link>
                 <Link
                   to="/profile"
-                  className="px-5 py-3 rounded-xl border border-gray-300 font-semibold hover:bg-gray-50 transition"
+                  className="px-5 py-3 font-semibold transition border border-gray-300 rounded-xl hover:bg-gray-50"
                 >
                   내 프로필 등록
                 </Link>
               </div>
 
               {/* 신뢰 문구 */}
-              <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-gray-500">
+              <div className="flex flex-wrap items-center gap-4 mt-6 text-sm text-gray-500">
                 <span>🛡️ 에스크로 임금 보호</span>
                 <span>📄 표준 계약 + AI 검토</span>
                 <span>⭐ 신뢰 기반 리뷰 시스템</span>
@@ -91,11 +91,11 @@ const Home = () => {
             </div>
 
             {/* 우측: 빠른 진입 패널 */}
-            <aside className="w-full rounded-2xl border border-gray-200 bg-white p-6">
-              <h2 className="text-lg sm:text-xl font-bold">무엇을 하시겠어요?</h2>
-              <p className="text-gray-600 mt-1">당신의 목적에 맞춰 빠르게 시작해요.</p>
+            <aside className="w-full p-6 bg-white border border-gray-200 rounded-2xl">
+              <h2 className="text-lg font-bold sm:text-xl">무엇을 하시겠어요?</h2>
+              <p className="mt-1 text-gray-600">당신의 목적에 맞춰 빠르게 시작해요.</p>
 
-              <div className="mt-5 grid sm:grid-cols-2 gap-4">
+              <div className="grid gap-4 mt-5 sm:grid-cols-2">
                 <MiniCard
                   to="/jobs"
                   icon="🔎"
@@ -127,24 +127,24 @@ const Home = () => {
       </section>
 
       {/* 핵심 기능 */}
-      <section className="bg-gray-50 border-y border-gray-100">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <section className="border-gray-100 bg-gray-50 border-y">
+        <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold">핵심 기능</h2>
-              <p className="text-gray-600 mt-1">
+              <h2 className="text-xl font-bold sm:text-2xl">핵심 기능</h2>
+              <p className="mt-1 text-gray-600">
                 안전한 매칭을 위해 꼭 필요한 것만 담았습니다.
               </p>
             </div>
             <Link
               to="/about"
-              className="text-indigo-600 font-semibold hover:underline"
+              className="font-semibold text-indigo-600 hover:underline"
             >
               자세히 보기 →
             </Link>
           </div>
 
-          <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
               icon={<Icon />}
               title="AI 스마트 매칭"
@@ -170,13 +170,13 @@ const Home = () => {
       </section>
 
       {/* 리뷰 / 신뢰 */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-xl sm:text-2xl font-bold">사용자 후기</h2>
-        <p className="text-gray-600 mt-1">
+      <section className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <h2 className="text-xl font-bold sm:text-2xl">사용자 후기</h2>
+        <p className="mt-1 text-gray-600">
           실제 사용자들의 경험이 신뢰를 만듭니다.
         </p>
 
-        <div className="mt-6 grid md:grid-cols-3 gap-6">
+        <div className="grid gap-6 mt-6 md:grid-cols-3">
           <ReviewCard
             name="박** (프론트엔드)"
             text="프로젝트 대금이 제때 들어와서 마음 편하게 일했어요. 매칭 정확도가 높았고 계약 검토도 큰 도움!"
@@ -193,10 +193,10 @@ const Home = () => {
       </section>
 
       {/* FAQ */}
-      <section className="bg-gray-50 border-y border-gray-100">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-xl sm:text-2xl font-bold">자주 묻는 질문</h2>
-          <div className="mt-6 grid md:grid-cols-2 gap-6">
+      <section className="border-gray-100 bg-gray-50 border-y">
+        <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <h2 className="text-xl font-bold sm:text-2xl">자주 묻는 질문</h2>
+          <div className="grid gap-6 mt-6 md:grid-cols-2">
             <FAQItem
               q="에스크로는 어떻게 작동하나요?"
               a="기업이 예치한 금액이 계약 조건 충족 시 자동 정산됩니다. 기한·분쟁 상황별 시나리오가 시스템에 반영돼요."
@@ -218,18 +218,18 @@ const Home = () => {
       </section>
 
       {/* 마지막 CTA */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="rounded-3xl border border-gray-200 bg-white p-8 lg:p-12 text-center shadow-sm">
+      <section className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="p-8 text-center bg-white border border-gray-200 shadow-sm rounded-3xl lg:p-12">
           <h3 className="text-2xl font-extrabold">
             지금, 공정한 일자리 환경을 경험해보세요.
           </h3>
           <p className="mt-2 text-gray-600">
             구직자와 기업 모두에게 안전하고 투명한 매칭을 제공합니다.
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
             <Link
               to="/start"
-              className="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition"
+              className="px-6 py-3 font-semibold text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700"
             >
               무료로 시작하기
             </Link>
@@ -259,7 +259,7 @@ function MiniCard({
   return (
     <Link
       to={to}
-      className="group rounded-2xl border border-gray-200 bg-white p-5 hover:shadow-md transition"
+      className="p-5 transition bg-white border border-gray-200 group rounded-2xl hover:shadow-md"
     >
       <div className="text-2xl">{icon}</div>
       <h3 className="mt-3 font-semibold">{title}</h3>
@@ -281,7 +281,7 @@ function FeatureCard({
   desc: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-sm transition">
+    <div className="p-6 transition bg-white border border-gray-200 rounded-2xl hover:shadow-sm">
       <div className="text-2xl">{icon}</div>
       <h3 className="mt-3 font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-gray-600">{desc}</p>
@@ -291,7 +291,7 @@ function FeatureCard({
 
 function ReviewCard({ name, text }: { name: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6">
+    <div className="p-6 bg-white border border-gray-200 rounded-2xl">
       <div className="flex items-center gap-2">
         <span className="text-yellow-500">★ ★ ★ ★ ★</span>
       </div>
@@ -303,8 +303,8 @@ function ReviewCard({ name, text }: { name: string; text: string }) {
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   return (
-    <details className="rounded-xl border border-gray-200 bg-white p-5">
-      <summary className="cursor-pointer font-semibold">{q}</summary>
+    <details className="p-5 bg-white border border-gray-200 rounded-xl">
+      <summary className="font-semibold cursor-pointer">{q}</summary>
       <p className="mt-2 text-sm text-gray-600">{a}</p>
     </details>
   );

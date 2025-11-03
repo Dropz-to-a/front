@@ -74,7 +74,9 @@ const Header = () => {
                 <Link to="/about" style={{ color: "white" }}>
                     소개
                 </Link>
-
+                <Link to="/jobs" style={{ color: "white" }}>
+                    공고
+                </Link>
                 {/* 개인회원 메뉴 */}
                 {isLoggedIn && userType === "personal" && (
                     <>
@@ -83,6 +85,9 @@ const Header = () => {
                         </Link>
                         <Link to="/my-applications" style={{ color: "white" }}>
                             지원목록
+                        </Link>
+                        <Link to="/paylog" style={{ color: "white" }}>
+                            급여내역
                         </Link>
                         <Link to="/profile" style={{ color: "white" }}>
                             프로필
@@ -104,6 +109,9 @@ const Header = () => {
                         </Link>
                         <Link to="/contracts" style={{ color: "white" }}>
                             계약관리
+                        </Link>
+                        <Link to="/payroll" style={{ color: "white" }}>
+                            급여관리
                         </Link>
                         <Link to="/jobs/completed/admin" style={{ color: "white" }}>
                             지원자관리

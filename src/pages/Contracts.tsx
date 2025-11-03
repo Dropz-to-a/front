@@ -81,7 +81,7 @@ export default function Contracts() {
         </div>
 
         {/* ===== 계약 테이블 ===== */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full text-sm text-gray-700">
             <thead className="bg-gray-100 text-gray-800 border-b">
               <tr>

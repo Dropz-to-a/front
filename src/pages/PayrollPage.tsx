@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
-import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
+import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 
 interface Employee {
     id: number;
@@ -28,13 +28,12 @@ const PayrollPage: React.FC = () => {
         async function initPayments() {
             try {
                 const tossPayments = await loadTossPayments(clientKey);
-
                 const paymentInstances: { [key: string]: any } = {};
                 employees.forEach((emp) => {
-                    // 직원별로 payment 객체 생성
-                    paymentInstances[emp.id] = tossPayments.payment({ customerKey: `user_${emp.id}` });
+                    paymentInstances[emp.id] = tossPayments.payment({
+                        customerKey: `user_${emp.id}`,
+                    });
                 });
-
                 setPayments(paymentInstances);
             } catch (error) {
                 console.error("Toss SDK 초기화 실패:", error);
@@ -43,7 +42,7 @@ const PayrollPage: React.FC = () => {
         initPayments();
     }, [employees]);
 
-    /** 2️⃣ 카드 등록 및 정기결제 */
+    /** 2️⃣ 카드 등록 */
     const handleBillingAuth = async (employee: Employee) => {
         const payment = payments[employee.id];
         if (!payment) {
@@ -53,7 +52,7 @@ const PayrollPage: React.FC = () => {
 
         try {
             await payment.requestBillingAuth({
-                method: "CARD", // 정기결제는 카드만 지원
+                method: "CARD",
                 successUrl: window.location.origin + "/success",
                 failUrl: window.location.origin + "/fail",
                 customerEmail: `user${employee.id}@example.com`,
@@ -64,6 +63,20 @@ const PayrollPage: React.FC = () => {
             console.error("빌링 인증 실패:", error);
             alert("빌링 인증 중 오류가 발생했습니다.");
         }
+    };
+
+    /** 3️⃣ 직원별 지급 */
+    const handlePayEmployee = (employee: Employee) => {
+        setEmployees((prev) =>
+            prev.map((e) => (e.id === employee.id ? { ...e, paid: true } : e))
+        );
+        alert(`${employee.name}에게 급여 지급 완료!`);
+    };
+
+    /** 4️⃣ 월별 일괄 지급 */
+    const handlePayAll = () => {
+        setEmployees((prev) => prev.map((e) => ({ ...e, paid: true })));
+        alert("모든 직원 급여 일괄 지급 완료!");
     };
 
     return (
@@ -78,11 +91,19 @@ const PayrollPage: React.FC = () => {
                 <div className="bg-white rounded-2xl shadow p-6">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold text-gray-700">직원 목록</h2>
-                        <select className="border rounded-md p-2 text-gray-700">
-                            <option>2025년 11월</option>
-                            <option>2025년 10월</option>
-                            <option>2025년 9월</option>
-                        </select>
+                        <div className="flex gap-2">
+                            <select className="border rounded-md p-2 text-gray-700">
+                                <option>2025년 11월</option>
+                                <option>2025년 10월</option>
+                                <option>2025년 9월</option>
+                            </select>
+                            <button
+                                onClick={handlePayAll}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            >
+                                월별 일괄 지급
+                            </button>
+                        </div>
                     </div>
 
                     <table className="w-full border-collapse text-left">
@@ -110,12 +131,14 @@ const PayrollPage: React.FC = () => {
                                     </td>
                                     <td className="p-3 border-b text-center flex justify-center gap-2">
                                         {!e.paid ? (
-                                            <button
-                                                onClick={() => handleBillingAuth(e)}
-                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                                            >
-                                                정기결제 카드 등록
-                                            </button>
+                                            <>
+                                                <button
+                                                    onClick={() => handlePayEmployee(e)}
+                                                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
+                                                >
+                                                    개별 지급
+                                                </button>
+                                            </>
                                         ) : (
                                             <button
                                                 disabled

@@ -39,7 +39,7 @@ export const publicRoutes: RouteItem[] = [
   { path: '/paylog', element: <PayLogPage/> },
   { path: '/contracts', element: <Contracts /> },
   { path: '/jobs/:id/completed', element: <JobCompleted /> },
-  { path: '/jobs/:id/completed/admin', element: <JobCompletedAdmin /> },
+  { path: '/jobs/completed/admin', element: <JobCompletedAdmin /> },
     { path: '/my-applications', element: <MyApplications /> },
   { path: '/jobedit', element: <JobEdit /> },
   { path: '/jobmanage', element: <JobManage /> },

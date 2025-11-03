@@ -7,7 +7,6 @@ import About from '../pages/About'
 import Jobs from '../pages/Jobs'
 import DetailJobs from '../pages/DetailJobs'
 import Profile from '../pages/Profile'
-import Pay from '../pages/Pay'
 import Contracts from '../pages/Contracts'
 import Profileedit from '../pages/ProfileEdit'
 import JobCompleted from '../pages/JobCompleted'
@@ -17,6 +16,11 @@ import Contact from '../pages/Contact'
 import Privacy from '../pages/Privacy'
 import Terms from '../pages/Terms'
 import JobEdit from "../pages/JobEdit";
+import JobManage from '../pages/JobManage'
+import JobRegister from '../pages/JobRegister'
+import PayLogPage from '../pages/PayLog'
+import PayrollPage from '../pages/PayrollPage'
+import CardSuccessPage from '../pages/CardSuccessPage'
 export type RouteItem = {
     path: string
     element: React.ReactNode
@@ -32,12 +36,17 @@ export const publicRoutes: RouteItem[] = [
   { path: '/jobs/:id', element: <DetailJobs /> },
   { path: '/profile', element: <Profile /> },
   { path: '/Profilleedit', element: <Profileedit /> },
-  { path: '/pay', element: <Pay /> },
+  { path: '/paylog', element: <PayLogPage/> },
   { path: '/contracts', element: <Contracts /> },
   { path: '/jobs/:id/completed', element: <JobCompleted /> },
   { path: '/jobs/:id/completed/admin', element: <JobCompletedAdmin /> },
     { path: '/my-applications', element: <MyApplications /> },
   { path: '/jobedit', element: <JobEdit /> },
+  { path: '/jobmanage', element: <JobManage /> },
+  { path: '/jobmanage/:id', element: <JobEdit /> },
+  { path: '/jobregister', element: <JobRegister /> },
+  { path: '/payroll', element: <PayrollPage /> },
+  { path: '/success', element: <CardSuccessPage /> },
   // Footer 페이지
   { path: '/contact', element: <Contact /> },
   { path: '/privacy', element: <Privacy /> },

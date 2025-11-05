@@ -101,9 +101,6 @@ const Header = () => {
                 {/* 기업회원 메뉴 */}
                 {isLoggedIn && userType === "company" && (
                     <>
-                        <Link to="/jobregister" style={{ color: "white" }}>
-                            공고등록
-                        </Link>
                         <Link to="/jobmanage" style={{ color: "white" }}>
                             공고관리
                         </Link>

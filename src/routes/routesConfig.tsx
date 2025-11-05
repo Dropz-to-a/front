@@ -15,15 +15,15 @@ import MyApplications from '../pages/MyApplications'
 import Contact from '../pages/Contact'
 import Privacy from '../pages/Privacy'
 import Terms from '../pages/Terms'
-import JobEdit from "../pages/JobEdit";
+import JobEdit from '../pages/JobEdit'
 import JobManage from '../pages/JobManage'
 import JobRegister from '../pages/JobRegister'
 import PayLogPage from '../pages/PayLog'
 import PayrollPage from '../pages/PayrollPage'
 import CardSuccessPage from '../pages/CardSuccessPage'
 export type RouteItem = {
-    path: string
-    element: React.ReactNode
+  path: string
+  element: React.ReactNode
 }
 
 export const publicRoutes: RouteItem[] = [
@@ -35,12 +35,12 @@ export const publicRoutes: RouteItem[] = [
   { path: '/jobs', element: <Jobs /> },
   { path: '/jobs/:id', element: <DetailJobs /> },
   { path: '/profile', element: <Profile /> },
-  { path: '/Profilleedit', element: <Profileedit /> },
-  { path: '/paylog', element: <PayLogPage/> },
+  { path: '/profile/edit', element: <Profileedit /> },
+  { path: '/paylog', element: <PayLogPage /> },
   { path: '/contracts', element: <Contracts /> },
   { path: '/jobs/:id/completed', element: <JobCompleted /> },
   { path: '/jobs/completed/admin', element: <JobCompletedAdmin /> },
-    { path: '/my-applications', element: <MyApplications /> },
+  { path: '/my-applications', element: <MyApplications /> },
   { path: '/jobedit', element: <JobEdit /> },
   { path: '/jobmanage', element: <JobManage /> },
   { path: '/jobmanage/:id', element: <JobEdit /> },

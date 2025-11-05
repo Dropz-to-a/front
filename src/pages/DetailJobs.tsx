@@ -268,7 +268,7 @@ export default function DetailJobs() {
                         <div className="mt-5">
                             {job.applyUrl ? (
                                 <Link
-                                    to={`/jobs/${id}/completed`}
+                                    to={`/jobs/${id}/applyform`}
                                     onClick={() => {
                                         // 기존 데이터 불러오기
                                         const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");

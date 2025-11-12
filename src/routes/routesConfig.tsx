@@ -8,7 +8,6 @@ import Jobs from '../pages/Jobs'
 import DetailJobs from '../pages/DetailJobs'
 import Profile from '../pages/Profile'
 import Contracts from '../pages/Contracts'
-import Profileedit from '../pages/ProfileEdit'
 import JobCompleted from '../pages/JobCompleted'
 import JobCompletedAdmin from '../pages/JobCompletedAdmin'
 import MyApplications from '../pages/MyApplications'
@@ -53,7 +52,6 @@ export const publicRoutes: RouteItem[] = [
 
   //프로필 페이지 & 수정
   { path: '/profile', element: <Profile /> },
-  { path: '/Profilleedit', element: <Profileedit /> },
 
   //재직자 급여로그 
   { path: '/paylog', element: <PayLogPage /> },

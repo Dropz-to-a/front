@@ -1,7 +1,11 @@
+import { useEffect } from 'react'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 
 const About = () => {
+  useEffect(() => {
+    document.title = '소개'
+  }, [])
   return (
     <div className="flex flex-col min-h-screen text-gray-900 bg-white">
       <Header />

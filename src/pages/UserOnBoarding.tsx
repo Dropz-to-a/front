@@ -17,7 +17,7 @@ interface IFormInput {
   career: career
 }
 
-export default function TestUserOnboarding() {
+export default function UserOnboarding() {
   const {
     register,
     handleSubmit,
@@ -43,7 +43,6 @@ export default function TestUserOnboarding() {
         <h2 className="text-2xl font-semibold text-center text-gray-800">
           사용자 온보딩
         </h2>
-
         {/* 나이 */}
         <div>
           <label className="block mb-1 font-medium text-gray-600">나이</label>
@@ -57,7 +56,6 @@ export default function TestUserOnboarding() {
             <p className="mt-1 text-sm text-red-500">이 입력칸은 비울 수 없습니다.</p>
           )}
         </div>
-
         {/* 경력 */}
         <div>
           <label className="block mb-1 font-medium text-gray-600">경력</label>
@@ -70,7 +68,6 @@ export default function TestUserOnboarding() {
             <option value="7년 이상">7년 이상</option>
           </select>
         </div>
-
         {/* 희망 연봉 */}
         <div>
           <label className="block mb-1 font-medium text-gray-600">희망 연봉</label>
@@ -86,7 +83,7 @@ export default function TestUserOnboarding() {
             <option value="5000만원 이상">5000만원 이상</option>
           </select>
         </div>
-
+        // TODO : 계좌번호도 입력받기
         {/* 제출 */}
         <button
           type="submit"

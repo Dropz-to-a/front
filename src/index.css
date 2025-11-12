@@ -62,3 +62,36 @@
         animation: pop 0.5s ease-out both;
     }
 }
+
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.input:focus {
+    border-color: #2563eb;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 120px;
+    /* ✅ 텍스트에리아 크기 */
+    resize: vertical;
+    /* ✅ 사용자가 크기 조절 가능 */
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.textarea:focus {
+    border-color: #2563eb;
+}

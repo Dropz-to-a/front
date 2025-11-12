@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Download, FileText } from "lucide-react";
 import jsPDF from "jspdf";
@@ -6,7 +6,6 @@ import html2canvas from "html2canvas";
 import Header from "../components/Header";
 import { JOBS_DATA } from "./Jobs";
 
-// 예시용 더미 데이터 (실제로는 서버나 localStorage에서 불러올 예정)
 const DUMMY_APPLICATION = {
     name: "박지우",
     email: "jiwoo@example.com",
@@ -29,32 +28,59 @@ const DUMMY_APPLICATION = {
 
 const ResumeViewPage = () => {
     const navigate = useNavigate();
-    const { id } = useParams(); // jobId
+    const { id } = useParams();
     const job = JOBS_DATA.find((j) => j.id === id);
-    const resumeRef = useRef(null);
+    const resumeRef = useRef<HTMLDivElement>(null);
 
-    // ✅ PDF 다운로드 함수
+    /** ✅ 색상 oklch → 안전한 rgb로 변환 */
+    const sanitizeColors = () => {
+        document.querySelectorAll("*").forEach((el) => {
+            const style = window.getComputedStyle(el);
+            const element = el as HTMLElement;
+
+            if (style.backgroundColor.includes("oklch")) {
+                element.style.backgroundColor = "#ffffff";
+            }
+            if (style.color.includes("oklch")) {
+                element.style.color = "#000000";
+            }
+            if (style.borderColor.includes("oklch")) {
+                element.style.borderColor = "#dddddd";
+            }
+        });
+    };
+
+    /** ✅ PDF 저장 함수 (개선 + 안전) */
     const handleDownloadPDF = async () => {
         const element = resumeRef.current;
-        const canvas = await html2canvas(element, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
+        if (!element) return;
 
+        // ⚡ 캡처 전에 색상 안전화
+        sanitizeColors();
+
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff",
+        });
+
+        const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("p", "mm", "a4");
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         const imgHeight = (canvas.height * pageWidth) / canvas.width;
 
+        let heightLeft = imgHeight;
         let position = 0;
-        pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
 
-        if (imgHeight > pageHeight) {
-            let remainingHeight = imgHeight - pageHeight;
-            while (remainingHeight > 0) {
-                position = remainingHeight - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
-                remainingHeight -= pageHeight;
-            }
+        pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, position, pageWidth, imgHeight);
+            heightLeft -= pageHeight;
         }
 
         pdf.save(`${DUMMY_APPLICATION.name}_이력서.pdf`);
@@ -79,6 +105,7 @@ const ResumeViewPage = () => {
                     ref={resumeRef}
                     className="bg-white shadow-lg rounded-2xl w-full max-w-4xl p-8 border border-gray-300"
                 >
+                    {/* 회사 정보 */}
                     <div className="flex items-center gap-4 mb-8">
                         {job?.logoUrl && (
                             <img
@@ -98,13 +125,11 @@ const ResumeViewPage = () => {
                     </div>
 
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-blue-600" />
-                        이력서 상세 보기
                     </h3>
 
-                    <div className="space-y-6">
+                    <div className="space-y-6 text-[15px] leading-relaxed">
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">
                                 기본 정보
                             </h4>
                             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -117,7 +142,7 @@ const ResumeViewPage = () => {
                         </section>
 
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">신체사항</h4>
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">신체사항</h4>
                             <div className="grid grid-cols-3 gap-4 text-sm">
                                 <p><b>신장:</b> {DUMMY_APPLICATION.height} cm</p>
                                 <p><b>체중:</b> {DUMMY_APPLICATION.weight} kg</p>
@@ -126,13 +151,13 @@ const ResumeViewPage = () => {
                         </section>
 
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">학력 및 병역</h4>
-                            <p className="text-sm whitespace-pre-wrap">{DUMMY_APPLICATION.education}</p>
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">학력 및 병역</h4>
+                            <p>{DUMMY_APPLICATION.education}</p>
                         </section>
 
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">자격증 및 외국어</h4>
-                            <p className="text-sm whitespace-pre-wrap">
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">자격증 및 외국어</h4>
+                            <p>
                                 {DUMMY_APPLICATION.license}
                                 <br />
                                 {DUMMY_APPLICATION.foreignLang}
@@ -140,13 +165,13 @@ const ResumeViewPage = () => {
                         </section>
 
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">연수 및 활동</h4>
-                            <p className="text-sm whitespace-pre-wrap">{DUMMY_APPLICATION.activity}</p>
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">연수 및 활동</h4>
+                            <p>{DUMMY_APPLICATION.activity}</p>
                         </section>
 
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">가족 및 취미</h4>
-                            <p className="text-sm whitespace-pre-wrap">
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">가족 및 취미</h4>
+                            <p>
                                 <b>가족:</b> {DUMMY_APPLICATION.family}
                                 <br />
                                 <b>취미:</b> {DUMMY_APPLICATION.hobby}
@@ -154,13 +179,12 @@ const ResumeViewPage = () => {
                         </section>
 
                         <section>
-                            <h4 className="font-semibold mb-2 border-b pb-1">지원 동기</h4>
-                            <p className="text-sm whitespace-pre-wrap">{DUMMY_APPLICATION.motivation}</p>
+                            <h4 className="font-semibold mb-2 border-b pb-1 text-gray-800">지원 동기</h4>
+                            <p>{DUMMY_APPLICATION.motivation}</p>
                         </section>
                     </div>
                 </div>
 
-                {/* ✅ PDF 저장 버튼 */}
                 <button
                     onClick={handleDownloadPDF}
                     className="mt-6 flex items-center gap-2 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"

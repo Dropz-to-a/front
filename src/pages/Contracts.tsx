@@ -81,9 +81,11 @@ export default function DepartmentTreePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
       <Header />
-      <main className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* ===== 왼쪽: 트리 구조 ===== */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+
+      {/* ===== 메인 영역 (가로 전체) ===== */}
+      <main className="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 py-10 gap-6">
+        {/* ===== 좌측: 트리 패널 ===== */}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-full md:w-[320px] flex-shrink-0 overflow-y-auto max-h-[80vh]">
           <div className="flex items-center gap-2 mb-4">
             <FolderTree className="w-6 h-6 text-indigo-600" />
             <h2 className="text-2xl font-bold text-gray-800">
@@ -123,7 +125,10 @@ export default function DepartmentTreePage() {
                         >
                           <User className="w-4 h-4" />
                           <span>
-                            {emp.name} <span className="text-gray-500">— {emp.position}</span>
+                            {emp.name}{" "}
+                            <span className="text-gray-500">
+                              — {emp.position}
+                            </span>
                           </span>
                         </div>
                       ))
@@ -139,8 +144,8 @@ export default function DepartmentTreePage() {
           </div>
         </div>
 
-        {/* ===== 오른쪽: 상세 보기 ===== */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6">
+        {/* ===== 우측: 상세 패널 ===== */}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 flex-1">
           {selectedEmployee ? (
             <>
               <div className="flex items-center justify-between border-b pb-3 mb-4">
@@ -151,7 +156,7 @@ export default function DepartmentTreePage() {
                 <StatusBadge status={selectedEmployee.status} />
               </div>
 
-              <div className="space-y-2 text-sm text-gray-700">
+              <div className="space-y-3 text-sm text-gray-700">
                 <p>
                   <b>직책:</b> {selectedEmployee.position}
                 </p>
@@ -165,7 +170,7 @@ export default function DepartmentTreePage() {
                 <a
                   href={selectedEmployee.fileUrl}
                   download
-                  className="inline-flex items-center gap-2 mt-5 px-4 py-2 text-sm font-semibold bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-all"
+                  className="inline-flex items-center gap-2 mt-6 px-5 py-2 text-sm font-semibold bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-all"
                 >
                   <FileText className="w-4 h-4" />
                   계약서 다운로드
@@ -179,7 +184,7 @@ export default function DepartmentTreePage() {
                   onClick={() =>
                     alert(`${selectedEmployee.name}님에게 계약 요청 전송됨`)
                   }
-                  className="mt-3 px-4 py-2 text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
+                  className="mt-4 px-5 py-2 text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
                 >
                   계약 요청
                 </button>
@@ -190,7 +195,7 @@ export default function DepartmentTreePage() {
                   onClick={() =>
                     alert(`${selectedEmployee.name}님 계약 완료 처리됨`)
                   }
-                  className="mt-3 px-4 py-2 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200"
+                  className="mt-4 px-5 py-2 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200"
                 >
                   완료 처리
                 </button>

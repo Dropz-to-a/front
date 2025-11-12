@@ -1,222 +1,248 @@
-// import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-  User, Briefcase,  Calendar, MapPin, Phone, Mail,
-  Edit, Shield, TrendingUp,  Clock, 
-  BookOpen,Wallet, 
+  User, Briefcase, MapPin, Phone, Mail, Edit, Save, X, Camera,
+  BookOpen, Shield, Calendar, Award, Wallet, TrendingUp, Clock,
 } from 'lucide-react';
 import Header from '../components/Header';
-import { Link } from 'react-router-dom';
 
-const Profile = () => {
-  // const [activeTab, setActiveTab] = useState('overview');
+export default function ProfileUnified() {
+  const [isEditing, setIsEditing] = useState(false);
 
-  // 사용자 데이터
-  const userProfile = {
+  const [profile, setProfile] = useState({
     name: '이지은',
     role: '구직자',
-    avatar: null,
     email: 'jieun.lee@example.com',
     phone: '010-5678-1234',
     location: '서울시 마포구',
     joinDate: '2024-03-15',
+    bio: '안녕하세요! 5년 차 마케팅 전문가 이지은입니다. 브랜드 전략과 디지털 캠페인을 중심으로 소비자와 소통하며, 데이터를 기반으로 한 마케팅 성과 향상을 이끌어왔습니다.',
     trustScore: 95,
-    bio: '5년 경력의 마케팅 전문가입니다. 브랜드 전략, 디지털 캠페인 기획, 콘텐츠 마케팅을 중심으로 다양한 산업의 프로젝트를 성공적으로 수행했습니다.',
-    skills: [
-      '브랜드 기획',
-      '디지털 마케팅',
-      '콘텐츠 전략',
-      'SNS 광고 운영',
-      '데이터 분석',
-      '카피라이팅'
+    experience: [
+      {
+        company: 'ABC 마케팅 에이전시',
+        role: '브랜드 전략 매니저',
+        years: '2022.03 - 현재',
+        summary: '대형 클라이언트 브랜드 캠페인 15건 이상 성공적으로 수행. KPI 평균 달성률 120% 이상 유지.',
+      },
+      {
+        company: 'XYZ 미디어랩',
+        role: '디지털 마케팅 담당',
+        years: '2019.01 - 2022.02',
+        summary: 'SNS 퍼포먼스 캠페인 기획 및 운영, ROAS 320% 달성.',
+      },
     ],
+    skills: ['브랜드 기획', '디지털 마케팅', '콘텐츠 전략', 'SNS 광고 운영'],
     preferences: {
       jobType: '정규직',
-      minSalary: 3500000,
-      maxSalary: 5000000,
+      salary: '4,200만 원 이상',
       workStyle: '오피스 근무',
-      startDate: '즉시 가능'
+      startDate: '즉시 가능',
+    },
+  });
+
+  const [newSkill, setNewSkill] = useState('');
+
+  const handleChange = (key: string, value: string) => {
+    setProfile({ ...profile, [key]: value });
+  };
+
+  const handlePreferenceChange = (field: string, value: string) => {
+    setProfile({
+      ...profile,
+      preferences: { ...profile.preferences, [field]: value },
+    });
+  };
+
+  const addSkill = () => {
+    if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
+      setProfile({ ...profile, skills: [...profile.skills, newSkill.trim()] });
+      setNewSkill('');
     }
   };
 
+  const removeSkill = (s: string) => {
+    setProfile({ ...profile, skills: profile.skills.filter((x) => x !== s) });
+  };
 
-  const experiences = [
-    {
-      company: 'ABC 마케팅 에이전시',
-      position: '브랜드 전략 매니저',
-      period: '2022.03 - 현재',
-      achievements: [
-        '브랜드 캠페인 기획 및 실행 (ROAS 320%)',
-        '5개 주요 파트너사 콘텐츠 마케팅 총괄',
-        '신규 클라이언트 온보딩 프로세스 개선',
-      ],
-    },
-    {
-      company: 'XYZ 미디어랩',
-      position: '디지털 마케팅 담당',
-      period: '2019.01 - 2022.02',
-      achievements: [
-        'SNS 광고 퍼포먼스 최적화 및 KPI 달성',
-        '구글 애널리틱스 기반 데이터 분석 리포트 제작',
-        '협력업체와 공동 캠페인 진행 (월간 예산 3천만원 규모)',
-      ],
-    },
-    {
-      company: '스타트업 HUB',
-      position: '마케팅 인턴',
-      period: '2018.06 - 2018.12',
-      achievements: [
-        'SNS 콘텐츠 제작 및 게시물 기획 지원',
-        '브랜드 인지도 향상 캠페인 참여',
-      ],
-    },
-  ];
-
-
-
-  const stats = [
-    { label: '진행 캠페인 수', value: '15건', icon: Briefcase, color: 'blue' },
-    { label: '평균 성과 지표', value: 'ROAS 320%', icon: TrendingUp, color: 'green' },
-    { label: '총 경력', value: '5년 3개월', icon: Clock, color: 'purple' },
-    { label: '신뢰도', value: `${userProfile.trustScore}점`, icon: Shield, color: 'orange' }
-  ];
-
+  const handleSave = () => {
+    alert('변경사항이 저장되었습니다!');
+    setIsEditing(false);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#f9fafb]">
       <Header />
 
-      {/* Profile Avatar Overlapping Header */}
-      <div className="max-w-7xl mx-auto px-4 mt-3 relative">
-        <div className="bg-white rounded-3xl shadow-md  p-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start">
-            {/* Avatar */}
-            <div className="relative group">
-              <div className="w-42 h-42 rounded-full bg-amber-50 flex items-center justify-center text-white text-4xl font-bold shadow-xl border-4 border-white">
-                {userProfile.name[0]}
+      {/* ===== 프로필 상단 카드 ===== */}
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="bg-white shadow-sm rounded-3xl p-8 border border-gray-200">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            {/* 아바타 */}
+            <div className="relative">
+              <div className="w-40 h-40 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center text-white text-5xl font-bold shadow-md">
+                {profile.name[0]}
               </div>
+              {isEditing && (
+                <button className="absolute bottom-3 right-3 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full shadow">
+                  <Camera className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
-            {/* Info */}
+            {/* 기본 정보 */}
             <div className="flex-1">
-              <div className="flex items-start justify-between flex-wrap gap-2">
+              <div className="flex justify-between items-start flex-wrap">
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-800 mb-1">{userProfile.name}</h2>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold">
-                      <User className="w-3.5 h-3.5" />
-                      {userProfile.role}
-                    </span>
-                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-100 to-yellow-100 px-3 py-1.5 rounded-full text-xs font-bold text-orange-800">
-                      <Shield className="w-3.5 h-3.5" />
-                      신뢰도 {userProfile.trustScore}점
-                    </span>
-                  </div>
+                  <h1 className="text-3xl font-bold text-gray-800 mb-1">{profile.name}</h1>
+                  <p className="text-sm text-gray-600">역할: {profile.role}</p>
                 </div>
-                <Link to="/Profilleedit" className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors shadow-md text-sm">
-                  <Edit className="w-3.5 h-3.5" />
-                  프로필 수정
-                </Link>
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-sm ${isEditing
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    }`}
+                >
+                  {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                  {isEditing ? '저장하기' : '프로필 수정'}
+                </button>
               </div>
 
-              <p className="text-gray-600 mt-3 leading-relaxed text-base">{userProfile.bio}</p>
+              {/* 자기소개 */}
+              <div className="mt-3">
+                {isEditing ? (
+                  <textarea
+                    value={profile.bio}
+                    onChange={(e) => handleChange('bio', e.target.value)}
+                    rows={3}
+                    className="w-full text-sm px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"
+                  />
+                ) : (
+                  <p className="text-gray-700 leading-relaxed text-[15px]">{profile.bio}</p>
+                )}
+              </div>
 
-              {/* Contact */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
+              {/* 연락처 및 지역 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
                 {[
-                  { icon: Mail, value: userProfile.email },
-                  { icon: Phone, value: userProfile.phone },
-                  { icon: MapPin, value: userProfile.location },
-                  { icon: Calendar, value: `가입일: ${userProfile.joinDate}` }
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 text-gray-700 bg-gray-50 p-2.5 rounded-xl text-sm">
-                    <item.icon className="w-4 h-4 text-blue-600" />
-                    <span>{item.value}</span>
+                  { icon: Mail, label: '이메일', key: 'email', value: profile.email },
+                  { icon: Phone, label: '연락처', key: 'phone', value: profile.phone },
+                  { icon: MapPin, label: '지역', key: 'location', value: profile.location },
+                  { icon: Calendar, label: '가입일', key: 'joinDate', value: profile.joinDate },
+                ].map(({ icon: Icon, label, key, value }) => (
+                  <div key={key} className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl text-sm text-gray-700">
+                    <Icon className="w-4 h-4 text-indigo-500" />
+                    <span className="font-medium">{label}:</span>
+                    {isEditing && key !== 'joinDate' ? (
+                      <input
+                        value={value}
+                        onChange={(e) => handleChange(key, e.target.value)}
+                        className="flex-1 bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none text-right"
+                      />
+                    ) : (
+                      <span className="flex-1 text-right">{value}</span>
+                    )}
                   </div>
                 ))}
-              </div>
-
-              {/* Skills */}
-              <div className="mt-4">
-                <h3 className="text-xs font-semibold text-gray-600 mb-2 flex items-center gap-1">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  보유 기술
-                </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {userProfile.skills.map((skill, idx) => (
-                    <span key={idx} className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1.5 rounded-md text-xs font-medium shadow">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {stats.map((stat, idx) => (
-            <div key={idx} className="bg-white rounded-2xl p-4 shadow-md hover:shadow-lg transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <div className={`p-2 bg-${stat.color}-100 rounded-lg`}>
-                  <stat.icon className={`w-5 h-5 text-${stat.color}-600`} />
-                </div>
-                <TrendingUp className={`w-3.5 h-3.5 text-${stat.color}-500`} />
-              </div>
-              <p className="text-2xl font-bold text-gray-800 mb-0.5">{stat.value}</p>
-              <p className="text-xs text-gray-600">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Experience */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-1.5">
-            <Briefcase className="w-6 h-6 text-blue-600" />
-            주요 경력
-          </h3>
-
+      {/* ===== 본문 ===== */}
+      <div className="max-w-6xl mx-auto px-6 space-y-8 pb-12">
+        {/* 경력 요약 */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-4">
+            <Briefcase className="w-5 h-5 text-indigo-500" /> 주요 경력
+          </h2>
           <div className="space-y-4">
-            {experiences.map((exp, idx) => (
-              <div
-                key={idx}
-                className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200 hover:shadow-md transition-all"
-              >
+            {profile.experience.map((exp, i) => (
+              <div key={i} className="bg-gray-50 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-1">
-                  <h4 className="font-bold text-gray-800 text-base">{exp.position}</h4>
-                  <span className="text-xs text-gray-500">{exp.period}</span>
+                  <h3 className="font-semibold text-gray-800">{exp.role}</h3>
+                  <span className="text-xs text-gray-500">{exp.years}</span>
                 </div>
-                <p className="text-sm font-medium text-blue-700">{exp.company}</p>
-                <ul className="list-disc list-inside text-xs text-gray-600 mt-2 space-y-1">
-                  {exp.achievements.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
+                <p className="text-sm text-gray-600 mb-1">{exp.company}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{exp.summary}</p>
               </div>
             ))}
           </div>
         </div>
 
+        {/* 스킬 */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-4">
+            <BookOpen className="w-5 h-5 text-indigo-500" /> 보유 기술
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {profile.skills.map((s, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-medium"
+              >
+                {s}
+                {isEditing && (
+                  <button
+                    onClick={() => removeSkill(s)}
+                    className="p-1 hover:bg-indigo-200 rounded-full"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+            {isEditing && (
+              <div className="flex gap-2 mt-1">
+                <input
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  placeholder="새로운 기술 입력"
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                />
+                <button
+                  onClick={addSkill}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 rounded-lg"
+                >
+                  추가
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
 
-        {/* Preferences */}
-        <div className="bg-white rounded-2xl shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-1.5">
-            <Wallet className="w-6 h-6 text-green-600" />
-            희망 근무 조건
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* 반복문으로도 바꿀 수 있음 */}
-            ...
+        {/* 희망 근무 조건 */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-4">
+            <Wallet className="w-5 h-5 text-green-600" /> 희망 근무 조건
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            {Object.entries(profile.preferences).map(([key, value]) => {
+              const labels: Record<string, string> = {
+                jobType: '고용 형태',
+                salary: '희망 연봉',
+                workStyle: '근무 형태',
+                startDate: '시작 가능일',
+              };
+              return (
+                <div key={key} className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                  <span className="text-gray-700 font-medium">{labels[key]}</span>
+                  {isEditing ? (
+                    <input
+                      value={value}
+                      onChange={(e) => handlePreferenceChange(key, e.target.value)}
+                      className="bg-transparent border-b border-gray-300 focus:border-indigo-500 text-right focus:outline-none"
+                    />
+                  ) : (
+                    <span className="text-gray-600">{value}</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
     </div>
-
   );
-};
-
-export default Profile;
+}

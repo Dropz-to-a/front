@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
-  User, Briefcase, MapPin, Phone, Mail, Edit, Save, X, Camera,
-  BookOpen, Shield, Calendar, Award, Wallet, TrendingUp, Clock,
+   Briefcase, MapPin, Phone, Mail, Edit, Save, X, Camera,
+  BookOpen,  Calendar,  Wallet, 
 } from 'lucide-react';
 import Header from '../components/Header';
 
@@ -64,10 +64,10 @@ export default function ProfileUnified() {
     setProfile({ ...profile, skills: profile.skills.filter((x) => x !== s) });
   };
 
-  const handleSave = () => {
-    alert('변경사항이 저장되었습니다!');
-    setIsEditing(false);
-  };
+  // const handleSave = () => {
+  //   alert('변경사항이 저장되었습니다!');
+  //   setIsEditing(false);
+  // };
 
   return (
     <div className="min-h-screen bg-[#f9fafb]">

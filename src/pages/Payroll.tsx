@@ -42,28 +42,28 @@ const PayrollPage: React.FC = () => {
         initPayments();
     }, [employees]);
 
-    /** 2️⃣ 카드 등록 */
-    const handleBillingAuth = async (employee: Employee) => {
-        const payment = payments[employee.id];
-        if (!payment) {
-            alert("결제 준비가 아직 완료되지 않았습니다.");
-            return;
-        }
+    // /** 2️⃣ 카드 등록 */
+    // const handleBillingAuth = async (employee: Employee) => {
+    //     const payment = payments[employee.id];
+    //     if (!payment) {
+    //         alert("결제 준비가 아직 완료되지 않았습니다.");
+    //         return;
+    //     }
 
-        try {
-            await payment.requestBillingAuth({
-                method: "CARD",
-                successUrl: window.location.origin + "/success",
-                failUrl: window.location.origin + "/fail",
-                customerEmail: `user${employee.id}@example.com`,
-                customerName: employee.name,
-            });
-            alert(`${employee.name} 결제수단 등록 완료!`);
-        } catch (error) {
-            console.error("빌링 인증 실패:", error);
-            alert("빌링 인증 중 오류가 발생했습니다.");
-        }
-    };
+    //     try {
+    //         await payment.requestBillingAuth({
+    //             method: "CARD",
+    //             successUrl: window.location.origin + "/success",
+    //             failUrl: window.location.origin + "/fail",
+    //             customerEmail: `user${employee.id}@example.com`,
+    //             customerName: employee.name,
+    //         });
+    //         alert(`${employee.name} 결제수단 등록 완료!`);
+    //     } catch (error) {
+    //         console.error("빌링 인증 실패:", error);
+    //         alert("빌링 인증 중 오류가 발생했습니다.");
+    //     }
+    // };
 
     /** 3️⃣ 직원별 지급 */
     const handlePayEmployee = (employee: Employee) => {

@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Download, FileText } from "lucide-react";
+import { ArrowLeft, Download,} from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Header from "../components/Header";

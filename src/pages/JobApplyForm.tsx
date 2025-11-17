@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, FileText, Send } from "lucide-react";
 import Header from "../components/Header";
-import { JOBS_DATA } from "./Jobs";
+import { JOBS_DATA } from "./Jobs"; 
 
 const ApplyFormPage = () => {
     const navigate = useNavigate();
@@ -29,7 +29,7 @@ const ApplyFormPage = () => {
     });
 
     useEffect(() => {
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const currentUser = JSON.parse(localStorage.getItem("currentUser")||"null");
         if (currentUser) {
             setForm((prev) => ({
                 ...prev,
@@ -54,7 +54,7 @@ const ApplyFormPage = () => {
                 body: JSON.stringify({ ...form, jobId: id }),
             });
             navigate(`/jobs/${id}/completed`);
-        } catch (err) {
+        } catch {
             alert("지원 중 오류가 발생했습니다.");
         }
     };

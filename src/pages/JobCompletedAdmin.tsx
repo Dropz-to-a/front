@@ -68,9 +68,6 @@ const JobCompletedAdmin = () => {
         "검토 중": "bg-yellow-100 text-yellow-700",
     } as Record<string, string>;
 
-    // ✅ 모달 상태 관리
-    const [selectedApplicant, setSelectedApplicant] = useState<any | null>(null);
-
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
@@ -154,9 +151,6 @@ const JobCompletedAdmin = () => {
                                         <td className="p-3 text-right space-x-2">
                                             <Link to={`/resume/${a.jobId}`} 
                                                 className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-                                                onClick={() =>
-                                                    setSelectedApplicant(a)
-                                                }
                                             >
                                                 이력서 보기
                                             </Link>

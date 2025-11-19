@@ -1,5 +1,5 @@
 // src/types/Application.ts
-import type { Job } from "../pages/Jobs";
+// import type { Job } from "../pages/Jobs";
 
 export type AppliedJob = Job & {
     date: string;

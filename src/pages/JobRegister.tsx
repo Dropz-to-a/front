@@ -2,7 +2,7 @@
     import { useState } from "react";
     import { useNavigate } from "react-router-dom";
     import Header from "../components/Header";
-    import type { Job } from "./Jobs";
+    // import type { Job } from "./Jobs";
 
     export default function JobRegister() {
         const navigate = useNavigate();

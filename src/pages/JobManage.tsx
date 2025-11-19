@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
+// import type { Job } from "./Jobs";
 
-type Job = {
-    id: string;
-    title: string;
-    company: string;
-    logoUrl?: string;
-    imageUrl?: string;
-    location: string;
-    salary: string;
-    description: string;
-    category: string;
-    status: "모집 중" | "마감됨";
-    applicants: number;
-    date: string;
-};
+// type Job = {
+//     id: string;
+//     title: string;
+//     company: string;
+//     logoUrl?: string;
+//     imageUrl?: string;
+//     location: string;
+//     salary: string;
+//     description: string;
+//     category: string;
+//     status: "모집 중" | "마감됨";
+//     applicants: number;
+//     date: string;
+// };
 
 const JobManage = () => {
     const [jobs, setJobs] = useState<Job[]>([

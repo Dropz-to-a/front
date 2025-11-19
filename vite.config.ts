@@ -10,8 +10,11 @@ import tailwindcss from '@tailwindcss/vite'; // 추가
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [react(), tailwindcss()] // tailwindcss() 추가
-  ,
+  plugins: [react(), tailwindcss()], // tailwindcss() 추가
+  server: {
+    open: true,
+    port: 3000,
+  },
 
   // test: {
   //   projects: [{

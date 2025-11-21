@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 
 /** ===== 유틸 컴포넌트 ===== */
 const Badge = ({ children }: { children: React.ReactNode }) => (
@@ -204,19 +204,3 @@ export default function DetailJobManage() {
         </main>
     );
 }
-
-/** ===== 타입 정의 ===== */
-type Job = {
-    id: string;
-    title: string;
-    company: string;
-    logoUrl?: string;
-    imageUrl?: string;
-    location: string;
-    salary: string;
-    description: string;
-    category: string;
-    status: "모집 중" | "마감됨";
-    applicants: number;
-    date: string;
-};

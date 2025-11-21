@@ -1,8 +1,8 @@
 // src/pages/Home.tsx
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import { useEffect, useRef,useState } from "react";
-import Footer from "../components/Footer";
+import Footer from "../../components/Footer";
 
 const Home = () => {
   const [keyword, setKeyword] = useState("");

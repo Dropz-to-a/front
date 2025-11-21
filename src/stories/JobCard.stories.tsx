@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { JobCard } from "../components/Jobs/JobCard";
 import { BrowserRouter } from "react-router-dom";
-import type { Job } from "../pages/Jobs";
+import type { Job } from "../pages/jobs/user/Jobs";
 
 const meta: Meta<typeof JobCard> = {
     title: "JobIT/JobCard",

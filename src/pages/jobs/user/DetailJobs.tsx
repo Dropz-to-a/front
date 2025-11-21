@@ -1,7 +1,7 @@
 // src/pages/DetailJobs.tsx
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 
 
 /** ==== 유틸 컴포넌트 ==== */

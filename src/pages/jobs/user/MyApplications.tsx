@@ -1,10 +1,10 @@
 // src/pages/MyApplications.tsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 import { JOBS_DATA } from "./Jobs";
 import { Trash2, FileText, CalendarDays } from "lucide-react";
-import type { AppliedJob } from "../types/Application";
+import type { AppliedJob } from "../../../types/Application";
 
 type AppliedItem = { id: string; date: string };
 

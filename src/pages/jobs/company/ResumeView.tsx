@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Download,} from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import Header from "../components/Header";
-import { JOBS_DATA } from "./Jobs";
+import Header from "../../../components/Header";
+import { JOBS_DATA } from "../user/Jobs";
 
 const DUMMY_APPLICATION = {
     name: "박지우",

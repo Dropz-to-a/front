@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
-import { JOBS_DATA } from "./Jobs";
+import Header from "../../../components/Header";
+import { JOBS_DATA } from "../user/Jobs";
 
 // ✅ 더미 지원자 데이터
 const ALL_APPLICANTS_DATA = [

@@ -7,7 +7,7 @@ import {
 
 import AuthGuard from "../components/Auth/AuthGuard";
 import GuestGuard from "../components/Auth/GuestGuard";
-import NotFound from "../pages/NotFound";
+import NotFound from "../pages/common/NotFound";
 
 import { publicRoutes, privateRoutes } from "./routesConfig";
 

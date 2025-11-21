@@ -3,7 +3,7 @@ import {
    Briefcase, MapPin, Phone, Mail, Edit, Save, X, Camera,
   BookOpen,  Calendar,  Wallet, 
 } from 'lucide-react';
-import Header from '../components/Header';
+import Header from '../../components/Header';
 
 export default function ProfileUnified() {
   const [isEditing, setIsEditing] = useState(false);

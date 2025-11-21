@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, FileText, Send } from "lucide-react";
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 import { JOBS_DATA } from "./Jobs"; 
 
 const ApplyFormPage = () => {

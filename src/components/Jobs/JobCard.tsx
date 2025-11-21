@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import type{ Job } from "../../pages/Jobs";
+import type{ Job } from "../../pages/jobs/user/Jobs";
 
 
 /** ====== 헬퍼 ====== */

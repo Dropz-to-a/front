@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 import { loadTossPayments } from "@tosspayments/tosspayments-sdk";
 
 interface Employee {

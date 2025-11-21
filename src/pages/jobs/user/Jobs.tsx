@@ -1,7 +1,7 @@
 // src/pages/Jobs.tsx
 import { useMemo, useState } from "react";
-import Header from "../components/Header";
-import { JobCard } from "../components/Jobs/JobCard";
+import Header from "../../../components/Header";
+import { JobCard } from "../../../components/Jobs/JobCard";
 
 /** ====== 타입 ====== */
 // export type Job = {

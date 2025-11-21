@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Header from "../components/Header";
-import type { Job } from "./Jobs";
+import Header from "../../../components/Header";
+import type { Job } from "../user/Jobs";
 
 export default function JobEdit() {
     const navigate = useNavigate();

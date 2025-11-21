@@ -1,7 +1,7 @@
 // src/pages/JobCompleted.tsx
 import { useParams, Link } from "react-router-dom";
 import { CheckCircle2, Briefcase, Home, FileText, AlertCircle } from "lucide-react";
-import Header from "../components/Header";
+import Header from "../../../components/Header";
 import { JOBS_DATA } from "./Jobs"; // ✅ 기존 데이터 import
 
 export default function JobCompleted() {

@@ -1,7 +1,8 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite'; // 추가
+// / <reference types="vitest/config" />
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite' // 추가
+import path from 'path'
 // import path from 'node:path';
 // import { fileURLToPath } from 'node:url';
 // import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
@@ -11,6 +12,11 @@ import tailwindcss from '@tailwindcss/vite'; // 추가
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   plugins: [react(), tailwindcss()], // tailwindcss() 추가
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
   server: {
     open: true,
     port: 3000,
@@ -39,4 +45,4 @@ export default defineConfig({
   //     }
   //   }]
   // }
-});
+})

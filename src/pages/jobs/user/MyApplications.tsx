@@ -6,7 +6,13 @@ import { JOBS_DATA } from "./Jobs";
 import { Trash2, FileText, CalendarDays } from "lucide-react";
 import type { AppliedJob } from "../../../types/Application";
 
-type AppliedItem = { id: string; date: string };
+type AppliedItem = {
+    id: string;
+    date: string;
+    applicationStatus: "지원완료" | "검토중" | "합격" | "불합격";
+    note: string;
+};
+
 
 export default function MyApplications() {
     const [appliedList, setAppliedList] = useState<AppliedItem[]>([]);
@@ -28,9 +34,17 @@ export default function MyApplications() {
     const appliedJobs = appliedList
         .map((item) => {
             const job = JOBS_DATA.find((j) => j.id === item.id);
-            return job ? { ...job, date: item.date } : null;
+            return job
+                ? {
+                    ...job,
+                    date: item.date,
+                    applicationStatus: item.applicationStatus ?? "지원완료",
+                    note: item.note ?? "",
+                }
+                : null;
         })
-        .filter((j): j is AppliedJob => j !== null);
+        .filter((job): job is AppliedJob => job !== null);
+
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">

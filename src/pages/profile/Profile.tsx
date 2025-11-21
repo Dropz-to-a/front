@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
-   Briefcase, MapPin, Phone, Mail, Edit, Save, X, Camera,
-  BookOpen,  Calendar,  Wallet, 
-} from 'lucide-react';
-import Header from '../../components/Header';
+  Briefcase,
+  MapPin,
+  Phone,
+  Mail,
+  Edit,
+  Save,
+  X,
+  Camera,
+  BookOpen,
+  Calendar,
+  Wallet,
+} from 'lucide-react'
+import Header from '@/components/Header'
 
 export default function ProfileUnified() {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false)
 
   const [profile, setProfile] = useState({
     name: '이지은',
@@ -22,7 +31,8 @@ export default function ProfileUnified() {
         company: 'ABC 마케팅 에이전시',
         role: '브랜드 전략 매니저',
         years: '2022.03 - 현재',
-        summary: '대형 클라이언트 브랜드 캠페인 15건 이상 성공적으로 수행. KPI 평균 달성률 120% 이상 유지.',
+        summary:
+          '대형 클라이언트 브랜드 캠페인 15건 이상 성공적으로 수행. KPI 평균 달성률 120% 이상 유지.',
       },
       {
         company: 'XYZ 미디어랩',
@@ -38,31 +48,31 @@ export default function ProfileUnified() {
       workStyle: '오피스 근무',
       startDate: '즉시 가능',
     },
-  });
+  })
 
-  const [newSkill, setNewSkill] = useState('');
+  const [newSkill, setNewSkill] = useState('')
 
   const handleChange = (key: string, value: string) => {
-    setProfile({ ...profile, [key]: value });
-  };
+    setProfile({ ...profile, [key]: value })
+  }
 
   const handlePreferenceChange = (field: string, value: string) => {
     setProfile({
       ...profile,
       preferences: { ...profile.preferences, [field]: value },
-    });
-  };
+    })
+  }
 
   const addSkill = () => {
     if (newSkill.trim() && !profile.skills.includes(newSkill.trim())) {
-      setProfile({ ...profile, skills: [...profile.skills, newSkill.trim()] });
-      setNewSkill('');
+      setProfile({ ...profile, skills: [...profile.skills, newSkill.trim()] })
+      setNewSkill('')
     }
-  };
+  }
 
   const removeSkill = (s: string) => {
-    setProfile({ ...profile, skills: profile.skills.filter((x) => x !== s) });
-  };
+    setProfile({ ...profile, skills: profile.skills.filter(x => x !== s) })
+  }
 
   // const handleSave = () => {
   //   alert('변경사항이 저장되었습니다!');
@@ -93,17 +103,23 @@ export default function ProfileUnified() {
             <div className="flex-1">
               <div className="flex justify-between items-start flex-wrap">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-800 mb-1">{profile.name}</h1>
+                  <h1 className="text-3xl font-bold text-gray-800 mb-1">
+                    {profile.name}
+                  </h1>
                   <p className="text-sm text-gray-600">역할: {profile.role}</p>
                 </div>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-sm ${isEditing
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-sm ${
+                    isEditing
                       ? 'bg-green-100 text-green-700 hover:bg-green-200'
                       : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    }`}
-                >
-                  {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                  }`}>
+                  {isEditing ? (
+                    <Save className="w-4 h-4" />
+                  ) : (
+                    <Edit className="w-4 h-4" />
+                  )}
                   {isEditing ? '저장하기' : '프로필 수정'}
                 </button>
               </div>
@@ -113,12 +129,14 @@ export default function ProfileUnified() {
                 {isEditing ? (
                   <textarea
                     value={profile.bio}
-                    onChange={(e) => handleChange('bio', e.target.value)}
+                    onChange={e => handleChange('bio', e.target.value)}
                     rows={3}
                     className="w-full text-sm px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"
                   />
                 ) : (
-                  <p className="text-gray-700 leading-relaxed text-[15px]">{profile.bio}</p>
+                  <p className="text-gray-700 leading-relaxed text-[15px]">
+                    {profile.bio}
+                  </p>
                 )}
               </div>
 
@@ -127,16 +145,28 @@ export default function ProfileUnified() {
                 {[
                   { icon: Mail, label: '이메일', key: 'email', value: profile.email },
                   { icon: Phone, label: '연락처', key: 'phone', value: profile.phone },
-                  { icon: MapPin, label: '지역', key: 'location', value: profile.location },
-                  { icon: Calendar, label: '가입일', key: 'joinDate', value: profile.joinDate },
+                  {
+                    icon: MapPin,
+                    label: '지역',
+                    key: 'location',
+                    value: profile.location,
+                  },
+                  {
+                    icon: Calendar,
+                    label: '가입일',
+                    key: 'joinDate',
+                    value: profile.joinDate,
+                  },
                 ].map(({ icon: Icon, label, key, value }) => (
-                  <div key={key} className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl text-sm text-gray-700">
+                  <div
+                    key={key}
+                    className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl text-sm text-gray-700">
                     <Icon className="w-4 h-4 text-indigo-500" />
                     <span className="font-medium">{label}:</span>
                     {isEditing && key !== 'joinDate' ? (
                       <input
                         value={value}
-                        onChange={(e) => handleChange(key, e.target.value)}
+                        onChange={e => handleChange(key, e.target.value)}
                         className="flex-1 bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none text-right"
                       />
                     ) : (
@@ -180,14 +210,12 @@ export default function ProfileUnified() {
             {profile.skills.map((s, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-medium"
-              >
+                className="flex items-center gap-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-medium">
                 {s}
                 {isEditing && (
                   <button
                     onClick={() => removeSkill(s)}
-                    className="p-1 hover:bg-indigo-200 rounded-full"
-                  >
+                    className="p-1 hover:bg-indigo-200 rounded-full">
                     <X className="w-3 h-3" />
                   </button>
                 )}
@@ -197,14 +225,13 @@ export default function ProfileUnified() {
               <div className="flex gap-2 mt-1">
                 <input
                   value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
+                  onChange={e => setNewSkill(e.target.value)}
                   placeholder="새로운 기술 입력"
                   className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                 />
                 <button
                   onClick={addSkill}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 rounded-lg"
-                >
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 rounded-lg">
                   추가
                 </button>
               </div>
@@ -224,25 +251,27 @@ export default function ProfileUnified() {
                 salary: '희망 연봉',
                 workStyle: '근무 형태',
                 startDate: '시작 가능일',
-              };
+              }
               return (
-                <div key={key} className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
+                <div
+                  key={key}
+                  className="bg-gray-50 p-3 rounded-xl flex justify-between items-center">
                   <span className="text-gray-700 font-medium">{labels[key]}</span>
                   {isEditing ? (
                     <input
                       value={value}
-                      onChange={(e) => handlePreferenceChange(key, e.target.value)}
+                      onChange={e => handlePreferenceChange(key, e.target.value)}
                       className="bg-transparent border-b border-gray-300 focus:border-indigo-500 text-right focus:outline-none"
                     />
                   ) : (
                     <span className="text-gray-600">{value}</span>
                   )}
                 </div>
-              );
+              )
             })}
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

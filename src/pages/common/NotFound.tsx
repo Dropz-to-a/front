@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
-import FallingText from "../../components/NotFound/FallingText";
-import Footer from "../../components/Footer";
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Header from '@/components/Header'
+import FallingText from '@/components/NotFound/FallingText'
+import Footer from '@/components/Footer'
 
 const NotFound = () => {
-  const navigate = useNavigate();
-  const [headerHeight, setHeaderHeight] = useState<number>(0);
+  const navigate = useNavigate()
+  const [headerHeight, setHeaderHeight] = useState<number>(0)
 
   // ✅ Header 높이 계산
   useEffect(() => {
-    const headerEl = document.querySelector("header");
-    if (headerEl) setHeaderHeight(headerEl.offsetHeight);
-  }, []);
+    const headerEl = document.querySelector('header')
+    if (headerEl) setHeaderHeight(headerEl.offsetHeight)
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
@@ -24,14 +24,13 @@ const NotFound = () => {
         className="relative flex-1 flex flex-col items-center justify-center overflow-hidden"
         style={{
           height: `calc(100vh - ${headerHeight}px)`,
-        }}
-      >
+        }}>
         {/* FallingText (화면 전체) */}
         <div className="absolute inset-0">
           <FallingText
             className="flex items-center justify-center white-space: nowrap"
             text="❓ ❓ ❓ ❓ ❓ ❓ ❓ ❓ ❓ "
-            highlightWords={["❓"]}
+            highlightWords={['❓']}
             trigger="hover"
             backgroundColor="transparent"
             gravity={0.6}
@@ -55,9 +54,8 @@ const NotFound = () => {
           {/* 버튼 */}
           <div className="mt-8">
             <button
-              onClick={() => navigate("/")}
-              className="px-8 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-all duration-300 shadow-md"
-            >
+              onClick={() => navigate('/')}
+              className="px-8 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-all duration-300 shadow-md">
               홈으로 돌아가기
             </button>
           </div>
@@ -67,7 +65,7 @@ const NotFound = () => {
       {/* 공통 Footer */}
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default NotFound;
+export default NotFound

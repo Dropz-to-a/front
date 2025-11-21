@@ -1,13 +1,13 @@
 // App.jsx 파일
-import './index.css';
-import AppRouter from './routes/AppRouter';
+import '@/index.css'
+import AppRouter from '@/routes/AppRouter'
 
 function App() {
   return (
     <>
-      <AppRouter/>
+      <AppRouter />
     </>
-  );
+  )
 }
 
-export default App;
+export default App

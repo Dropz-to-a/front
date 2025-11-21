@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import  type{ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import {
   User,
   Briefcase,
@@ -17,7 +17,7 @@ import {
   Calendar,
   Award,
 } from 'lucide-react'
-import Header from '../../components/Header'
+import Header from '@/components/Header'
 import { Link } from 'react-router'
 
 interface Preferences {
@@ -85,7 +85,7 @@ const ProfileEdit = () => {
   // ✅ 희망조건 변경
   const handlePreferenceChange = (
     field: keyof Preferences,
-    value: string | number,
+    value: string | number
   ): void => {
     setProfile({
       ...profile,

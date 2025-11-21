@@ -1,4 +1,5 @@
-import { useState, ChangeEvent } from 'react'
+import { useState } from 'react'
+import  type{ChangeEvent } from 'react'
 import {
   User,
   Briefcase,
@@ -16,7 +17,7 @@ import {
   Calendar,
   Award,
 } from 'lucide-react'
-import Header from '../components/Header'
+import Header from '../../components/Header'
 import { Link } from 'react-router'
 
 interface Preferences {
@@ -287,6 +288,11 @@ const ProfileEdit = () => {
                 </>
               )}
             </button>
+            {showSuccess && (
+              <div className="fixed bottom-6 right-6 bg-green-600 text-white px-4 py-2 rounded-xl shadow-lg animate-fade-in">
+                프로필이 성공적으로 저장되었습니다!
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -39,24 +39,6 @@ type Job = JobDetail & {
 
         type User = {
             role: "company" | "user";
-            form: {
-                name: string;
-                email: string;
-                phone: string;
-                birth: string;
-                address: string;
-                height: string;
-                weight: string;
-                blood: string;
-                education: string;
-                military: string;
-                license: string;
-                foreignLang: string;
-                activity: string;
-                family: string;
-                hobby: string;
-                motivation: string;
-            };
             profile: {
                 name: string;
                 role: string;

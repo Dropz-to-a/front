@@ -1,7 +1,7 @@
 // src/pages/CardSuccessPage.tsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);

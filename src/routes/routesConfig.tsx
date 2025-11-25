@@ -1,5 +1,5 @@
 import React from 'react'
-import Start from '../pages/Start'
+import Start from '../pages/auth/Start'
 import Login from '../pages/auth/Login'
 import Register from '../pages/auth/Register'
 import Home from '../pages/home/Home'
@@ -43,10 +43,10 @@ export const publicRoutes: RouteItem[] = [
 
   //-------------------------------------구직자---------------------------------------------
 
-  //공고 이력서 작성 
-  { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
-  //공고 지원완료 
-  { path: '/jobs/:id/completed', element: <JobCompleted /> },
+  // //공고 이력서 작성 
+  // { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
+  // //공고 지원완료 
+  // { path: '/jobs/:id/completed', element: <JobCompleted /> },
   //공고 지원목록 
   { path: '/my-applications', element: <MyApplications /> },
 
@@ -84,4 +84,10 @@ export const publicRoutes: RouteItem[] = [
   { path: '/terms', element: <Terms /> },
 ]
 
-export const privateRoutes: RouteItem[] = [{ path: '/', element: <Home /> }]
+export const privateRoutes: RouteItem[] = [
+  { path: '/', element: <Home /> },
+  //공고 이력서 작성 
+  { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
+  //공고 지원완료 
+  { path: '/jobs/:id/completed', element: <JobCompleted /> },
+]

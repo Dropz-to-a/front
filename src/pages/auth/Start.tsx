@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TextBg from "../assets/StartTextbg.png";
+import TextBg from "../../assets/StartTextbg.png";
 
 const Start: React.FC = () => {
   const navigate = useNavigate();

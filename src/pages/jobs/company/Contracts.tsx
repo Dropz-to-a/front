@@ -1,32 +1,23 @@
+// src/pages/jobs/company/Contracts.tsx
+
 import { useState } from "react";
 import Header from "../../../components/Header";
-import {
-  ChevronRight,
-  ChevronDown,
-  User,
-  FileText,
-  CheckCircle,
-  FolderTree,
-} from "lucide-react";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
+import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
 
-type Employee = {
-  id: string;
-  name: string;
-  position: string;
-  status: "요청 중" | "진행 중" | "완료";
-  startDate: string;
-  endDate?: string;
-  fileUrl?: string;
-};
+import DepartmentList from "../../../components/contracts/DepartmentList";
+import EmployeeDetail from "../../../components/contracts/EmployeeDetail";
+import Modal from "../../../components/contracts/Modal";
+import EmployeeCard from "../../../components/contracts/EmployeeCard";
 
-type Department = {
-  id: string;
-  name: string;
-  employees: Employee[];
-};
+import type { Department, Employee } from "../../../types/contracts";
+import { Plus } from "lucide-react";
 
-export default function DepartmentTreePage() {
-  const [departments] = useState<Department[]>([
+export default function Contracts() {
+  /* ============================
+      초기 데이터
+  ============================ */
+  const [departments, setDepartments] = useState<Department[]>([
     {
       id: "dev",
       name: "개발팀",
@@ -68,164 +59,262 @@ export default function DepartmentTreePage() {
   ]);
 
   const [expanded, setExpanded] = useState<string[]>(["dev"]);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
-    null
-  );
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
-  const toggleExpand = (id: string) => {
-    setExpanded((prev) =>
-      prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]
-    );
+  /* ============================
+      DragOverlay 상태
+  ============================ */
+  const [activeEmployee, setActiveEmployee] = useState<Employee | null>(null);
+  const [activeDeptId, setActiveDeptId] = useState<string | null>(null);
+
+  const onDragStart = (event: DragStartEvent) => {
+    const empId = String(event.active.id);
+    const deptId = event.active.data.current?.deptId;
+    if (!deptId) return;
+
+    const found =
+      departments.flatMap((d) => d.employees).find((e) => e.id === empId) ||
+      null;
+
+    setActiveEmployee(found);
+    setActiveDeptId(deptId);
   };
 
+  const onDragEnd = (event: DragEndEvent) => {
+    setActiveEmployee(null);
+    setActiveDeptId(null);
+
+    const { active, over } = event;
+    if (!over) return;
+
+    const empId = String(active.id);
+    const fromDept = active.data.current?.deptId;
+    const toDept = over.data.current?.deptId;
+
+    if (!fromDept || !toDept || fromDept === toDept) return;
+
+    setDepartments((prev) => {
+      const next = [...prev];
+      let moving: Employee | null = null;
+
+      next.forEach((dept) => {
+        if (dept.id === fromDept) {
+          dept.employees = dept.employees.filter((emp) => {
+            if (emp.id === empId) moving = emp;
+            return emp.id !== empId;
+          });
+        }
+      });
+
+      next.forEach((dept) => {
+        if (dept.id === toDept && moving) dept.employees.push(moving);
+      });
+
+      return next;
+    });
+  };
+
+  /* ============================
+      출근 / 퇴근 API
+  ============================ */
+  const handleClockIn = async () => {
+    if (!selectedEmployee) return;
+
+    const res = await fetch("/api/attendance/clock-in", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        employeeAccountId: selectedEmployee.id,
+        companyAccountId: 8,
+      }),
+    });
+
+    res.ok ? alert("출근 완료!") : alert("이미 출근 기록 있음");
+  };
+
+  const handleClockOut = async () => {
+    if (!selectedEmployee) return;
+
+    const res = await fetch("/api/attendance/clock-out", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        employeeAccountId: selectedEmployee.id,
+        companyAccountId: 8,
+      }),
+    });
+
+    res.ok ? alert("퇴근 완료!") : alert("출근 기록 없음 또는 이미 퇴근됨");
+  };
+
+  /* ============================
+      부서 추가 / 수정 / 삭제
+  ============================ */
+  const [newDeptOpen, setNewDeptOpen] = useState(false);
+  const [newDeptName, setNewDeptName] = useState("");
+
+  const [editDept, setEditDept] = useState<Department | null>(null);
+  const [editDeptName, setEditDeptName] = useState("");
+
+  const [deleteDept, setDeleteDept] = useState<Department | null>(null);
+
+  const addDepartment = () => {
+    if (!newDeptName.trim()) return;
+
+    const id = Date.now().toString();
+    setDepartments((prev) => [...prev, { id, name: newDeptName, employees: [] }]);
+
+    setNewDeptName("");
+    setNewDeptOpen(false);
+  };
+
+  const saveDeptName = () => {
+    if (!editDept) return;
+
+    setDepartments((prev) =>
+      prev.map((d) => (d.id === editDept.id ? { ...d, name: editDeptName } : d))
+    );
+
+    setEditDept(null);
+  };
+
+  const confirmDeleteDept = () => {
+    if (!deleteDept) return;
+
+    setDepartments((prev) => {
+      let updated = [...prev];
+
+      let unassigned = updated.find((x) => x.id === "unassigned");
+      if (!unassigned) {
+        unassigned = {
+          id: "unassigned",
+          name: "미배정 부서",
+          employees: [],
+        };
+        updated.push(unassigned);
+      }
+
+      unassigned.employees.push(...deleteDept.employees);
+
+      return updated.filter((d) => d.id !== deleteDept.id);
+    });
+
+    setDeleteDept(null);
+  };
+
+  /* ============================
+        UI
+  ============================ */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
-      <Header />
+    <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      <DragOverlay>
+        {activeEmployee ? (
+          <EmployeeCard employee={activeEmployee} deptId={activeDeptId!} isOverlay />
+        ) : null}
+      </DragOverlay>
 
-      {/* ===== 메인 영역 (가로 전체) ===== */}
-      <main className="flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 py-10 gap-6">
-        {/* ===== 좌측: 트리 패널 ===== */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-full md:w-[320px] flex-shrink-0 overflow-y-auto max-h-[80vh]">
-          <div className="flex items-center gap-2 mb-4">
-            <FolderTree className="w-6 h-6 text-indigo-600" />
-            <h2 className="text-2xl font-bold text-gray-800">
-              부서별 재직자 관리
-            </h2>
-          </div>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
 
-          <div className="space-y-2">
-            {departments.map((dept) => (
-              <div key={dept.id} className="relative group">
-                <button
-                  onClick={() => toggleExpand(dept.id)}
-                  className="flex items-center gap-2 w-full text-left font-semibold text-gray-800 hover:bg-indigo-50 px-3 py-2 rounded-md transition-all duration-150"
-                >
-                  {expanded.includes(dept.id) ? (
-                    <ChevronDown className="w-5 h-5 text-indigo-500" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5 text-indigo-500" />
-                  )}
-                  {dept.name}
-                  <span className="ml-auto text-sm text-gray-500">
-                    {dept.employees.length}명
-                  </span>
-                </button>
+        <main className="flex max-w-7xl mx-auto p-6 gap-6">
+          {/* 좌측 패널 */}
+          <div className="bg-white rounded-2xl shadow p-6 w-[320px] h-[80vh] overflow-y-auto">
+            <div className="flex justify-between mb-4">
+              <h2 className="text-xl font-bold">부서별 재직자 관리</h2>
 
-                {expanded.includes(dept.id) && (
-                  <div className="ml-7 mt-2 border-l border-gray-200 pl-4 space-y-1">
-                    {dept.employees.length > 0 ? (
-                      dept.employees.map((emp) => (
-                        <div
-                          key={emp.id}
-                          onClick={() => setSelectedEmployee(emp)}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md cursor-pointer text-sm transition-all ${selectedEmployee?.id === emp.id
-                              ? "bg-indigo-100 text-indigo-700 shadow-sm"
-                              : "hover:bg-gray-100 text-gray-700"
-                            }`}
-                        >
-                          <User className="w-4 h-4" />
-                          <span>
-                            {emp.name}{" "}
-                            <span className="text-gray-500">
-                              — {emp.position}
-                            </span>
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-400 ml-2">
-                        인원이 없습니다.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ===== 우측: 상세 패널 ===== */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 flex-1">
-          {selectedEmployee ? (
-            <>
-              <div className="flex items-center justify-between border-b pb-3 mb-4">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <User className="w-5 h-5 text-indigo-600" />
-                  {selectedEmployee.name}
-                </h3>
-                <StatusBadge status={selectedEmployee.status} />
-              </div>
-
-              <div className="space-y-3 text-sm text-gray-700">
-                <p>
-                  <b>직책:</b> {selectedEmployee.position}
-                </p>
-                <p>
-                  <b>계약 기간:</b> {selectedEmployee.startDate}{" "}
-                  {selectedEmployee.endDate && `~ ${selectedEmployee.endDate}`}
-                </p>
-              </div>
-
-              {selectedEmployee.fileUrl ? (
-                <a
-                  href={selectedEmployee.fileUrl}
-                  download
-                  className="inline-flex items-center gap-2 mt-6 px-5 py-2 text-sm font-semibold bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-all"
-                >
-                  <FileText className="w-4 h-4" />
-                  계약서 다운로드
-                </a>
-              ) : (
-                <p className="text-xs text-gray-400 mt-3">계약서 파일 없음</p>
-              )}
-
-              {selectedEmployee.status === "요청 중" && (
-                <button
-                  onClick={() =>
-                    alert(`${selectedEmployee.name}님에게 계약 요청 전송됨`)
-                  }
-                  className="mt-4 px-5 py-2 text-sm bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200"
-                >
-                  계약 요청
-                </button>
-              )}
-
-              {selectedEmployee.status === "진행 중" && (
-                <button
-                  onClick={() =>
-                    alert(`${selectedEmployee.name}님 계약 완료 처리됨`)
-                  }
-                  className="mt-4 px-5 py-2 text-sm bg-green-100 text-green-700 rounded-md hover:bg-green-200"
-                >
-                  완료 처리
-                </button>
-              )}
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400">
-              <CheckCircle className="w-10 h-10 mb-2 text-gray-300" />
-              <p>직원을 선택하면 상세 계약 정보를 볼 수 있습니다.</p>
+              <button
+                onClick={() => setNewDeptOpen(true)}
+                className="p-2 bg-indigo-100 rounded-md"
+              >
+                <Plus className="w-4 h-4 text-indigo-700" />
+              </button>
             </div>
-          )}
-        </div>
-      </main>
-    </div>
+
+            <DepartmentList
+              departments={departments}
+              expanded={expanded}
+              toggleExpand={(id) =>
+                setExpanded((prev) =>
+                  prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+                )
+              }
+              onEditDept={(dept) => {
+                setEditDept(dept);
+                setEditDeptName(dept.name);
+              }}
+              onDeleteDept={setDeleteDept}
+              setSelectedEmployee={setSelectedEmployee}
+            />
+          </div>
+
+          {/* 우측 패널 */}
+          <div className="flex-1 bg-white rounded-2xl shadow p-8">
+            <EmployeeDetail
+              employee={selectedEmployee}
+              onClockIn={handleClockIn}
+              onClockOut={handleClockOut}
+            />
+          </div>
+        </main>
+
+        {/* ======== 모달: 부서 추가 ======== */}
+        {newDeptOpen && (
+          <Modal onClose={() => setNewDeptOpen(false)}>
+            <h3 className="text-lg font-semibold mb-3">새 부서 추가</h3>
+
+            <input
+              value={newDeptName}
+              onChange={(e) => setNewDeptName(e.target.value)}
+              placeholder="예: 연구개발팀"
+              className="w-full px-3 py-2 border rounded-md"
+            />
+
+            <div className="flex justify-end mt-4 gap-2">
+              <button
+                onClick={() => setNewDeptOpen(false)}
+                className="px-3 py-1.5 bg-gray-200 rounded-md"
+              >
+                취소
+              </button>
+              <button
+                onClick={addDepartment}
+                className="px-3 py-1.5 bg-indigo-600 text-white rounded-md"
+              >
+                추가
+              </button>
+            </div>
+          </Modal>
+        )}
+
+        {/* ======== 모달: 부서 삭제 ======== */}
+        {deleteDept && (
+          <Modal onClose={() => setDeleteDept(null)}>
+            <h3 className="text-lg font-semibold mb-3 text-red-700">
+              부서 삭제
+            </h3>
+
+            <p className="text-sm text-gray-700 mb-4">
+              "{deleteDept.name}" 부서를 삭제하면 <br />
+              <b>소속 직원은 '미배정 부서'로 이동합니다.</b>
+            </p>
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setDeleteDept(null)}
+                className="px-3 py-1.5 bg-gray-200 rounded-md"
+              >
+                취소
+              </button>
+              <button
+                onClick={confirmDeleteDept}
+                className="px-3 py-1.5 bg-red-600 text-white rounded-md"
+              >
+                삭제
+              </button>
+            </div>
+          </Modal>
+        )}
+      </div>
+    </DndContext>
   );
 }
-
-/** ===== 상태 배지 ===== */
-const StatusBadge = ({ status }: { status: Employee["status"] }) => {
-  const color =
-    status === "완료"
-      ? "bg-green-100 text-green-700"
-      : status === "진행 중"
-        ? "bg-blue-100 text-blue-700"
-        : "bg-yellow-100 text-yellow-700";
-  return (
-    <span
-      className={`px-2 py-1 rounded-md text-xs font-semibold border ${color} border-opacity-50`}
-    >
-      {status}
-    </span>
-  );
-};

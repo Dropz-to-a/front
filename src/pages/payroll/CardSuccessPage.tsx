@@ -19,7 +19,7 @@ const CardSuccessPage: React.FC = () => {
 
     if (!cKey || !aKey) {
       alert('잘못된 접근입니다.')
-      navigate('/') // 홈으로 이동
+      navigate('/')
       return
     }
 

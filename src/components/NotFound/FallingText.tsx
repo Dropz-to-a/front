@@ -140,7 +140,7 @@ const FallingText: React.FC<FallingTextProps> = ({
 
         const loop = () => {
             wordBodies.forEach(({ body, elem }) => {
-                const { x, y, angle } = body.position;
+                const { x, y} = body.position;
                 elem.style.left = `${x}px`;
                 elem.style.top = `${y}px`;
                 elem.style.transform = `translate(-50%, -50%) rotate(${body.angle}rad)`;
@@ -155,7 +155,7 @@ const FallingText: React.FC<FallingTextProps> = ({
             if (render.canvas && canvasContainerRef.current) {
                 canvasContainerRef.current.removeChild(render.canvas);
             }
-            World.clear(engine.world);
+            World.clear(engine.world, false);
             Engine.clear(engine);
         };
     }, [effectStarted, gravity, wireframes, backgroundColor, mouseConstraintStiffness]);

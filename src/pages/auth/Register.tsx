@@ -1,51 +1,20 @@
-import HighLight from '@/assets/highlight.png'
-import HighLight2 from '@/assets/highlight2.png'
-
 import type { FC } from 'react'
 
+import LoginIntro from '@/components/LoginIntro'
 import LoginForm from '@/components/LoginForm'
 
 const Register: FC = () => {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="flex w-6/9 rounded-3xl h-7/9">
+    <div className="relative flex items-center justify-center h-screen overflow-hidden bg-gray-200">
+      <div className="z-10 flex shadow-2xl/40 w-6/9 rounded-3xl h-6/7">
         {/* 왼쪽 섹션 */}
-        <div className="overflow-hidden text-white w-5/7">
-          <div className="w-full h-full flex flex-col items-start justify-center rounded-l-3xl p-12 bg-[linear-gradient(30deg,#0000FF,#A3A3ED)]">
-            {/* 소개 문구 */}
-            <h1 className="mb-16 mr-10 italic font-bold text-7xl">Welcome</h1>
-            <div className="flex flex-col gap-2">
-              <span className="text-3xl font-semibold leading-8">
-                기업{' '}
-                <span className="relative inline-block">
-                  <img
-                    className="absolute inset-0 z-0 object-contain w-full h-full"
-                    src={HighLight}
-                    alt=""
-                  />
-                  <p className="relative z-10 text-3xl text-blue-500">정보</p>
-                </span>
-                부터
-              </span>
-              <span className="text-3xl font-semibold leading-8">
-                취업 후{' '}
-                <span className="relative inline-block">
-                  <img
-                    className="absolute inset-0 z-0 object-contain w-full h-full"
-                    src={HighLight2}
-                    alt=""
-                  />
-                  <p className="relative z-10 text-3xl text-blue-500">관리</p>
-                </span>
-                까지 한 번에!
-              </span>
-            </div>
-          </div>
-        </div>
+        <LoginIntro />
 
         {/* 오른쪽 섹션 */}
         <LoginForm isActive={false} />
       </div>
+      <div className="absolute z-0 rotate-45 bg-purple-600 -bottom-80 -left-100 w-200 aspect-square" />
+      <div className="absolute z-0 rotate-45 rounded-full bg-turquoise -top-80 -right-100 w-200 aspect-square" />
     </div>
   )
 }

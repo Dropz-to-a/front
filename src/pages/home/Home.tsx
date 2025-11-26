@@ -1,32 +1,27 @@
-// src/pages/Home.tsx
-import { Link } from "react-router-dom";
-import Header from "../../components/Header";
-import { useEffect, useRef,useState } from "react";
-import Footer from "../../components/Footer";
+import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 
 const Home = () => {
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('')
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: 검색 페이지로 이동하거나 쿼리 파라미터 전달
-    // 예: navigate(`/jobs?kw=${encodeURIComponent(keyword)}`);
-    alert(`검색어: ${keyword}`);
-  };
+    e.preventDefault()
+    alert(`검색어: ${keyword}`)
+  }
 
-  // 검색바 자동 포커스
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
+    inputRef.current?.focus()
+  }, [])
 
   return (
     <div className="min-h-screen text-gray-900 bg-white">
       <Header />
 
-      {/* Hero + 빠른 진입 (병합 섹션) */}
+      {/* Hero + 빠른 진입 */}
       <section className="w-full bg-white">
         <div className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="grid items-start gap-10 lg:grid-cols-2">
@@ -48,20 +43,18 @@ const Home = () => {
               {/* 검색바 */}
               <form
                 onSubmit={handleSearch}
-                className="mt-6 flex w-full max-w-xl border rounded-xl transition-all duration-300 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:border-indigo-500"
-              >
+                className="mt-6 flex w-full max-w-xl border rounded-xl transition-all duration-300 focus-within:shadow-lg focus-within:scale-[1.01] focus-within:border-indigo-500">
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="예) 프론트엔드 인턴, 주 3일, 원격"
                   className="flex-1 px-4 py-3 transition-all outline-none rounded-l-xl"
                   value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
+                  onChange={e => setKeyword(e.target.value)}
                 />
                 <button
                   type="submit"
-                  className="px-5 py-3 rounded-r-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition translate-x-[1px]"
-                >
+                  className="px-5 py-3 rounded-r-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition translate-x-[1px]">
                   검색
                 </button>
               </form>
@@ -70,14 +63,12 @@ const Home = () => {
               <div className="flex flex-wrap gap-3 mt-5">
                 <Link
                   to="/jobs"
-                  className="px-5 py-3 font-semibold text-white transition bg-gray-900 rounded-xl hover:bg-black"
-                >
+                  className="px-5 py-3 font-semibold text-white transition bg-gray-900 rounded-xl hover:bg-black">
                   일자리 둘러보기
                 </Link>
                 <Link
                   to="/profile"
-                  className="px-5 py-3 font-semibold transition border border-gray-300 rounded-xl hover:bg-gray-50"
-                >
+                  className="px-5 py-3 font-semibold transition border border-gray-300 rounded-xl hover:bg-gray-50">
                   내 프로필 등록
                 </Link>
               </div>
@@ -132,14 +123,10 @@ const Home = () => {
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold sm:text-2xl">핵심 기능</h2>
-              <p className="mt-1 text-gray-600">
-                안전한 매칭을 위해 꼭 필요한 것만 담았습니다.
-              </p>
+              <p className="mt-1 text-gray-600">안전한 매칭을 위해 꼭 필요한 것만 담았습니다.</p>
             </div>
-            <Link
-              to="/about"
-              className="font-semibold text-indigo-600 hover:underline"
-            >
+
+            <Link to="/about" className="font-semibold text-indigo-600 hover:underline">
               자세히 보기 →
             </Link>
           </div>
@@ -169,12 +156,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 리뷰 / 신뢰 */}
+      {/* 리뷰 */}
       <section className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <h2 className="text-xl font-bold sm:text-2xl">사용자 후기</h2>
-        <p className="mt-1 text-gray-600">
-          실제 사용자들의 경험이 신뢰를 만듭니다.
-        </p>
+        <p className="mt-1 text-gray-600">실제 사용자들의 경험이 신뢰를 만듭니다.</p>
 
         <div className="grid gap-6 mt-6 md:grid-cols-3">
           <ReviewCard
@@ -220,28 +205,24 @@ const Home = () => {
       {/* 마지막 CTA */}
       <section className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="p-8 text-center bg-white border border-gray-200 shadow-sm rounded-3xl lg:p-12">
-          <h3 className="text-2xl font-extrabold">
-            지금, 공정한 일자리 환경을 경험해보세요.
-          </h3>
+          <h3 className="text-2xl font-extrabold">지금, 공정한 일자리 환경을 경험해보세요.</h3>
           <p className="mt-2 text-gray-600">
             구직자와 기업 모두에게 안전하고 투명한 매칭을 제공합니다.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
             <Link
               to="/start"
-              className="px-6 py-3 font-semibold text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700"
-            >
+              className="px-6 py-3 font-semibold text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700">
               무료로 시작하기
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 푸터 (간단) */}
       <Footer />
     </div>
-  );
-};
+  )
+}
 
 /* ----------------------- 작은 UI 컴포넌트들 ----------------------- */
 
@@ -251,16 +232,15 @@ function MiniCard({
   desc,
   to,
 }: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-  to: string;
+  icon: React.ReactNode
+  title: string
+  desc: string
+  to: string
 }) {
   return (
     <Link
       to={to}
-      className="p-5 transition bg-white border border-gray-200 group rounded-2xl hover:shadow-md"
-    >
+      className="p-5 transition bg-white border border-gray-200 group rounded-2xl hover:shadow-md">
       <div className="text-2xl">{icon}</div>
       <h3 className="mt-3 font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-gray-600">{desc}</p>
@@ -268,7 +248,7 @@ function MiniCard({
         바로가기 →
       </div>
     </Link>
-  );
+  )
 }
 
 function FeatureCard({
@@ -276,9 +256,9 @@ function FeatureCard({
   title,
   desc,
 }: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
+  icon: React.ReactNode
+  title: string
+  desc: string
 }) {
   return (
     <div className="p-6 transition bg-white border border-gray-200 rounded-2xl hover:shadow-sm">
@@ -286,7 +266,7 @@ function FeatureCard({
       <h3 className="mt-3 font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-gray-600">{desc}</p>
     </div>
-  );
+  )
 }
 
 function ReviewCard({ name, text }: { name: string; text: string }) {
@@ -298,7 +278,7 @@ function ReviewCard({ name, text }: { name: string; text: string }) {
       <p className="mt-3 text-gray-700">{text}</p>
       <p className="mt-3 text-sm text-gray-500">— {name}</p>
     </div>
-  );
+  )
 }
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -307,22 +287,38 @@ function FAQItem({ q, a }: { q: string; a: string }) {
       <summary className="font-semibold cursor-pointer">{q}</summary>
       <p className="mt-2 text-sm text-gray-600">{a}</p>
     </details>
-  );
+  )
 }
 
-/* ----------------------- 간단 아이콘 (SVG/이모지) ----------------------- */
+/* ----------------------- 아이콘 ----------------------- */
 
 function Icon() {
-  return <span role="img" aria-label="ai">🤖</span>;
+  return (
+    <span role="img" aria-label="ai">
+      🤖
+    </span>
+  )
 }
 function AuditIcon() {
-  return <span role="img" aria-label="audit">🧐</span>;
+  return (
+    <span role="img" aria-label="audit">
+      🧐
+    </span>
+  )
 }
 function EscrowIcon() {
-  return <span role="img" aria-label="escrow">💰</span>;
+  return (
+    <span role="img" aria-label="escrow">
+      💰
+    </span>
+  )
 }
 function ShieldLogIcon() {
-  return <span role="img" aria-label="shield-log">🛡️📑</span>;
+  return (
+    <span role="img" aria-label="shield-log">
+      🛡️📑
+    </span>
+  )
 }
 
-export default Home;
+export default Home

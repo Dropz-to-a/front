@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import  type{ChangeEvent } from 'react'
+import type { ChangeEvent } from 'react'
 import {
   User,
   Briefcase,
@@ -17,7 +17,8 @@ import {
   Calendar,
   Award,
 } from 'lucide-react'
-import Header from '../../components/Header'
+
+import Header from '@/components/Header'
 import { Link } from 'react-router'
 
 interface Preferences {
@@ -85,6 +86,7 @@ const ProfileEdit = () => {
   // ✅ 희망조건 변경
   const handlePreferenceChange = (
     field: keyof Preferences,
+
     value: string | number,
   ): void => {
     setProfile({
@@ -174,9 +176,7 @@ const ProfileEdit = () => {
                 onChange={e => handleChange('bio', e.target.value)}
                 className="w-full px-4 py-2 text-sm border-2 border-gray-200 resize-none rounded-xl focus:border-blue-500 focus:outline-none"
               />
-              <p className="mt-1 text-xs text-right text-gray-500">
-                {profile.bio.length} / 500자
-              </p>
+              <p className="mt-1 text-xs text-right text-gray-500">{profile.bio.length} / 500자</p>
             </div>
           </div>
 
@@ -289,7 +289,7 @@ const ProfileEdit = () => {
               )}
             </button>
             {showSuccess && (
-              <div className="fixed bottom-6 right-6 bg-green-600 text-white px-4 py-2 rounded-xl shadow-lg animate-fade-in">
+              <div className="fixed px-4 py-2 text-white bg-green-600 shadow-lg bottom-6 right-6 rounded-xl animate-fade-in">
                 프로필이 성공적으로 저장되었습니다!
               </div>
             )}

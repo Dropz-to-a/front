@@ -3,8 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Download } from 'lucide-react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-import Header from '../../../components/Header'
-import { JOBS_DATA } from '../user/Jobs'
+
+import Header from '@/components/Header'
+import { JOBS_DATA } from '@/pages/jobs/user/Jobs'
 
 const DUMMY_APPLICATION = {
   name: '박지우',
@@ -114,6 +115,7 @@ const ResumeViewPage = () => {
             )}
             <div>
               <h2 className="text-xl font-semibold">{job?.company || '회사명'}</h2>
+
               <p className="text-sm text-gray-500">{job?.title || '지원한 공고'}</p>
             </div>
           </div>

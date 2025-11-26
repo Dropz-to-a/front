@@ -1,26 +1,28 @@
 import React from 'react'
-import Start from '../pages/auth/Start'
-import Login from '../pages/auth/Login'
-import Register from '../pages/auth/Register'
-import Home from '../pages/home/Home'
-import About from '../pages/common/About'
-import Jobs from '../pages/jobs/user/Jobs'
-import DetailJobs from '../pages/jobs/user/DetailJobs'
-import Profile from '../pages/profile/Profile'
-import Contracts from '../pages/jobs/company/Contracts'
-import JobCompleted from '../pages/jobs/user/JobCompleted'
-import JobCompletedAdmin from '../pages/jobs/company/JobCompletedAdmin'
-import MyApplications from '../pages/jobs/user/MyApplications'
-import Contact from '../pages/common/Contact'
-import Privacy from '../pages/common/Privacy'
-import Terms from '../pages/common/Terms'
-import JobEdit from '../pages/jobs/company/JobEdit'
-import JobManage from '../pages/jobs/company/JobManage'
-import JobRegister from '../pages/jobs/company/JobRegister'
-import PayLogPage from '../pages/payroll/user/PayLog'
-import PayrollPage from '../pages/payroll/company/Payroll'
-import JobApplyForm from '../pages/jobs/user/JobApplyForm'
-import ResumeViewPage from '../pages/jobs/company/ResumeView'
+import Login from '@/pages/auth/Login'
+import Register from '@/pages/auth/Register'
+import Home from '@/pages/home/Home'
+import About from '@/pages/common/About'
+import Jobs from '@/pages/jobs/user/Jobs'
+import DetailJobs from '@/pages/jobs/user/DetailJobs'
+import Profile from '@/pages/profile/Profile'
+import Contracts from '@/pages/jobs/company/Contracts'
+import JobCompleted from '@/pages/jobs/user/JobCompleted'
+import JobCompletedAdmin from '@/pages/jobs/company/JobCompletedAdmin'
+import MyApplications from '@/pages/jobs/user/MyApplications'
+import Contact from '@/pages/common/Contact'
+import Privacy from '@/pages/common/Privacy'
+import Terms from '@/pages/common/Terms'
+import JobEdit from '@/pages/jobs/company/JobEdit'
+import JobManage from '@/pages/jobs/company/JobManage'
+import JobRegister from '@/pages/jobs/company/JobRegister'
+import PayLogPage from '@/pages/payroll/user/PayLog'
+import PayrollPage from '@/pages/payroll/company/Payroll'
+import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
+import ResumeViewPage from '@/pages/jobs/company/ResumeView'
+import Start from '@/pages/auth/Start'
+import TestUserOnboarding from '@/pages/auth/user/UserOnBoarding'
+import TestCompanyOnboarding from '@/pages/auth/company/CompanyOnboarding'
 export type RouteItem = {
   path: string
   element: React.ReactNode
@@ -55,6 +57,9 @@ export const publicRoutes: RouteItem[] = [
 
   //재직자 급여로그
   { path: '/paylog', element: <PayLogPage /> },
+
+  { path: '/user/onboarding', element: <TestUserOnboarding /> },
+  { path: '/company/onboarding', element: <TestCompanyOnboarding /> },
 
   //-------------------------------------기업---------------------------------------------
 

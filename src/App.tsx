@@ -1,5 +1,6 @@
-import './index.css'
-import AppRouter from './routes/AppRouter'
+// App.jsx 파일
+import '@/index.css'
+import AppRouter from '@/routes/AppRouter'
 
 function App() {
   return (

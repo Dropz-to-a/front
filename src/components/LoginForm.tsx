@@ -84,13 +84,15 @@ const LoginForm: FC<LoginFormProps> = ({ isActive }) => {
         ? '기업-로그인'
         : '기업-회원가입'
       : isActive
-      ? '로그인'
-      : '회원가입'
+        ? '로그인'
+        : '회원가입'
 
-  const headerDesc = isActive ? '계정에 로그인하여 시작하세요' : '회원가입하여 JOBIT을 시작하세요'
+  const headerDesc = isActive
+    ? '계정에 로그인하여 시작하세요'
+    : '회원가입을 통해 서비스를 시작하세요'
 
   return (
-    <div className="w-3/5 text-center bg-gray-200 p-14 rounded-r-3xl">
+    <div className="flex flex-col justify-center w-3/5 text-center bg-gray-50 p-14 rounded-r-3xl">
       {/* 헤더 */}
       <div className={`mb-${isActive ? '10' : '4'}`}>
         <h1 className="mb-4 text-5xl font-semibold">{headerTitle}</h1>

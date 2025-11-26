@@ -19,6 +19,12 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* 경로 설정 추가 */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

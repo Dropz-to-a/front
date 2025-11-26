@@ -184,7 +184,10 @@ export default function Contracts() {
     setDepartments((prev) => {
       let updated = [...prev];
 
+      // 기존 unassigned 찾기
       let unassigned = updated.find((x) => x.id === "unassigned");
+
+      // 없을 때만 생성
       if (!unassigned) {
         unassigned = {
           id: "unassigned",
@@ -194,13 +197,18 @@ export default function Contracts() {
         updated.push(unassigned);
       }
 
-      unassigned.employees.push(...deleteDept.employees);
+      // 삭제되는 부서의 직원들을 미배정으로 이동
+      unassigned.employees = [...unassigned.employees, ...deleteDept.employees];
 
-      return updated.filter((d) => d.id !== deleteDept.id);
+      // 삭제될 부서를 제거
+      updated = updated.filter((d) => d.id !== deleteDept.id);
+
+      return updated;
     });
 
     setDeleteDept(null);
   };
+
 
   /* ============================
         UI
@@ -231,7 +239,9 @@ export default function Contracts() {
             </div>
 
             <DepartmentList
-              departments={departments}
+              departments={departments.filter(
+                (d) => !(d.id === "unassigned" && d.employees.length === 0)
+              )}
               expanded={expanded}
               toggleExpand={(id) =>
                 setExpanded((prev) =>
@@ -245,6 +255,7 @@ export default function Contracts() {
               onDeleteDept={setDeleteDept}
               setSelectedEmployee={setSelectedEmployee}
             />
+
           </div>
 
           {/* 우측 패널 */}

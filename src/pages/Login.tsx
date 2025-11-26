@@ -7,13 +7,13 @@ import LoginForm from '../components/LoginForm'
 
 const Login: FC = () => {
   const location = useLocation()
-  const [isLogin, setIsLogin] = useState(true)
+  const [isActive, setIsActive] = useState(location.state?.register ?? false)
 
   useEffect(() => {
     if (location.pathname === '/login') {
-      setIsLogin(true)
+      setIsActive(true)
     } else {
-      setIsLogin(false)
+      setIsActive(false)
     }
   }, [location.pathname])
 
@@ -54,7 +54,7 @@ const Login: FC = () => {
         </div>
 
         {/* 오른쪽 섹션 */}
-        <LoginForm isLogin={isLogin} />
+        <LoginForm isActive={isActive} />
       </div>
     </div>
   )

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const CompanyRegister: FC = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen p-6">
+    <div className="flex items-center justify-center min-h-screen p-6 bg-gray-100">
       <div className="w-full max-w-6xl p-12 bg-[linear-gradient(30deg,#0000ff,#c3c3e7)] shadow-lg rounded-3xl">
         {/* 헤더 */}
         <div className="flex items-center mb-10">
@@ -123,9 +123,7 @@ const CompanyRegister: FC = () => {
 
           {/* 버튼 영역 */}
           <div className="flex flex-col items-center mt-10">
-            <button
-              type="submit"
-              className="w-1/3 py-3 text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600">
+            <button className="w-1/3 py-3 text-white transition-colors bg-blue-500 rounded-lg hover:bg-blue-600">
               회원가입
             </button>
             <p className="mt-4 text-gray-600">

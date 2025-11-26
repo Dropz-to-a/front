@@ -2,19 +2,10 @@ import HighLight from '../assets/highlight.png'
 import HighLight2 from '../assets/highlight2.png'
 
 import type { FC } from 'react'
-import { useLocation } from 'react-router'
 
 import LoginForm from '../components/LoginForm'
-import CompanyRegister from '../pages/CompanyRegister'
 
 const Register: FC = () => {
-  const location = useLocation()
-  const params = new URLSearchParams(location.search)
-  const type = params.get('type')
-
-  if (type === 'company') {
-    return <CompanyRegister />
-  }
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="flex w-6/9 rounded-3xl h-7/9">
@@ -24,7 +15,7 @@ const Register: FC = () => {
             {/* 소개 문구 */}
             <h1 className="mb-16 mr-10 italic font-bold text-7xl">Welcome</h1>
             <div className="flex flex-col gap-2">
-              <p className="text-3xl font-semibold leading-8">
+              <span className="text-3xl font-semibold leading-8">
                 기업{' '}
                 <span className="relative inline-block">
                   <img
@@ -35,8 +26,8 @@ const Register: FC = () => {
                   <p className="relative z-10 text-3xl text-blue-500">정보</p>
                 </span>
                 부터
-              </p>
-              <p className="text-3xl font-semibold leading-8">
+              </span>
+              <span className="text-3xl font-semibold leading-8">
                 취업 후{' '}
                 <span className="relative inline-block">
                   <img
@@ -47,13 +38,13 @@ const Register: FC = () => {
                   <p className="relative z-10 text-3xl text-blue-500">관리</p>
                 </span>
                 까지 한 번에!
-              </p>
+              </span>
             </div>
           </div>
         </div>
 
         {/* 오른쪽 섹션 */}
-        <LoginForm isLogin={false} />
+        <LoginForm isActive={false} />
       </div>
     </div>
   )

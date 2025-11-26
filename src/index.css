@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+.highlighted {
+    color: #22d3ee;
+    font-weight: bold;
+}
+
+@layer utilities {
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pop {
+        0% {
+            transform: scale(0.7) rotate(-10deg);
+            opacity: 0;
+        }
+
+        70% {
+            transform: scale(1.1) rotate(2deg);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1) rotate(0);
+        }
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.6s ease-out both;
+    }
+
+    .animate-fadeUp {
+        animation: fadeUp 0.6s ease-out both;
+    }
+
+    .animate-fadeInDelay {
+        animation: fadeIn 1s ease-out 0.3s both;
+    }
+
+    .animate-pop {
+        animation: pop 0.5s ease-out both;
+    }
+}
+
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.input:focus {
+    border-color: #2563eb;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 120px;
+    /* ✅ 텍스트에리아 크기 */
+    resize: vertical;
+    /* ✅ 사용자가 크기 조절 가능 */
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.textarea:focus {
+    border-color: #2563eb;
+}

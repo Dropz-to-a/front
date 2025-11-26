@@ -1,4 +1,4 @@
-// tailwind.config.js 파일(직접 생성
+// tailwind.config.js 파일(직접 생성)
 
 export default {
   content: [

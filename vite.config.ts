@@ -14,6 +14,11 @@ export default defineConfig({
   server: {
     open: true,
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://172.28.5.94:8083',
+      },
+    },
   },
   resolve: {
     alias: [{ find: '@', replacement: '/src' }],

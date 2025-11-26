@@ -54,7 +54,7 @@ const isValidExpiry = (v: string) => {
   return true
 }
 
-export default function CompanyOnboarding() {
+export default function TestCompanyOnboarding() {
   const {
     control,
     handleSubmit,
@@ -90,8 +90,7 @@ export default function CompanyOnboarding() {
             rules={{
               required: '카드 번호를 입력해주세요.',
               validate: {
-                len16: v =>
-                  digitsOnly(v).length === 16 || '카드 번호는 16자리여야 합니다.',
+                len16: v => digitsOnly(v).length === 16 || '카드 번호는 16자리여야 합니다.',
                 luhn: v => luhnCheck(digitsOnly(v)) || '유효하지 않은 카드 번호입니다.',
               },
             }}
@@ -134,9 +133,7 @@ export default function CompanyOnboarding() {
                 />
               )}
             />
-            {errors.expiry && (
-              <p className="mt-1 text-sm text-red-500">{errors.expiry.message}</p>
-            )}
+            {errors.expiry && <p className="mt-1 text-sm text-red-500">{errors.expiry.message}</p>}
           </div>
 
           <div className="flex-1">
@@ -159,9 +156,7 @@ export default function CompanyOnboarding() {
                 />
               )}
             />
-            {errors.cvc && (
-              <p className="mt-1 text-sm text-red-500">{errors.cvc.message}</p>
-            )}
+            {errors.cvc && <p className="mt-1 text-sm text-red-500">{errors.cvc.message}</p>}
           </div>
         </div>
 

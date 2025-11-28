@@ -6,10 +6,10 @@ import { registerUser, loginUser } from '../api'
 // import { register } from 'module'
 
 type LoginFormProps = {
-  isActive: boolean
+  isLoggedIn: boolean
 }
 
-const LoginForm: FC<LoginFormProps> = ({ isActive }) => {
+const LoginForm: FC<LoginFormProps> = ({ isLoggedIn }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const queryParams = new URLSearchParams(location.search)
@@ -76,32 +76,32 @@ const LoginForm: FC<LoginFormProps> = ({ isActive }) => {
     }
   }
 
-  const inputMarginStyle = `flex flex-col items-start w-full mb-${!isActive ? '4' : '6'}`
+  const inputMarginStyle = `flex flex-col items-start w-full mb-${!isLoggedIn ? '4' : '6'}`
 
   const headerTitle =
     type === 'company'
-      ? isActive
+      ? isLoggedIn
         ? '기업-로그인'
         : '기업-회원가입'
-      : isActive
-        ? '로그인'
-        : '회원가입'
+      : isLoggedIn
+      ? '로그인'
+      : '회원가입'
 
-  const headerDesc = isActive
+  const headerDesc = isLoggedIn
     ? '계정에 로그인하여 시작하세요'
     : '회원가입을 통해 서비스를 시작하세요'
 
   return (
     <div className="flex flex-col justify-center w-3/5 text-center bg-gray-50 p-14 rounded-r-3xl">
       {/* 헤더 */}
-      <div className={`mb-${isActive ? '10' : '4'}`}>
+      <div className={`mb-${isLoggedIn ? '10' : '4'}`}>
         <h1 className="mb-4 text-5xl font-semibold">{headerTitle}</h1>
         <p className="text-gray-400">{headerDesc}</p>
       </div>
 
       {/* 폼 시작 */}
       <div className="flex flex-col">
-        {!isActive && (
+        {!isLoggedIn && (
           <>
             {/* 회원가입 입력란 */}
             <div className={inputMarginStyle}>
@@ -163,7 +163,7 @@ const LoginForm: FC<LoginFormProps> = ({ isActive }) => {
         )}
 
         {/* 로그인 폼 */}
-        {isActive && (
+        {isLoggedIn && (
           <>
             <div className={inputMarginStyle}>
               <label className="mb-2" htmlFor="id">
@@ -195,7 +195,7 @@ const LoginForm: FC<LoginFormProps> = ({ isActive }) => {
         )}
 
         {/* 버튼 및 링크 */}
-        {!isActive ? (
+        {!isLoggedIn ? (
           <>
             <div className="mt-6">
               <button

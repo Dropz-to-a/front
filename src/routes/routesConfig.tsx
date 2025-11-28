@@ -21,6 +21,8 @@ import PayrollPage from '@/pages/payroll/company/Payroll'
 import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
 import ResumeViewPage from '@/pages/jobs/company/ResumeView'
 import Start from '@/pages/auth/Start'
+import TestUserOnboarding from '@/pages/auth/user/UserOnBoarding'
+import TestCompanyOnboarding from '@/pages/auth/company/CompanyOnboarding'
 export type RouteItem = {
   path: string
   element: React.ReactNode
@@ -55,6 +57,9 @@ export const publicRoutes: RouteItem[] = [
 
   //재직자 급여로그
   { path: '/paylog', element: <PayLogPage /> },
+
+  { path: '/user/onboarding', element: <TestUserOnboarding /> },
+  { path: '/company/onboarding', element: <TestCompanyOnboarding /> },
 
   //-------------------------------------기업---------------------------------------------
 

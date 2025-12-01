@@ -1,5 +1,7 @@
 import React from 'react'
 
+import Marquee from 'react-fast-marquee'
+
 type Review = { name: string; text: string }
 
 function ReviewCard({ name, text }: { name: string; text: string }) {
@@ -56,41 +58,27 @@ const REVIEWS: Review[] = [
 ]
 
 export default function ReviewSection() {
-  // 무한 루프용으로 2세트
-  const loop = [...REVIEWS, ...REVIEWS]
-
   return (
-    <div className="relative w-full py-6 overflow-hidden">
-      {/* 흐르는 트랙 */}
-      <div
-        className="flex w-max gap-6 animate-[marquee_var(--dur)_linear_infinite]"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        style={{ ['--dur' as any]: '28s' } as React.CSSProperties}>
-        {/* 두 덩어리를 연달아 배치 (폭의 50%씩) */}
-        <div className="flex gap-6">
-          {REVIEWS.map((r, i) => (
-            <ReviewCard key={`a-${i}`} name={r.name} text={r.text} />
-          ))}
-        </div>
-        <div className="flex gap-6">
-          {REVIEWS.map((r, i) => (
-            <ReviewCard key={`b-${i}`} name={r.name} text={r.text} />
-          ))}
+    <Marquee gradient={true} pauseOnClick={true} speed={100}>
+      <div className="relative w-full py-6 overflow-hidden">
+        {/* 흐르는 트랙 */}
+        <div
+          className="flex w-max gap-6 animate-[marquee_var(--dur)_linear_infinite]"
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          style={{ ['--dur' as any]: '28s' } as React.CSSProperties}>
+          {/* 두 덩어리를 연달아 배치 (폭의 50%씩) */}
+          <div className="flex gap-6">
+            {REVIEWS.map((r, i) => (
+              <ReviewCard key={`a-${i}`} name={r.name} text={r.text} />
+            ))}
+          </div>
+          <div className="flex gap-6">
+            {REVIEWS.map((r, i) => (
+              <ReviewCard key={`b-${i}`} name={r.name} text={r.text} />
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* 좌/우 페이드 마스크 (배경이 흰색일 때) */}
-      <div className="absolute inset-y-0 left-0 w-16 pointer-events-none bg-gradient-to-r from-white to-transparent" />
-      <div className="absolute inset-y-0 right-0 w-16 pointer-events-none bg-gradient-to-l from-white to-transparent" />
-
-      <style>{`
-        @keyframes marquee {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); } /* 앞 절반만큼 이동 */
-        }
-        @media (max-width: 480px) { :root { --dur: 20s; } }
-        @media (min-width: 1024px) { :root { --dur: 35s; } }
-      `}</style>
-    </div>
+    </Marquee>
   )
 }

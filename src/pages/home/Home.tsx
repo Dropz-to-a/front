@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 
+import ReviewSection from './ReviewCard'
+
 const Home = () => {
   const [keyword, setKeyword] = useState('')
 
@@ -161,20 +163,7 @@ const Home = () => {
         <h2 className="text-xl font-bold sm:text-2xl">사용자 후기</h2>
         <p className="mt-1 text-gray-600">실제 사용자들의 경험이 신뢰를 만듭니다.</p>
 
-        <div className="grid gap-6 mt-6 md:grid-cols-3">
-          <ReviewCard
-            name="박** (프론트엔드)"
-            text="프로젝트 대금이 제때 들어와서 마음 편하게 일했어요. 매칭 정확도가 높았고 계약 검토도 큰 도움!"
-          />
-          <ReviewCard
-            name="김** (디자이너)"
-            text="작업물 업로드와 시간 기록이 자동으로 정리되어 포트폴리오 관리까지 쉬워졌어요."
-          />
-          <ReviewCard
-            name="이** (백엔드)"
-            text="분쟁 걱정 없이 협업할 수 있었습니다. 에스크로 정산 체계가 특히 좋았어요."
-          />
-        </div>
+        <ReviewSection />
       </section>
 
       {/* FAQ */}
@@ -261,22 +250,10 @@ function FeatureCard({
   desc: string
 }) {
   return (
-    <div className="p-6 transition bg-white border border-gray-200 rounded-2xl hover:shadow-sm">
+    <div className="p-6 transition bg-white border border-gray-200 rounded-2xl hover:border-indigo-500">
       <div className="text-2xl">{icon}</div>
       <h3 className="mt-3 font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-gray-600">{desc}</p>
-    </div>
-  )
-}
-
-function ReviewCard({ name, text }: { name: string; text: string }) {
-  return (
-    <div className="p-6 bg-white border border-gray-200 rounded-2xl">
-      <div className="flex items-center gap-2">
-        <span className="text-yellow-500">★ ★ ★ ★ ★</span>
-      </div>
-      <p className="mt-3 text-gray-700">{text}</p>
-      <p className="mt-3 text-sm text-gray-500">— {name}</p>
     </div>
   )
 }

@@ -59,7 +59,7 @@ const REVIEWS: Review[] = [
 
 export default function ReviewSection() {
   return (
-    <Marquee gradient={true} pauseOnClick={true} speed={100}>
+    <Marquee gradient={true} speed={100}>
       <div className="relative w-full py-6 overflow-hidden">
         {/* 흐르는 트랙 */}
         <div

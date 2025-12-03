@@ -10,7 +10,7 @@ export function FormInput<T extends Record<string, unknown>>({
   error,
 }: FormInputProps<T>) {
   return (
-    <div className="flex flex-col items-start w-full mb-4">
+    <div className="flex flex-col items-start w-full mb-2">
       <label className="mb-2" htmlFor={String(name)}>
         {label}
       </label>

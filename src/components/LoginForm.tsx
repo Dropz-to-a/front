@@ -83,7 +83,7 @@ const LoginForm: FC = () => {
         />
 
         {/* 버튼 및 링크 */}
-        <div className="mt-6">
+        <div className="mt-2">
           <input
             type="submit"
             value="로그인"

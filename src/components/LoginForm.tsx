@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 
 import { loginUser } from '../api'
-// import { register } from 'module'
 
 type LoginFormValue = {
   id: string

@@ -23,11 +23,9 @@ export function FormInput<T extends Record<string, unknown>>({
         {...register(name, rules)}
       />
 
-      {error && (
-        <small className="font-semibold text-red-500" role="alert">
-          {error.message}
-        </small>
-      )}
+      <small className="font-semibold text-red-500 min-h-5" role="alert">
+        {error && error.message}
+      </small>
     </div>
   )
 }

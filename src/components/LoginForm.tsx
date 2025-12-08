@@ -75,7 +75,7 @@ const LoginForm: FC = () => {
           rules={{
             required: true,
             minLength: {
-              value: 6,
+              value: 8,
               message: '비밀번호는 최소 8자 이상이어야 합니다.',
             },
           }}

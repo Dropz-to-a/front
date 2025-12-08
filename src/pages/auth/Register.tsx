@@ -12,7 +12,7 @@ const Register: FC = () => {
         title={'만나서 반가워요!'}
         description={'당신이 누군지 저희에게 알려주세요!'}
       />
-      <RegisterForm isLoggedIn={false} />
+      <RegisterForm />
     </AuthBackground>
   )
 }

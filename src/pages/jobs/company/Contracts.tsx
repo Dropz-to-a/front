@@ -182,26 +182,30 @@ export default function Contracts() {
     if (!deleteDept) return;
 
     setDepartments((prev) => {
-      let updated = [...prev];
+      // 기존 구조 복사
+      let updated = prev.filter((d) => d.id !== deleteDept.id);
 
-      // 기존 unassigned 찾기
-      let unassigned = updated.find((x) => x.id === "unassigned");
+      // 미배정 부서 찾기
+      const unassignedIndex = updated.findIndex((d) => d.id === "unassigned");
 
-      // 없을 때만 생성
-      if (!unassigned) {
-        unassigned = {
-          id: "unassigned",
-          name: "미배정 부서",
-          employees: [],
+      if (unassignedIndex === -1) {
+        // 미배정 부서 없으면 생성
+        updated = [
+          ...updated,
+          {
+            id: "unassigned",
+            name: "미배정 부서",
+            employees: [...deleteDept.employees], // ⭐ 새 배열로 생성
+          },
+        ];
+      } else {
+        // 이미 미배정 부서 있음 → 기존 employees에 추가
+        const old = updated[unassignedIndex];
+        updated[unassignedIndex] = {
+          ...old,
+          employees: [...old.employees, ...deleteDept.employees], // ⭐ push 금지
         };
-        updated.push(unassigned);
       }
-
-      // 삭제되는 부서의 직원들을 미배정으로 이동
-      unassigned.employees = [...unassigned.employees, ...deleteDept.employees];
-
-      // 삭제될 부서를 제거
-      updated = updated.filter((d) => d.id !== deleteDept.id);
 
       return updated;
     });

@@ -21,6 +21,8 @@ import PayLogPage from '../pages/payroll/user/PayLog'
 import PayrollPage from '../pages/payroll/company/Payroll'
 import JobApplyForm from '../pages/jobs/user/JobApplyForm'
 import ResumeViewPage from '../pages/jobs/company/ResumeView'
+import Attendance from '../pages/jobs/user/Attendance'
+import WorkDashboard from '../pages/jobs/user/WorkDashboard'
 export type RouteItem = {
     path: string
     element: React.ReactNode
@@ -49,13 +51,20 @@ export const publicRoutes: RouteItem[] = [
   // { path: '/jobs/:id/completed', element: <JobCompleted /> },
   //공고 지원목록 
   { path: '/my-applications', element: <MyApplications /> },
-
+  //지원자 이력서 확인
+  { path: '/applications/resume/:id', element: <ResumeViewPage /> },
   //프로필 페이지 & 수정
   { path: '/profile', element: <Profile /> },
 
   //재직자 급여로그 
   { path: '/paylog', element: <PayLogPage /> },
 
+  //-------------------------------------재직자---------------------------------------------
+
+  //출퇴근 관리
+  { path: '/attendance', element: <Attendance /> },
+  //근무 대시보드
+  { path: '/work-dashboard', element: <WorkDashboard /> },
   //-------------------------------------기업---------------------------------------------
 
   //지원자 관리
@@ -77,6 +86,10 @@ export const publicRoutes: RouteItem[] = [
   { path: '/payroll', element: <PayrollPage /> },
 
 
+  //공고 이력서 작성 
+  { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
+  //공고 지원완료 
+  { path: '/jobs/:id/completed', element: <JobCompleted /> },
 
   // Footer 페이지
   { path: '/contact', element: <Contact /> },
@@ -86,8 +99,4 @@ export const publicRoutes: RouteItem[] = [
 
 export const privateRoutes: RouteItem[] = [
   { path: '/', element: <Home /> },
-  //공고 이력서 작성 
-  { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
-  //공고 지원완료 
-  { path: '/jobs/:id/completed', element: <JobCompleted /> },
 ]

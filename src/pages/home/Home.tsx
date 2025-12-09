@@ -85,7 +85,7 @@ const Home = () => {
               {/* 신뢰 문구 */}
               <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                 <span>🛡️ 에스크로 임금 보호</span>
-                <span>📄 표준 계약 + AI 검토</span>
+                <span>📄 표준 계약 + 알고리즘 검토</span>
                 <span>⭐ 신뢰 기반 리뷰 시스템</span>
               </div>
             </div>
@@ -109,10 +109,10 @@ const Home = () => {
                   desc="역량·경력·희망근무 입력하고 노출"
                 />
                 <MiniCard
-                  to="/contracts"
+                  to="/my-applications"
                   icon="📄"
-                  title="표준 계약 체결"
-                  desc="AI가 위험 문구를 자동 검토"
+                  title="지원 계약 확인하기"
+                  desc=""
                 />
                 <MiniCard
                   to="/activity"
@@ -147,12 +147,12 @@ const Home = () => {
           <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureCard
               icon={<Icon />}
-              title="AI 스마트 매칭"
+              title="스마트 매칭"
               desc="이력/기술/선호 조건을 분석해 적합도 추천"
             />
             <FeatureCard
               icon={<AuditIcon />}
-              title="AI 계약 검토"
+              title="계약 검토"
               desc="불리한 조항 탐지, 대체 문구 제안"
             />
             <FeatureCard

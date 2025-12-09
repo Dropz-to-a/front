@@ -45,19 +45,37 @@ const ApplyFormPage = () => {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            await fetch("/api/applications", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...form, jobId: id }),
-            });
-            navigate(`/jobs/${id}/completed`);
-        } catch {
-            alert("지원 중 오류가 발생했습니다.");
+
+        const stored = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
+
+        // 🔥 중복 방지 — 반드시 실제 저장 전에 검사
+        if (stored.some((a: any) => a.id === id)) {
+            alert("이미 제출한 공고입니다.");
+            return;
         }
+
+        // 🔵 저장되는 지원서의 정확한 구조
+        const applicationData = {
+            id,
+            date: new Date().toISOString().split("T")[0],
+            form,   // ← form 전체를 한 객체로 묶어서 저장
+        };
+
+        const updated = [...stored, applicationData];
+
+        // 🔥 localStorage 저장 (완료 보장)
+        localStorage.setItem("appliedJobs", JSON.stringify(updated));
+
+        // 🔥 저장 후 이동 (저장 직후)
+        setTimeout(() => {
+            navigate(`/jobs/${id}/completed`);
+        }, 50);
     };
+
+
+
 
     if (!job) {
         return (
@@ -195,5 +213,3 @@ const ApplyFormPage = () => {
 };
 
 export default ApplyFormPage;
-
-/* ✅ 추가 CSS (App.css 혹은 index.css에 추가) */

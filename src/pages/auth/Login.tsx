@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 
-import AuthBackground from '@/components/AuthBackground'
+import LoginIntro from '@/components/LoginIntro'
 import LoginForm from '@/components/LoginForm'
 import AuthIntro from '@/components/AuthIntro'
 import JobitLogo from '@/../public/logo(white).svg'

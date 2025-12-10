@@ -60,6 +60,9 @@ export const publicRoutes: RouteItem[] = [
   //재직자 급여로그
   { path: '/paylog', element: <PayLogPage /> },
 
+  { path: '/user/onboarding', element: <TestUserOnboarding /> },
+  { path: '/company/onboarding', element: <TestCompanyOnboarding /> },
+
   //-------------------------------------기업---------------------------------------------
 
   //지원자 관리

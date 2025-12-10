@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Header from '@/components/Header'
+import type { JobDetail } from '@/pages/jobs/user/Jobs'
 
 /** ==== 유틸 컴포넌트 ==== */
 const Badge = ({ children }: { children: React.ReactNode }) => (

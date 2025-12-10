@@ -1,3 +1,4 @@
+import type { Job } from "@/pages/jobs/user/Jobs";
 
 
 export type AppliedJob = Job & {

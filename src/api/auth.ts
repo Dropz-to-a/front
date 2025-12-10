@@ -5,8 +5,9 @@
 //   "password": "1234",
 //   "roleCode": "ROLE_COMPANY"
 // }
+
 import api from './Api'
-import type { UserRegisterData, UserLoginData } from '../types/index'
+import type { UserRegisterData, UserLoginData, UserOnBoardData } from '../types/index'
 
 export const registerUser = async (data: UserRegisterData) => {
   const response = await api.post('/api/auth/register', data, {
@@ -27,8 +28,17 @@ export const loginUser = async (data: UserLoginData) => {
   const { accessToken } = response.data
 
   if (accessToken) {
-    localStorage.setItem('accessToken', accessToken)
+    localStorage.setItem('jwtToken', accessToken)
   }
 
+  return response.data
+}
+
+export const OnBoardUser = async (data: UserOnBoardData) => {
+  const response = await api.post('/api/onboarding/user', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
   return response.data
 }

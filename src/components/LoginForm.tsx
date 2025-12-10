@@ -24,12 +24,13 @@ const LoginForm: FC = () => {
 
     try {
       const response = await loginUser(requestBody)
-      console.log('로그인 성공:', response.data)
+      console.log('로그인 성공:', response)
+
       navigate('/')
-      alert('로그인에 성공했습니다!')
+      alert('로그인 성공!')
     } catch (err) {
       console.error('로그인 실패:', err)
-      alert('아이디 또는 비밀번호를 확인해주세요.')
+      alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }
   }
 

@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '@/components/Header'
+import type { Job } from '@/pages/jobs/user/Jobs'
 // import type { Job } from "./Jobs";
 
 export default function JobRegister() {

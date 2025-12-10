@@ -10,3 +10,11 @@ export type UserLoginData = {
   id: string
   password: string
 }
+
+export type UserOnBoardData = {
+  realName: string
+  birth: string
+  address: string
+  detailAddress: string
+  zonecode: string
+}

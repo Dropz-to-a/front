@@ -20,6 +20,8 @@ const LoginForm: FC = () => {
       password,
     }
 
+    console.log('로그인 요청 본문:', requestBody)
+
     try {
       const response = await loginUser(requestBody)
       console.log('로그인 성공:', response.data)
@@ -75,8 +77,8 @@ const LoginForm: FC = () => {
           rules={{
             required: true,
             minLength: {
-              value: 8,
-              message: '비밀번호는 최소 8자 이상이어야 합니다.',
+              value: 2,
+              message: '비밀번호는 최소 2자 이상이어야 합니다.',
             },
           }}
           error={errors.password}

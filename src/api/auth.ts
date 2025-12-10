@@ -5,11 +5,11 @@
 //   "password": "1234",
 //   "roleCode": "ROLE_COMPANY"
 // }
-import api from './instance'
+import api from './Api'
 import type { UserRegisterData, UserLoginData } from '../types/index'
 
 export const registerUser = async (data: UserRegisterData) => {
-  const response = await api.post('/auth/register', data, {
+  const response = await api.post('/api/auth/register', data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -18,7 +18,7 @@ export const registerUser = async (data: UserRegisterData) => {
 }
 
 export const loginUser = async (data: UserLoginData) => {
-  const response = await api.post('/auth/login', data, {
+  const response = await api.post('/api/auth/login', data, {
     headers: {
       'Content-Type': 'application/json',
     },

@@ -14,14 +14,28 @@ import { JobCard } from '@/components/Jobs/JobCard'
      salary?: string;
      badges?: string[];
      dday?: number;
-     verified?: boolean;
+   verified?: boolean;
+   status?: "모집 중" | "마감됨";
      hot?: boolean;
-     new?: boolean;
+   new?: boolean;
+   date?: string;
+   applicants?: number;
      category: "개발" | "디자인" | "마케팅" | "운영" | "영업" | "기타";
      imageUrl?: string;
      logoUrl?: string;
      applyUrl?: string; // 외부/내부 혼용 가능
- };
+};
+ 
+export type JobDetail = Job & {
+  postedAt?: string;          // 게시일
+  overview?: string;          // 회사/포지션 소개
+  responsibilities?: string[]; // 주요업무
+  requirements?: string[];     // 자격요건
+  preferred?: string[];        // 우대사항
+  benefits?: string[];         // 복지 및 혜택
+  process?: string[];          // 채용 절차
+  employmentType?: string;     // 고용형태 (정규직, 인턴 등)
+}
 
 /** ====== 샘플 데이터 (원하는 대로 교체) ====== */
 // eslint-disable-next-line react-refresh/only-export-components

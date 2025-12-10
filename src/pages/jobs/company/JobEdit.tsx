@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import type { Job } from '@/pages/jobs/user/Jobs'
 import Header from '@/components/Header'
 
 export default function JobEdit() {

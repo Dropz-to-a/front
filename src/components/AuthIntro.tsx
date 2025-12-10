@@ -11,6 +11,7 @@ const LoginIntro = ({ img, title, description }: LoginIntroProps) => {
         <div className="bg-white shadow-sm rounded-2xl mb-14">
           <img src={img} alt="Logo" className="w-30 h-30" />
         </div>
+
         <div className="flex flex-col items-center w-full gap-2 mb-10 text-center font-school-normal [word-spacing:5px]">
           <p className="mb-2 text-3xl">{title}</p>
           <p>{description}</p>

@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import { useForm } from 'react-hook-form'
+import { Search } from 'lucide-react'
 
 import { FormInput } from '@/components/FormInput'
 
@@ -24,9 +25,10 @@ const Inquire = () => {
         </p>
 
         {/* 검색바 */}
-        <form onSubmit={handleSubmit(() => {})} className="w-2/5 mx-auto">
+        <form onSubmit={handleSubmit(() => {})} className="relative w-2/5 mx-auto">
+          <Search className="absolute text-gray-300 top-[1.2rem] left-[0.7rem]" />
           <FormInput
-            className="pl-7"
+            className="pl-10"
             label=""
             name="keyword"
             placeholder="궁금한 내용을 검색해보세요."

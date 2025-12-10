@@ -21,7 +21,10 @@ import PayrollPage from '@/pages/payroll/company/Payroll'
 import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
 import ResumeViewPage from '@/pages/jobs/company/ResumeView'
 import Start from '@/pages/auth/Start'
+
+import Inquire from '@/pages/common/Inquire'
 import OnBoard from '@/pages/auth/user/OnBoarding'
+
 export type RouteItem = {
   path: string
   element: React.ReactNode
@@ -45,6 +48,8 @@ export const publicRoutes: RouteItem[] = [
   //직업 목록페이지 & 상세
   { path: '/jobs', element: <Jobs /> },
   { path: '/jobs/:id', element: <DetailJobs /> },
+  //문의페이지
+  { path: '/inquire', element: <Inquire /> },
 
   //-------------------------------------구직자---------------------------------------------
 

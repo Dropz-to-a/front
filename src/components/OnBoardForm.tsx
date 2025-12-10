@@ -67,7 +67,7 @@ const UserOnBoardForm: FC = () => {
             name="realName"
             placeholder="실명을 입력하세요"
             type="text"
-            register={register}
+            value={register}
             rules={{ required: true }}
             error={errors.realName}
           />
@@ -77,7 +77,7 @@ const UserOnBoardForm: FC = () => {
             name="birth"
             type="date"
             placeholder="생년월일을 입력하세요"
-            register={register}
+            value={register}
             rules={{ required: true }}
             error={errors.birth}
           />
@@ -101,7 +101,7 @@ const UserOnBoardForm: FC = () => {
             name="zonecode"
             placeholder="우편번호"
             type="text"
-            register={register}
+            value={register}
             rules={{ required: true }}
             error={errors.zonecode}
           />
@@ -111,7 +111,7 @@ const UserOnBoardForm: FC = () => {
             name="address"
             placeholder="주소 입력"
             type="text"
-            register={register}
+            value={register}
             rules={{ required: true }}
             error={errors.address}
           />
@@ -121,7 +121,7 @@ const UserOnBoardForm: FC = () => {
             name="detailAddress"
             placeholder="상세 주소 입력"
             type="text"
-            register={register}
+            value={register}
             rules={{ required: true }}
             error={errors.detailAddress}
           />

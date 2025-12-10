@@ -16,7 +16,7 @@ const Inquire = () => {
     <div>
       <Header />
       <section className="w-full py-20 bg-gradient-to-b from-blue-500 to-blue-100">
-        <h1 className="mb-6 font-bold text-center text-white text-7xl">WHAT THE FAQS</h1>
+        <h1 className="mb-12 font-bold text-center text-white text-7xl">WHAT THE FAQS</h1>
         <p className="mb-12 text-lg text-center text-white">
           JOBIT은 모든 기업과 연결되어있지 않지만, 매우 많은 기업과 연결되어있습니다.
           <br />
@@ -24,8 +24,9 @@ const Inquire = () => {
         </p>
 
         {/* 검색바 */}
-        <form onSubmit={handleSubmit(() => {})} className="w-3/5 mx-auto">
+        <form onSubmit={handleSubmit(() => {})} className="w-2/5 mx-auto">
           <FormInput
+            className="pl-7"
             label=""
             name="keyword"
             placeholder="궁금한 내용을 검색해보세요."

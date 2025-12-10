@@ -1,6 +1,7 @@
 import type { FormInputProps } from '@/types'
 
 export function FormInput<T extends Record<string, unknown>>({
+  className,
   label,
   name,
   placeholder,
@@ -19,7 +20,7 @@ export function FormInput<T extends Record<string, unknown>>({
         id={String(name)}
         type={type}
         placeholder={placeholder}
-        className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
+        className={`${className} w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg`}
         {...value(name, rules)}
       />
 

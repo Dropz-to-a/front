@@ -21,7 +21,8 @@ const PayrollPage: React.FC = () => {
     { id: 3, name: '박지훈', position: '마케팅팀', salary: 3500000, paid: true },
   ])
 
-  const [payments, setPayments] = useState<{ [key: string]: any }>({})
+  // 직원별 결제창 인스턴스
+  const [payments, setPayments] = useState<{ [key: number]: any }>({})
 
   const totalPayroll = employees.reduce((acc, e) => acc + e.salary, 0)
 
@@ -30,53 +31,60 @@ const PayrollPage: React.FC = () => {
     async function initPayments() {
       try {
         const tossPayments = await loadTossPayments(clientKey)
-        const paymentInstances: { [key: string]: any } = {}
+
+        const paymentInstances: { [key: number]: any } = {}
         employees.forEach(emp => {
           paymentInstances[emp.id] = tossPayments.payment({
-            customerKey: `user_${emp.id}`,
+            customerKey: `user_${emp.id}`, // 직원별 customerKey
           })
         })
+
         setPayments(paymentInstances)
       } catch (error) {
         console.error('Toss SDK 초기화 실패:', error)
       }
     }
+
     initPayments()
   }, [employees])
 
-  // /** 2️⃣ 카드 등록 */
-  // const handleBillingAuth = async (employee: Employee) => {
-  //     const payment = payments[employee.id];
-  //     if (!payment) {
-  //         alert("결제 준비가 아직 완료되지 않았습니다.");
-  //         return;
-  //     }
+  /** 2️⃣ 직원별 카드 등록 (빌링 카드 등록창) */
+  const handleBillingAuth = async (employee: Employee) => {
+    const payment = payments[employee.id]
 
-  //     try {
-  //         await payment.requestBillingAuth({
-  //             method: "CARD",
-  //             successUrl: window.location.origin + "/success",
-  //             failUrl: window.location.origin + "/fail",
-  //             customerEmail: `user${employee.id}@example.com`,
-  //             customerName: employee.name,
-  //         });
-  //         alert(`${employee.name} 결제수단 등록 완료!`);
-  //     } catch (error) {
-  //         console.error("빌링 인증 실패:", error);
-  //         alert("빌링 인증 중 오류가 발생했습니다.");
-  //     }
-  // };
+    if (!payment) {
+      alert('결제 준비가 아직 완료되지 않았습니다. 잠시 후 다시 시도해주세요.')
+      return
+    }
 
-  /** 3️⃣ 직원별 지급 */
+    try {
+      await payment.requestBillingAuth({
+        method: 'CARD', // 자동결제(빌링)는 카드만 지원
+        successUrl: window.location.origin + '/payroll/success', // 리다이렉트 URL은 라우트에 맞게 수정 가능
+        failUrl: window.location.origin + '/payroll/fail',
+        customerEmail: `user${employee.id}@example.com`,
+        customerName: employee.name,
+      })
+
+      // 리다이렉트 후에는 success 페이지에서 빌링키 발급 API 호출하면 됨(백엔드 작업)
+      // 여기서는 프론트 테스트용이라 alert만 간단히 사용
+      console.log('requestBillingAuth 요청 완료')
+    } catch (error) {
+      console.error('빌링 인증 실패:', error)
+      alert('카드 등록(빌링 인증) 중 오류가 발생했습니다.')
+    }
+  }
+
+  /** 3️⃣ 직원별 지급 (지금은 UI용 토글) */
   const handlePayEmployee = (employee: Employee) => {
     setEmployees(prev => prev.map(e => (e.id === employee.id ? { ...e, paid: true } : e)))
-    alert(`${employee.name}에게 급여 지급 완료!`)
+    alert(`${employee.name}에게 급여 지급 완료! (테스트용 표시)`)
   }
 
   /** 4️⃣ 월별 일괄 지급 */
   const handlePayAll = () => {
     setEmployees(prev => prev.map(e => ({ ...e, paid: true })))
-    alert('모든 직원 급여 일괄 지급 완료!')
+    alert('모든 직원 급여 일괄 지급 완료! (테스트용 표시)')
   }
 
   return (
@@ -85,7 +93,7 @@ const PayrollPage: React.FC = () => {
       <div className="min-h-screen p-8 bg-gray-50">
         <header className="mb-8">
           <h1 className="mb-2 text-3xl font-bold text-gray-800">급여 관리</h1>
-          <p className="text-gray-500">기업용 정기결제 테스트 시스템</p>
+          <p className="text-gray-500">기업용 정기결제 테스트 시스템 (Toss Payments)</p>
         </header>
 
         <div className="p-6 bg-white shadow rounded-2xl">
@@ -129,14 +137,21 @@ const PayrollPage: React.FC = () => {
                     )}
                   </td>
                   <td className="flex justify-center gap-2 p-3 text-center border-b">
+                    {/* 카드 등록 (Toss Billing Auth) */}
+                    <button
+                      type="button"
+                      onClick={() => handleBillingAuth(e)}
+                      className="px-3 py-2 text-sm text-white transition bg-blue-600 rounded-lg hover:bg-blue-700">
+                      카드 등록
+                    </button>
+
+                    {/* 개별 지급 (지금은 UI 토글 + 알림용) */}
                     {!e.paid ? (
-                      <>
-                        <button
-                          onClick={() => handlePayEmployee(e)}
-                          className="px-4 py-2 text-white transition bg-yellow-500 rounded-lg hover:bg-yellow-600">
-                          개별 지급
-                        </button>
-                      </>
+                      <button
+                        onClick={() => handlePayEmployee(e)}
+                        className="px-4 py-2 text-white transition bg-yellow-500 rounded-lg hover:bg-yellow-600">
+                        개별 지급
+                      </button>
                     ) : (
                       <button
                         disabled

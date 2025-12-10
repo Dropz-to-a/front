@@ -6,7 +6,7 @@
 //   "roleCode": "ROLE_COMPANY"
 // }
 import api from './instance'
-import type { UserRegisterData, UserLoginData } from '../types/index'
+import type { UserRegisterData, UserLoginData, UserOnBoardData } from '../types/index'
 
 export const registerUser = async (data: UserRegisterData) => {
   const response = await api.post('/auth/register', data, {
@@ -19,6 +19,15 @@ export const registerUser = async (data: UserRegisterData) => {
 
 export const loginUser = async (data: UserLoginData) => {
   const response = await api.post('/auth/login', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return response.data
+}
+
+export const OnBoardUser = async (data: UserOnBoardData) => {
+  const response = await api.post('/auth/onboarding/user', data, {
     headers: {
       'Content-Type': 'application/json',
     },

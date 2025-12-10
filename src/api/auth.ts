@@ -23,5 +23,12 @@ export const loginUser = async (data: UserLoginData) => {
       'Content-Type': 'application/json',
     },
   })
+
+  const { accessToken } = response.data
+
+  if (accessToken) {
+    localStorage.setItem('accessToken', accessToken)
+  }
+
   return response.data
 }

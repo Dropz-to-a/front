@@ -42,7 +42,6 @@ const Header = () => {
         alignItems: 'center',
         padding: '10px 20px',
         backgroundColor: '#2E80FF',
-        borderBottom: '1px solid #ddd',
       }}>
       {/* 로고 */}
       <div

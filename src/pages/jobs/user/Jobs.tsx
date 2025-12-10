@@ -4,24 +4,24 @@ import Header from '@/components/Header'
 import { JobCard } from '@/components/Jobs/JobCard'
 
 /** ====== 타입 ====== */
-// export type Job = {
-//     id: string;
-//     company: string;
-//     title: string;
-//     description: string;
-//     location?: string;
-//     salaryNote?: string;
-//     salary?: string;
-//     badges?: string[];
-//     dday?: number;
-//     verified?: boolean;
-//     hot?: boolean;
-//     new?: boolean;
-//     category: "개발" | "디자인" | "마케팅" | "운영" | "영업" | "기타";
-//     imageUrl?: string;
-//     logoUrl?: string;
-//     applyUrl?: string; // 외부/내부 혼용 가능
-// };
+ export type Job = {
+     id: string;
+     company: string;
+     title: string;
+     description: string;
+     location?: string;
+     salaryNote?: string;
+     salary?: string;
+     badges?: string[];
+     dday?: number;
+     verified?: boolean;
+     hot?: boolean;
+     new?: boolean;
+     category: "개발" | "디자인" | "마케팅" | "운영" | "영업" | "기타";
+     imageUrl?: string;
+     logoUrl?: string;
+     applyUrl?: string; // 외부/내부 혼용 가능
+ };
 
 /** ====== 샘플 데이터 (원하는 대로 교체) ====== */
 // eslint-disable-next-line react-refresh/only-export-components

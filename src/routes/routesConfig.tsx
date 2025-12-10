@@ -21,6 +21,7 @@ import PayrollPage from '@/pages/payroll/company/Payroll'
 import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
 import ResumeViewPage from '@/pages/jobs/company/ResumeView'
 import Start from '@/pages/auth/Start'
+import OnBoard from '@/pages/auth/user/OnBoarding'
 export type RouteItem = {
   path: string
   element: React.ReactNode
@@ -35,6 +36,10 @@ export const publicRoutes: RouteItem[] = [
   { path: '/login', element: <Login /> },
   //회원가입
   { path: '/register', element: <Register /> },
+
+  //온보딩
+  { path: '/onboarding', element: <OnBoard /> },
+
   //서비스 설명
   { path: '/about', element: <About /> },
   //직업 목록페이지 & 상세

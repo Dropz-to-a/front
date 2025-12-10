@@ -17,6 +17,9 @@ const Header = () => {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [openTestPanel, setOpenTestPanel] = useState(false); // ⭐ 테스트 패널 열림 상태
 
+
+  //배포 테스트
+
   // 로그인 정보 불러오기
   useEffect(() => {
     try {

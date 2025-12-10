@@ -64,7 +64,7 @@ const RegisterForm: FC = () => {
           name="username"
           placeholder="아이디를 입력하세요"
           type="text"
-          register={register}
+          value={register}
           rules={{
             required: true,
             pattern: {
@@ -80,7 +80,7 @@ const RegisterForm: FC = () => {
           name="email"
           placeholder="이메일을 입력하세요"
           type="email"
-          register={register}
+          value={register}
           rules={{
             required: true,
             pattern: {
@@ -96,7 +96,7 @@ const RegisterForm: FC = () => {
           name="phone"
           placeholder="전화번호를 입력하세요"
           type="tel"
-          register={register}
+          value={register}
           rules={{
             required: true,
             pattern: {
@@ -112,7 +112,7 @@ const RegisterForm: FC = () => {
           name="password"
           placeholder="비밀번호를 입력하세요"
           type="password"
-          register={register}
+          value={register}
           rules={{
             required: true,
             minLength: {

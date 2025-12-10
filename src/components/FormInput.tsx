@@ -5,7 +5,7 @@ export function FormInput<T extends Record<string, unknown>>({
   name,
   placeholder,
   type = 'text',
-  register,
+  value,
   rules,
   error,
 }: FormInputProps<T>) {
@@ -20,7 +20,7 @@ export function FormInput<T extends Record<string, unknown>>({
         type={type}
         placeholder={placeholder}
         className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-        {...register(name, rules)}
+        {...value(name, rules)}
       />
 
       <small className="font-semibold text-red-500 min-h-5" role="alert">

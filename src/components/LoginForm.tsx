@@ -56,7 +56,7 @@ const LoginForm: FC = () => {
           name="id"
           placeholder="아이디를 입력하세요"
           type="text"
-          register={register}
+          value={register}
           rules={{
             required: true,
             pattern: {
@@ -73,7 +73,7 @@ const LoginForm: FC = () => {
           name="password"
           placeholder="비밀번호를 입력하세요"
           type="password"
-          register={register}
+          value={register}
           rules={{
             required: true,
             minLength: {

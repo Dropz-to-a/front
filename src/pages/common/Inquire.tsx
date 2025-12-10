@@ -1,6 +1,17 @@
 import Header from '@/components/Header'
+import { useForm } from 'react-hook-form'
+
+import { FormInput } from '@/components/FormInput'
+
+type SearchValue = {
+  keyword: string
+}
 
 const Inquire = () => {
+  const { handleSubmit, register: keyword /* getValues */ } = useForm<SearchValue>({
+    mode: 'onChange',
+  })
+
   return (
     <div>
       <Header />
@@ -11,6 +22,18 @@ const Inquire = () => {
           <br />
           가장 많이 받는 질문들의 답변을 FAQ에서 찾아보세요.
         </p>
+
+        {/* 검색바 */}
+        <form onSubmit={handleSubmit(() => {})} className="w-3/5 mx-auto">
+          <FormInput
+            label=""
+            name="keyword"
+            placeholder="궁금한 내용을 검색해보세요."
+            type="text"
+            value={keyword}
+            error={undefined}
+          />
+        </form>
       </section>
     </div>
   )

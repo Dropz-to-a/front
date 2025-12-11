@@ -142,23 +142,6 @@ const Header = () => {
 
       {/* 우측 영역 (로그인 + 테스트 패널) */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        {/* 모드 전환 버튼 */}
-        {user?.userType === "personal" && (
-          <button
-            onClick={toggleMode}
-            style={{
-              backgroundColor: "#FFD43B",
-              color: "#333",
-              borderRadius: "6px",
-              padding: "4px 10px",
-              border: "none",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-          >
-            {user.mode === "job-seeker" ? "재직자 모드" : "구직자 모드"}
-          </button>
-        )}
 
         {/* 로그인 / 로그아웃 */}
         {user ? (

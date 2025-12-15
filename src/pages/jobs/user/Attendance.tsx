@@ -171,7 +171,7 @@ const Attendance = () => {
 
                     /* 기본 active(선택) 스타일은 우리가 tileClassName에서 덮어씀 */
                     "
-                    tileClassName={({ date }) => {
+                tileClassName={({ date }: { date: Date }) => {
                     const todayStr = formatLocalDate(new Date());
                     const dateStr = formatLocalDate(date);
 

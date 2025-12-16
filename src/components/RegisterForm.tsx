@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
@@ -8,9 +9,21 @@ import { registerUser } from '../api'
 type RegisterFormValue = {
   username: string
   email: string
-  phone: string
+  phone: string // 화면에 보이는 값은 010-xxxx-xxxx 형태
   password: string
   roleCode: string
+}
+
+// 숫자만 남기기
+const onlyDigits = (v: string) => v.replace(/\D/g, '')
+
+// 자동 하이픈 포맷 (010-1234-5678 / 010-123-4567 모두 대응)
+const formatPhone = (value: string) => {
+  const digits = onlyDigits(value).slice(0, 11) // ✅ 최대 11자리 제한
+
+  if (digits.length <= 3) return digits
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
 }
 
 const RegisterForm: FC = () => {
@@ -19,12 +32,32 @@ const RegisterForm: FC = () => {
   const queryParams = new URLSearchParams(location.search)
   const type = queryParams.get('type') || 'personal'
 
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    getValues,
+    setValue,
+    watch,
+  } = useForm<RegisterFormValue>({ mode: 'onChange' })
+
+  // ✅ phone 입력값이 바뀔 때마다 하이픈 자동 적용
+  const phoneWatch = watch('phone')
+  useEffect(() => {
+    if (phoneWatch == null) return
+    const formatted = formatPhone(phoneWatch)
+    if (phoneWatch !== formatted) {
+      setValue('phone', formatted, { shouldValidate: true, shouldDirty: true })
+    }
+  }, [phoneWatch, setValue])
+
   const handleRegister = async () => {
     const { username, email, phone, password } = getValues()
+
     const requestBody: RegisterFormValue = {
       username,
       email,
-      phone,
+      phone: onlyDigits(phone), // ✅ 백엔드로는 숫자만 보냄
       password,
       roleCode: type === 'company' ? 'ROLE_COMPANY' : 'ROLE_USER',
     }
@@ -42,22 +75,13 @@ const RegisterForm: FC = () => {
     }
   }
 
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-    getValues,
-  } = useForm<RegisterFormValue>({ mode: 'onChange' })
-
   return (
     <div className="flex flex-col justify-center w-3/5 text-center bg-gray-50 p-14 rounded-r-3xl">
-      {/* 헤더 */}
       <div className="mb-4">
         <h1 className="mb-4 text-5xl font-semibold">회원가입</h1>
         <p className="text-gray-400">회원가입을 통해 서비스를 시작하세요</p>
       </div>
 
-      {/* 폼 시작 */}
       <form className="flex flex-col" onSubmit={handleSubmit(handleRegister)}>
         <FormInput
           label="아이디"
@@ -94,14 +118,20 @@ const RegisterForm: FC = () => {
         <FormInput
           label="전화번호"
           name="phone"
-          placeholder="전화번호를 입력하세요"
+          placeholder="010-1234-5678"
           type="tel"
           value={register}
           rules={{
             required: true,
-            pattern: {
-              value: /^[0-9]{10,11}$/,
-              message: '유효한 전화번호를 입력하세요.',
+            // ✅ 하이픈 포함한 길이 제한 (최대: 010-1234-5678 = 13)
+            maxLength: { value: 13, message: '전화번호가 너무 깁니다.' },
+            // ✅ 숫자만 10~11자리여야 함 (전송용 기준)
+            validate: (v: string) => {
+              const digits = onlyDigits(v)
+              return (
+                (digits.length === 10 || digits.length === 11) ||
+                '유효한 전화번호(10~11자리)를 입력하세요.'
+              )
             },
           }}
           error={errors.phone}
@@ -123,7 +153,6 @@ const RegisterForm: FC = () => {
           error={errors.password}
         />
 
-        {/* 버튼 및 링크 */}
         <div className="mt-6">
           <input
             type="submit"
@@ -131,6 +160,7 @@ const RegisterForm: FC = () => {
             className="w-full h-12 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
           />
         </div>
+
         <span className="mt-6">
           계정이 있으신가요?{' '}
           <a href={`/login?type=${type}`} className="text-blue-500 hover:underline">

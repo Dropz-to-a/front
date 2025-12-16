@@ -1,6 +1,4 @@
 import React from 'react'
-
-import Start from '@/pages/auth/Start'
 import Login from '@/pages/auth/Login'
 import Register from '@/pages/auth/Register'
 
@@ -9,7 +7,6 @@ import About from '@/pages/common/About'
 
 import Jobs from '@/pages/jobs/user/Jobs'
 import DetailJobs from '@/pages/jobs/user/DetailJobs'
-import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
 import JobCompleted from '@/pages/jobs/user/JobCompleted'
 import MyApplications from '@/pages/jobs/user/MyApplications'
 import Attendance from '@/pages/jobs/user/Attendance'
@@ -22,7 +19,6 @@ import JobCompletedAdmin from '@/pages/jobs/company/JobCompletedAdmin'
 import JobEdit from '@/pages/jobs/company/JobEdit'
 import JobManage from '@/pages/jobs/company/JobManage'
 import JobRegister from '@/pages/jobs/company/JobRegister'
-import ResumeViewPage from '@/pages/jobs/company/ResumeView'
 
 import PayLogPage from '@/pages/payroll/user/PayLog'
 import PayrollPage from '@/pages/payroll/company/Payroll'
@@ -33,6 +29,10 @@ import Start from '@/pages/auth/Start'
 import Inquire from '@/pages/common/Inquire'
 import UserOnBoard from '@/pages/auth/user/OnBoarding'
 import CompanyOnBoard from '@/pages/auth/company/OnBoarding'
+
+import Contact from '@/pages/common/Contact'
+import Privacy from '@/pages/common/Privacy'
+import Terms from '@/pages/common/Terms'
 
 export type RouteItem = {
   path: string

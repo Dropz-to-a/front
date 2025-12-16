@@ -5,7 +5,7 @@
 //   "password": "1234",
 //   "roleCode": "ROLE_COMPANY"
 // }
-import api from './instance'
+import api from './Api'
 import type { UserRegisterData, UserLoginData } from '../types/index'
 
 export const registerUser = async (data: UserRegisterData) => {

@@ -15,7 +15,7 @@ const Header = () => {
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [openTestPanel, setOpenTestPanel] = useState(false) // ⭐ 테스트 패널 열림 상태
 
-  // 로그인 정보 불러오기
+  // ✔ 실제 로그인 정보 불러오기
   useEffect(() => {
     try {
       const stored = localStorage.getItem('currentUser')
@@ -238,6 +238,9 @@ const Header = () => {
           테스트
         </button>
       </div>
+    </header>
+  )
+}
 
       {/* ⭐ 테스트 패널 UI */}
       {openTestPanel && (

@@ -1,10 +1,13 @@
 import axios from 'axios'
 
 // axios 인스턴스 생성
+// axios 인스턴스 생성
+// .env 파일에서 VITE_API_BASE_URL 값을 가져와 API 기본 URL로 설정합니다.
+// Vite는 import.meta.env를 통해 환경 변수를 제공합니다.
 const apiClient = axios.create({
-  baseURL: 'http://3.39.222.186:8080', // API 기본 URL로 교체
-  timeout: 10000, // 요청 타임아웃 설정
-})
+    baseURL: import.meta.env.VITE_API_BASE_URL, // API 기본 URL로 교체
+    timeout: 10000, // 요청 타임아웃 설정
+});     
 
 // 요청 인터셉터 추가 (JWT를 헤더에 포함)
 apiClient.interceptors.request.use(

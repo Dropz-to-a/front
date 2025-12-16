@@ -120,8 +120,8 @@ const Header = () => {
         {/* 개인회원 재직자 모드 */}
         {user?.userType === "personal" && user.mode === "employee" && (
           <>
-            <Link to="/work-dashboard" style={{ color: "white" }}>근무 관리</Link>
             <Link to="/paylog" style={{ color: "white" }}>급여조회</Link>
+            <Link to="/work-dashboard" style={{ color: "white" }}>근무 관리</Link>
             <Link to="/attendance" style={{ color: "white" }}>출퇴근 기록</Link>
             <Link to="/profile" style={{ color: "white" }}>내 정보</Link>
           </>

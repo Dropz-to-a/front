@@ -2,9 +2,9 @@ import type { FC } from 'react'
 
 import AuthBackground from '@/components/AuthBackground'
 import AuthIntro from '@/components/AuthIntro'
-import OnBoardForm from '@/components/OnBoardForm'
+import UserOnBoardForm from '@/pages/auth/user/UserOnBoardForm'
 
-const OnBoard: FC = () => {
+const UserOnBoard: FC = () => {
   return (
     <AuthBackground>
       <AuthIntro
@@ -12,9 +12,9 @@ const OnBoard: FC = () => {
         title={'사용자님에 대해서 알려주세요!'}
         description={'사용자님 정보는 저희가 안전하게 보관할게요.'}
       />
-      <OnBoardForm />
+      <UserOnBoardForm />
     </AuthBackground>
   )
 }
 
-export default OnBoard
+export default UserOnBoard

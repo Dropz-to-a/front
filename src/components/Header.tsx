@@ -13,7 +13,7 @@ const Header = () => {
   const navigate = useNavigate()
 
   const [user, setUser] = useState<CurrentUser | null>(null)
-  const [openTestPanel, setOpenTestPanel] = useState(false) // ⭐ 테스트 패널 열림 상태
+  const [openTestPanel, setOpenTestPanel] = useState(false)
 
   // ✔ 실제 로그인 정보 불러오기
   useEffect(() => {
@@ -29,7 +29,7 @@ const Header = () => {
     }
   }, [])
 
-  /** ⭐ 테스트용: 개인회원 로그인 */
+  /** ✅ 테스트용: 개인회원 로그인 */
   const testLoginPersonal = () => {
     const fakeUser: CurrentUser = {
       id: '123',
@@ -42,7 +42,7 @@ const Header = () => {
     setUser(fakeUser)
   }
 
-  /** ⭐ 테스트용: 기업회원 로그인 */
+  /** ✅ 테스트용: 기업회원 로그인 */
   const testLoginCompany = () => {
     const fakeUser: CurrentUser = {
       id: '999',
@@ -55,7 +55,7 @@ const Header = () => {
     setUser(fakeUser)
   }
 
-  /** ⭐ 개인회원 모드 전환 */
+  /** 개인회원 모드 전환 */
   const toggleMode = () => {
     if (!user || user.userType !== 'personal') return
 
@@ -68,181 +68,189 @@ const Header = () => {
     setUser(updated)
   }
 
-  /** ⭐ 로그아웃 */
+  /** 로그아웃 */
   const handleLogout = () => {
     localStorage.removeItem('currentUser')
     localStorage.removeItem('token')
     setUser(null)
+    setOpenTestPanel(false)
     navigate('/')
   }
 
   return (
-    <header
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '10px 20px',
-        backgroundColor: '#2E80FF',
-      }}>
-      {/* 로고 */}
-      <div
-        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-        onClick={() => navigate('/')}>
-        <img src="/logo.svg" alt="Logo" style={{ width: '150px', height: '40px' }} />
-      </div>
+    // ✅ header + 테스트패널을 하나의 wrapper로 묶어야 함
+    <div style={{ position: 'relative' }}>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '10px 20px',
+          backgroundColor: '#2E80FF',
+        }}
+      >
+        {/* 로고 */}
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        >
+          <img src="/logo.svg" alt="Logo" style={{ width: '150px', height: '40px' }} />
+        </div>
 
-      {/* 메뉴 */}
-      <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <Link to="/" style={{ color: 'white' }}>
-          홈
-        </Link>
-        <Link to="/about" style={{ color: 'white' }}>
-          소개
-        </Link>
-        <Link to="/jobs" style={{ color: 'white' }}>
-          공고
-        </Link>
+        {/* 메뉴 */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <Link to="/" style={{ color: 'white' }}>
+            홈
+          </Link>
+          <Link to="/about" style={{ color: 'white' }}>
+            소개
+          </Link>
+          <Link to="/jobs" style={{ color: 'white' }}>
+            공고
+          </Link>
 
-        {/* 개인회원 구직자 모드 */}
-        {user?.userType === 'personal' && user.mode === 'job-seeker' && (
-          <>
-            <Link to="/my-applications" style={{ color: 'white' }}>
-              지원목록
-            </Link>
-            <Link to="/paylog" style={{ color: 'white' }}>
-              급여내역
-            </Link>
-            <Link to="/profile" style={{ color: 'white' }}>
-              프로필
-            </Link>
-            <Link to="/profile-edit" style={{ color: 'white' }}>
-              프로필수정
-            </Link>
-          </>
-        )}
+          {/* 개인회원 구직자 모드 */}
+          {user?.userType === 'personal' && user.mode === 'job-seeker' && (
+            <>
+              <Link to="/my-applications" style={{ color: 'white' }}>
+                지원목록
+              </Link>
+              <Link to="/paylog" style={{ color: 'white' }}>
+                급여내역
+              </Link>
+              <Link to="/profile" style={{ color: 'white' }}>
+                프로필
+              </Link>
+              <Link to="/profile-edit" style={{ color: 'white' }}>
+                프로필수정
+              </Link>
+            </>
+          )}
 
-        {/* 개인회원 재직자 모드 */}
-        {user?.userType === 'personal' && user.mode === 'employee' && (
-          <>
-            <Link to="/work-dashboard" style={{ color: 'white' }}>
-              근무 대시보드
-            </Link>
-            <Link to="/paylog" style={{ color: 'white' }}>
-              급여조회
-            </Link>
-            <Link to="/attendance" style={{ color: 'white' }}>
-              출퇴근 기록
-            </Link>
-            <Link to="/profile" style={{ color: 'white' }}>
-              내 정보
-            </Link>
-          </>
-        )}
+          {/* 개인회원 재직자 모드 */}
+          {user?.userType === 'personal' && user.mode === 'employee' && (
+            <>
+              <Link to="/work-dashboard" style={{ color: 'white' }}>
+                근무 대시보드
+              </Link>
+              <Link to="/paylog" style={{ color: 'white' }}>
+                급여조회
+              </Link>
+              <Link to="/attendance" style={{ color: 'white' }}>
+                출퇴근 기록
+              </Link>
+              <Link to="/profile" style={{ color: 'white' }}>
+                내 정보
+              </Link>
+            </>
+          )}
 
-        {/* 기업회원 메뉴 */}
-        {user?.userType === 'company' && (
-          <>
-            <Link to="/jobmanage" style={{ color: 'white' }}>
-              공고관리
-            </Link>
-            <Link to="/contracts" style={{ color: 'white' }}>
-              계약관리
-            </Link>
-            <Link to="/payroll" style={{ color: 'white' }}>
-              급여관리
-            </Link>
-            <Link to="/jobs/completed/admin" style={{ color: 'white' }}>
-              지원자관리
-            </Link>
-          </>
-        )}
-      </nav>
+          {/* 기업회원 메뉴 */}
+          {user?.userType === 'company' && (
+            <>
+              <Link to="/jobmanage" style={{ color: 'white' }}>
+                공고관리
+              </Link>
+              <Link to="/contracts" style={{ color: 'white' }}>
+                계약관리
+              </Link>
+              <Link to="/payroll" style={{ color: 'white' }}>
+                급여관리
+              </Link>
+              <Link to="/jobs/completed/admin" style={{ color: 'white' }}>
+                지원자관리
+              </Link>
+            </>
+          )}
+        </nav>
 
-      {/* 우측 영역 (로그인 + 테스트 패널) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        {/* 모드 전환 버튼 */}
-        {user?.userType === 'personal' && (
-          <button
-            onClick={toggleMode}
-            style={{
-              backgroundColor: '#FFD43B',
-              color: '#333',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 600,
-            }}>
-            {user.mode === 'job-seeker' ? '재직자 모드' : '구직자 모드'}
-          </button>
-        )}
-
-        {/* 로그인 / 로그아웃 */}
-        {user ? (
-          <>
-            <span style={{ color: 'white', fontSize: '14px' }}>{user.name}님 환영합니다.</span>
+        {/* 우측 영역 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* 모드 전환 버튼 */}
+          {user?.userType === 'personal' && (
             <button
-              onClick={handleLogout}
+              onClick={toggleMode}
               style={{
-                backgroundColor: '#ff4d4d',
-                color: 'white',
+                backgroundColor: '#FFD43B',
+                color: '#333',
                 borderRadius: '6px',
                 padding: '4px 10px',
                 border: 'none',
                 cursor: 'pointer',
                 fontWeight: 600,
-              }}>
-              로그아웃
+              }}
+            >
+              {user.mode === 'job-seeker' ? '재직자 모드' : '구직자 모드'}
             </button>
-          </>
-        ) : (
-          <>
-            <Link
-              to="/login"
-              style={{
-                backgroundColor: 'white',
-                color: '#2E80FF',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                fontWeight: 600,
-              }}>
-              로그인
-            </Link>
+          )}
 
-            <Link
-              to="/start"
-              style={{
-                backgroundColor: '#0051C4',
-                color: 'white',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                fontWeight: 600,
-              }}>
-              회원가입
-            </Link>
-          </>
-        )}
+          {/* 로그인 / 로그아웃 */}
+          {user ? (
+            <>
+              <span style={{ color: 'white', fontSize: '14px' }}>{user.name}님 환영합니다.</span>
+              <button
+                onClick={handleLogout}
+                style={{
+                  backgroundColor: '#ff4d4d',
+                  color: 'white',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                style={{
+                  backgroundColor: 'white',
+                  color: '#2E80FF',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  fontWeight: 600,
+                }}
+              >
+                로그인
+              </Link>
 
-        {/* ⭐ 테스트 패널 열기 버튼 */}
-        <button
-          onClick={() => setOpenTestPanel(prev => !prev)}
-          style={{
-            backgroundColor: '#444',
-            color: 'white',
-            borderRadius: '6px',
-            padding: '4px 10px',
-            border: 'none',
-            cursor: 'pointer',
-          }}>
-          테스트
-        </button>
-      </div>
-    </header>
-  )
-}
+              <Link
+                to="/start"
+                style={{
+                  backgroundColor: '#0051C4',
+                  color: 'white',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  fontWeight: 600,
+                }}
+              >
+                회원가입
+              </Link>
+            </>
+          )}
 
-      {/* ⭐ 테스트 패널 UI */}
+          {/* 테스트 패널 토글 */}
+          <button
+            onClick={() => setOpenTestPanel(prev => !prev)}
+            style={{
+              backgroundColor: '#444',
+              color: 'white',
+              borderRadius: '6px',
+              padding: '4px 10px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            테스트
+          </button>
+        </div>
+      </header>
+
+      {/* ✅ 테스트 패널은 header 밖(같은 wrapper 안) */}
       {openTestPanel && (
         <div
           style={{
@@ -255,7 +263,8 @@ const Header = () => {
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
             zIndex: 100,
             width: '220px',
-          }}>
+          }}
+        >
           <h4 style={{ fontWeight: 700, marginBottom: '10px' }}>테스트 로그인</h4>
 
           <button
@@ -269,7 +278,8 @@ const Header = () => {
               borderRadius: '6px',
               border: 'none',
               cursor: 'pointer',
-            }}>
+            }}
+          >
             개인회원 로그인
           </button>
 
@@ -284,7 +294,8 @@ const Header = () => {
               borderRadius: '6px',
               border: 'none',
               cursor: 'pointer',
-            }}>
+            }}
+          >
             기업회원 로그인
           </button>
 
@@ -300,7 +311,8 @@ const Header = () => {
                 borderRadius: '6px',
                 border: 'none',
                 cursor: 'pointer',
-              }}>
+              }}
+            >
               모드 전환 ({user.mode})
             </button>
           )}
@@ -315,12 +327,13 @@ const Header = () => {
               borderRadius: '6px',
               border: 'none',
               cursor: 'pointer',
-            }}>
+            }}
+          >
             로그아웃
           </button>
         </div>
       )}
-    </header>
+    </div>
   )
 }
 

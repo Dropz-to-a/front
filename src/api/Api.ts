@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // axios 인스턴스 생성
 const apiClient = axios.create({
-  baseURL: 'https://8c154c25b84c.ngrok-free.app', // API 기본 URL로 교체
+  baseURL: 'http://3.39.222.186:8080', // API 기본 URL로 교체
   timeout: 10000, // 요청 타임아웃 설정
 })
 
@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(
   },
   error => {
     return Promise.reject(error)
-  }
+  },
 )
 
 // 응답 인터셉터 추가 (선택 사항, 전역적으로 에러 처리)
@@ -30,7 +30,7 @@ apiClient.interceptors.response.use(
       window.location.href = '/login'
     }
     return Promise.reject(error)
-  }
+  },
 )
 
 export default apiClient

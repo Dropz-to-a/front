@@ -23,8 +23,8 @@ import ResumeViewPage from '@/pages/jobs/company/ResumeView'
 import Start from '@/pages/auth/Start'
 
 import Inquire from '@/pages/common/Inquire'
-import OnBoard from '@/pages/auth/user/OnBoarding'
-import PostCode from '@/test/PostCode'
+import UserOnBoard from '@/pages/auth/user/OnBoarding'
+import CompanyOnBoard from '@/pages/auth/company/OnBoarding'
 
 export type RouteItem = {
   path: string
@@ -42,10 +42,8 @@ export const publicRoutes: RouteItem[] = [
   { path: '/register', element: <Register /> },
 
   //온보딩
-  { path: '/onboarding', element: <OnBoard /> },
-
-  // 테스트 포스트코드
-  { path: '/test/postcode', element: <PostCode /> },
+  { path: '/user/onboarding', element: <UserOnBoard /> }, // 유저 온보딩 페이지
+  { path: '/company/onboarding', element: <CompanyOnBoard /> }, // 기업 온보딩 페이지
 
   //서비스 설명
   { path: '/about', element: <About /> },

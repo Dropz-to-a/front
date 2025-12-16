@@ -8,6 +8,7 @@
 
 import api from './Api'
 import type { UserRegisterData, UserLoginData, UserOnBoardData } from '../types/index'
+import type { CompanyOnBoardData } from '@/types/company'
 
 export const registerUser = async (data: UserRegisterData) => {
   const response = await api.post('/api/auth/register', data, {
@@ -36,6 +37,15 @@ export const loginUser = async (data: UserLoginData) => {
 
 export const OnBoardUser = async (data: UserOnBoardData) => {
   const response = await api.post('/api/onboarding/user', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return response.data
+}
+
+export const OnBoardCompany = async (data: CompanyOnBoardData) => {
+  const response = await api.post('/api/onboarding/company', data, {
     headers: {
       'Content-Type': 'application/json',
     },

@@ -24,6 +24,7 @@ import Start from '@/pages/auth/Start'
 
 import Inquire from '@/pages/common/Inquire'
 import OnBoard from '@/pages/auth/user/OnBoarding'
+import PostCode from '@/test/PostCode'
 
 export type RouteItem = {
   path: string
@@ -42,6 +43,9 @@ export const publicRoutes: RouteItem[] = [
 
   //온보딩
   { path: '/onboarding', element: <OnBoard /> },
+
+  // 테스트 포스트코드
+  { path: '/test/postcode', element: <PostCode /> },
 
   //서비스 설명
   { path: '/about', element: <About /> },

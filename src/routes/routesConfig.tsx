@@ -26,10 +26,13 @@ import ResumeViewPage from '@/pages/jobs/company/ResumeView'
 
 import PayLogPage from '@/pages/payroll/user/PayLog'
 import PayrollPage from '@/pages/payroll/company/Payroll'
+import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
+import ResumeViewPage from '@/pages/jobs/company/ResumeView'
+import Start from '@/pages/auth/Start'
 
-import Contact from '@/pages/common/Contact'
-import Privacy from '@/pages/common/Privacy'
-import Terms from '@/pages/common/Terms'
+import Inquire from '@/pages/common/Inquire'
+import UserOnBoard from '@/pages/auth/user/OnBoarding'
+import CompanyOnBoard from '@/pages/auth/company/OnBoarding'
 
 export type RouteItem = {
   path: string
@@ -45,12 +48,19 @@ export const publicRoutes: RouteItem[] = [
   { path: '/login', element: <Login /> },
   // 회원가입
   { path: '/register', element: <Register /> },
-  // 서비스 설명
+
+  //온보딩
+  { path: '/user/onboarding', element: <UserOnBoard /> }, // 유저 온보딩 페이지
+  { path: '/company/onboarding', element: <CompanyOnBoard /> }, // 기업 온보딩 페이지
+
+  //서비스 설명
   { path: '/about', element: <About /> },
 
   // 직업 목록 & 상세
   { path: '/jobs', element: <Jobs /> },
   { path: '/jobs/:id', element: <DetailJobs /> },
+  //문의페이지
+  { path: '/inquire', element: <Inquire /> },
 
   //------------------------------------- 구직자 ---------------------------------------------
 

@@ -1,59 +1,34 @@
 import type { FC } from 'react'
-import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 
-import { registerUser, loginUser } from '../api'
-// import { register } from 'module'
+import { FormInput } from './FormInput'
+import { registerUser } from '../api'
 
-type LoginFormProps = {
-  isLoggedIn: boolean
+type RegisterFormValue = {
+  username: string
+  email: string
+  phone: string
+  password: string
+  roleCode: string
 }
 
-const RegisterForm: FC<LoginFormProps> = ({ isLoggedIn }) => {
+const RegisterForm: FC = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const queryParams = new URLSearchParams(location.search)
   const type = queryParams.get('type') || 'personal'
-  const [registerFormData, setRegisterFormData] = useState({
-    username: '',
-    email: '',
-    phone: '',
-    password: '',
-    roleCode: `${type === 'company' ? '2' : '1'}`,
-  })
 
-
-
-  const [loginFormData, setLoginFormData] = useState({
-    id: '',
-    password: '',
-  })
-
-  const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target
-    setRegisterFormData(prev => ({
-      ...prev,
-      [id]: value,
-    }))
-  }
-
-  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target
-    setLoginFormData(prev => ({
-      ...prev,
-      [id]: value,
-    }))
-  }
-  // 전화번호 하이픈 제거 함수
-  const sanitizePhoneNumber = (phone: string) => phone.replace(/-/g, '')
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const requestBody = {
-      ...registerFormData,
-      phone: sanitizePhoneNumber(registerFormData.phone),
+  const handleRegister = async () => {
+    const { username, email, phone, password } = getValues()
+    const requestBody: RegisterFormValue = {
+      username,
+      email,
+      phone,
+      password,
+      roleCode: type === 'company' ? 'ROLE_COMPANY' : 'ROLE_USER',
     }
+
     console.log('회원가입 요청 본문:', requestBody)
 
     try {
@@ -67,186 +42,102 @@ const RegisterForm: FC<LoginFormProps> = ({ isLoggedIn }) => {
     }
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const requestBody = loginFormData
-    console.log('로그인 요청 본문:', requestBody)
-
-    try {
-      const response = await loginUser(requestBody)
-      console.log('로그인 성공:', response.data)
-      navigate('/')
-      alert('로그인에 성공했습니다!')
-    } catch (err) {
-      console.error('로그인 실패:', err)
-      alert('아이디 또는 비밀번호를 확인해주세요.')
-    }
-  }
-
-  const inputMarginStyle = `flex flex-col items-start w-full mb-${!isLoggedIn ? '4' : '6'}`
-
-  const headerTitle =
-    type === 'company'
-      ? isLoggedIn
-        ? '기업-로그인'
-        : '기업-회원가입'
-      : isLoggedIn
-      ? '로그인'
-      : '회원가입'
-
-  const headerDesc = isLoggedIn
-    ? '계정에 로그인하여 시작하세요'
-    : '회원가입을 통해 서비스를 시작하세요'
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    getValues,
+  } = useForm<RegisterFormValue>({ mode: 'onChange' })
 
   return (
     <div className="flex flex-col justify-center w-3/5 text-center bg-gray-50 p-14 rounded-r-3xl">
       {/* 헤더 */}
-      <div className={`mb-${isLoggedIn ? '10' : '4'}`}>
-        <h1 className="mb-4 text-5xl font-semibold">{headerTitle}</h1>
-        <p className="text-gray-400">{headerDesc}</p>
+      <div className="mb-4">
+        <h1 className="mb-4 text-5xl font-semibold">회원가입</h1>
+        <p className="text-gray-400">회원가입을 통해 서비스를 시작하세요</p>
       </div>
 
       {/* 폼 시작 */}
-      <div className="flex flex-col">
-        {!isLoggedIn && (
-          <>
-            {/* 회원가입 입력란 */}
-            <div className={inputMarginStyle}>
-              <label className="mb-2" htmlFor="username">
-                아이디
-              </label>
-              <input
-                className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-                id="username"
-                type="text"
-                value={registerFormData.username}
-                placeholder="아이디를 입력하세요"
-                onChange={handleRegisterChange}
-              />
-            </div>
+      <form className="flex flex-col" onSubmit={handleSubmit(handleRegister)}>
+        <FormInput
+          label="아이디"
+          name="username"
+          placeholder="아이디를 입력하세요"
+          type="text"
+          value={register}
+          rules={{
+            required: true,
+            pattern: {
+              value: /^[a-zA-Z0-9]+$/,
+              message: '아이디는 영문자와 숫자만 사용할 수 있습니다.',
+            },
+          }}
+          error={errors.username}
+        />
 
-            <div className={inputMarginStyle}>
-              <label className="mb-2" htmlFor="email">
-                이메일
-              </label>
-              <input
-                className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-                id="email"
-                type="email"
-                value={registerFormData.email}
-                placeholder="이메일을 입력하세요"
-                onChange={handleRegisterChange}
-              />
-            </div>
+        <FormInput
+          label="이메일"
+          name="email"
+          placeholder="이메일을 입력하세요"
+          type="email"
+          value={register}
+          rules={{
+            required: true,
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: '유효한 이메일 주소를 입력하세요.',
+            },
+          }}
+          error={errors.email}
+        />
 
-            <div className={inputMarginStyle}>
-              <label className="mb-2" htmlFor="phone">
-                전화번호
-              </label>
-              <input
-                className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-                id="phone"
-                type="text"
-                value={registerFormData.phone}
-                placeholder="전화번호를 입력하세요"
-                onChange={handleRegisterChange}
-                maxLength={13}
-                onInput={(e) => {
-                  const input = e.target as HTMLInputElement;
-                  input.value = input.value
-                    .replace(/[^0-9]/g, '') // 숫자만 입력
-                    .replace(/(\d{3})(\d{3,4})?(\d{4})?/, (_, p1, p2, p3) =>
-                      [p1, p2, p3].filter(Boolean).join('-')
-                    ); // 형식에 맞게 변환
-                }}
-              />
-            </div>
+        <FormInput
+          label="전화번호"
+          name="phone"
+          placeholder="전화번호를 입력하세요"
+          type="tel"
+          value={register}
+          rules={{
+            required: true,
+            pattern: {
+              value: /^[0-9]{10,11}$/,
+              message: '유효한 전화번호를 입력하세요.',
+            },
+          }}
+          error={errors.phone}
+        />
 
-            <div className={inputMarginStyle}>
-              <label className="mb-2" htmlFor="password">
-                비밀번호
-              </label>
-              <input
-                className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-                id="password"
-                type="password"
-                value={registerFormData.password}
-                placeholder="비밀번호를 입력하세요"
-                onChange={handleRegisterChange}
-              />
-            </div>
-          </>
-        )}
-
-        {/* 로그인 폼 */}
-        {isLoggedIn && (
-          <>
-            <div className={inputMarginStyle}>
-              <label className="mb-2" htmlFor="id">
-                아이디
-              </label>
-              <input
-                className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-                id="id"
-                type="text"
-                value={loginFormData.id}
-                placeholder="아이디를 입력하세요"
-                onChange={handleLoginChange}
-              />
-            </div>
-            <div className={inputMarginStyle}>
-              <label className="mb-2" htmlFor="password">
-                비밀번호
-              </label>
-              <input
-                className="w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg"
-                id="password"
-                type="password"
-                value={loginFormData.password}
-                placeholder="비밀번호를 입력하세요"
-                onChange={handleLoginChange}
-              />
-            </div>
-          </>
-        )}
+        <FormInput
+          label="비밀번호"
+          name="password"
+          placeholder="비밀번호를 입력하세요"
+          type="password"
+          value={register}
+          rules={{
+            required: true,
+            minLength: {
+              value: 2,
+              message: '비밀번호는 최소 2자 이상이어야 합니다.',
+            },
+          }}
+          error={errors.password}
+        />
 
         {/* 버튼 및 링크 */}
-        {!isLoggedIn ? (
-          <>
-            <div className="mt-6">
-              <button
-                onClick={handleRegister}
-                className="w-full h-12 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                회원가입
-              </button>
-            </div>
-            <span className="mt-6">
-              계정이 있으신가요?{' '}
-              <a href={`/login?type=${type}`} className="text-blue-500 hover:underline">
-                로그인
-              </a>
-            </span>
-          </>
-        ) : (
-          <>
-            {/* 로그인 영역 */}
-            <div className="mt-6">
-              <button
-                onClick={handleLogin}
-                className="w-full h-12 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                로그인
-              </button>
-            </div>
-            <span className="mt-6">
-              계정이 없으신가요?{' '}
-              <a href={`/register?type=${type}`} className="text-blue-500 hover:underline">
-                회원가입
-              </a>
-            </span>
-          </>
-        )}
-      </div>
+        <div className="mt-6">
+          <input
+            type="submit"
+            value="회원가입"
+            className="w-full h-12 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+          />
+        </div>
+        <span className="mt-6">
+          계정이 있으신가요?{' '}
+          <a href={`/login?type=${type}`} className="text-blue-500 hover:underline">
+            로그인
+          </a>
+        </span>
+      </form>
     </div>
   )
 }

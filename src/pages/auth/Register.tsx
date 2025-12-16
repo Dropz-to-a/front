@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import AuthBackground from '@/components/AuthBackground'
 import RegisterForm from '@/components/RegisterForm'
 import AuthIntro from '@/components/AuthIntro'
+import JobitLogo from '/logo_white.svg'
 
 const Register: FC = () => {
   return (
@@ -12,7 +13,7 @@ const Register: FC = () => {
         title={'만나서 반가워요!'}
         description={'당신이 누군지 저희에게 알려주세요!'}
       />
-      <RegisterForm isLoggedIn={false} />
+      <RegisterForm />
     </AuthBackground>
   )
 }

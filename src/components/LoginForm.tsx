@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 
 import { loginUser } from '../api'
-// import { register } from 'module'
 
 type LoginFormValue = {
   id: string
@@ -21,14 +20,17 @@ const LoginForm: FC = () => {
       password,
     }
 
+    console.log('로그인 요청 본문:', requestBody)
+
     try {
       const response = await loginUser(requestBody)
-      console.log('로그인 성공:', response.data)
+      console.log('로그인 성공:', response)
+
       navigate('/')
-      alert('로그인에 성공했습니다!')
+      alert('로그인 성공!')
     } catch (err) {
       console.error('로그인 실패:', err)
-      alert('아이디 또는 비밀번호를 확인해주세요.')
+      alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }
   }
 
@@ -55,7 +57,7 @@ const LoginForm: FC = () => {
           name="id"
           placeholder="아이디를 입력하세요"
           type="text"
-          register={register}
+          value={register}
           rules={{
             required: true,
             pattern: {
@@ -72,19 +74,19 @@ const LoginForm: FC = () => {
           name="password"
           placeholder="비밀번호를 입력하세요"
           type="password"
-          register={register}
+          value={register}
           rules={{
             required: true,
             minLength: {
-              value: 6,
-              message: '비밀번호는 최소 8자 이상이어야 합니다.',
+              value: 2,
+              message: '비밀번호는 최소 2자 이상이어야 합니다.',
             },
           }}
           error={errors.password}
         />
 
         {/* 버튼 및 링크 */}
-        <div className="mt-6">
+        <div className="mt-2">
           <input
             type="submit"
             value="로그인"

@@ -21,6 +21,9 @@ const RegisterForm: FC<LoginFormProps> = ({ isLoggedIn }) => {
     password: '',
     roleCode: `${type === 'company' ? '2' : '1'}`,
   })
+
+
+
   const [loginFormData, setLoginFormData] = useState({
     id: '',
     password: '',
@@ -41,11 +44,16 @@ const RegisterForm: FC<LoginFormProps> = ({ isLoggedIn }) => {
       [id]: value,
     }))
   }
+  // 전화번호 하이픈 제거 함수
+  const sanitizePhoneNumber = (phone: string) => phone.replace(/-/g, '')
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const requestBody = registerFormData
+    const requestBody = {
+      ...registerFormData,
+      phone: sanitizePhoneNumber(registerFormData.phone),
+    }
     console.log('회원가입 요청 본문:', requestBody)
 
     try {
@@ -143,6 +151,15 @@ const RegisterForm: FC<LoginFormProps> = ({ isLoggedIn }) => {
                 value={registerFormData.phone}
                 placeholder="전화번호를 입력하세요"
                 onChange={handleRegisterChange}
+                maxLength={13}
+                onInput={(e) => {
+                  const input = e.target as HTMLInputElement;
+                  input.value = input.value
+                    .replace(/[^0-9]/g, '') // 숫자만 입력
+                    .replace(/(\d{3})(\d{3,4})?(\d{4})?/, (_, p1, p2, p3) =>
+                      [p1, p2, p3].filter(Boolean).join('-')
+                    ); // 형식에 맞게 변환
+                }}
               />
             </div>
 

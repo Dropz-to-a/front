@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { FormInput } from './FormInput'
@@ -13,11 +13,8 @@ type RegisterFormValue = {
   roleCode: string
 }
 
-const RegisterForm: FC = () => {
-  const location = useLocation()
+const RegisterForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
-  const queryParams = new URLSearchParams(location.search)
-  const type = queryParams.get('type') || 'personal'
 
   const handleRegister = async () => {
     const { username, email, phone, password } = getValues()

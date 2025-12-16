@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
@@ -12,6 +13,9 @@ type LoginFormValue = {
 
 const LoginForm: FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const type = queryParams.get('type') || 'personal'
 
   const handleLogin = async () => {
     const { id, password } = getValues()
@@ -94,7 +98,7 @@ const LoginForm: FC = () => {
         </div>
         <span className="mt-6">
           계정이 없으신가요?{' '}
-          <a href={`/register`} className="text-blue-500 hover:underline">
+          <a href={`/register?type=${type}`} className="text-blue-500 hover:underline">
             회원가입
           </a>
         </span>

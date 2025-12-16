@@ -3,7 +3,6 @@ import type { FC } from 'react'
 import AuthBackground from '@/components/AuthBackground'
 import RegisterForm from '@/components/RegisterForm'
 import AuthIntro from '@/components/AuthIntro'
-import JobitLogo from '/logo_white.svg'
 
 const Register: FC = () => {
   return (

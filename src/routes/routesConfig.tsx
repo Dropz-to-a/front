@@ -38,14 +38,10 @@ export type RouteItem = {
   path: string
   element: React.ReactNode
 }
-// 공개 라우트 설정
-export const publicRoutes: RouteItem[] = [
-  // 홈페이지
-  { path: '/', element: <Home /> },
-  
-  // 시작페이지
-  { path: '/start', element: <Start /> },
 
+
+// 로그인 거부 라우트 설정
+export const LoginHateRoutes: RouteItem[] = [
   // 로그인
   { path: '/login', element: <Login /> },
 
@@ -55,6 +51,15 @@ export const publicRoutes: RouteItem[] = [
   //온보딩
   { path: '/user/onboarding', element: <UserOnBoard /> }, // 유저 온보딩 페이지
   { path: '/company/onboarding', element: <CompanyOnBoard /> }, // 기업 온보딩 페이지
+]
+
+// 공개 라우트 설정
+export const publicRoutes: RouteItem[] = [
+  // 홈페이지
+  { path: '/', element: <Home /> },
+  
+  // 시작페이지
+  { path: '/start', element: <Start /> },
 
   //서비스 설명
   { path: '/about', element: <About /> },

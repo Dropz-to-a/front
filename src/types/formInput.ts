@@ -9,4 +9,7 @@ export type FormInputProps<T extends object> = {
   value: UseFormRegister<T>
   rules?: RegisterOptions<T, Path<T>>
   error?: FieldError
+  min?: string
+  max?: string
+  readOnly?: boolean
 }

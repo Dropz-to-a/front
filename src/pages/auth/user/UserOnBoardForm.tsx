@@ -87,9 +87,10 @@ const UserOnBoardForm: FC = () => {
             label="생년월일"
             name="birth"
             type="date"
-            placeholder="생년월일을 입력하세요"
+            min="1900-01-01"
+            max={new Date().toISOString().split('T')[0]}
             value={register}
-            rules={{ required: true }}
+            rules={{ required: '생년월일을 입력하세요.' }}
             error={errors.birth}
           />
 

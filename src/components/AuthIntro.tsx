@@ -1,4 +1,4 @@
-import { useLocation, useParams } from 'react-router'
+import { useLocation } from 'react-router'
 
 type LoginIntroProps = {
   img: string

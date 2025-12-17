@@ -22,8 +22,7 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw?   
 *.env
-
 *storybook.log
 storybook-static

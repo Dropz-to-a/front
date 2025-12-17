@@ -84,14 +84,19 @@ const CompanyOnBoardForm: FC = () => {
           />
 
           <FormInput
-            label="사업자 등록번호"
+            label="사업자등록번호"
             name="businessNumber"
-            type="text"
-            placeholder="사업자 등록번호를 입력하세요"
+            placeholder="888-88-88888"
             value={register}
-            rules={{ required: true }}
+            format="businessNumber"
+            rules={{
+              required: '사업자등록번호를 입력하세요.',
+              validate: (v: any) =>
+                String(v ?? '').replace(/\D/g, '').length === 10 || '사업자등록번호는 10자리입니다.',
+            }}
             error={errors.businessNumber}
           />
+
 
           <div className="flex justify-end mt-6">
             <button

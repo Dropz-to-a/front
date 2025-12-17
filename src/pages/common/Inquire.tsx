@@ -1,7 +1,8 @@
-import Header from '@/components/Header'
 import { useForm } from 'react-hook-form'
-import { Search } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState } from 'react'
 
+import Header from '@/components/Header'
 import { FormInput } from '@/components/FormInput'
 
 type SearchValue = {
@@ -12,12 +13,17 @@ const Inquire = () => {
   const { handleSubmit, register: keyword /* getValues */ } = useForm<SearchValue>({
     mode: 'onChange',
   })
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  const toggleQA = (index: number) => {
+    setOpenIndex(prev => (prev === index ? null : index))
+  }
 
   return (
     <div>
       <Header />
       {/* 배너 */}
-      <section className="w-full pb-10 pt-18 bg-gradient-to-b from-blue-500 to-blue-100">
+      <section className="w-full pb-10 pt-18 bg-gradient-to-b from-blue-500 to-blue-200">
         <h1 className="mb-10 font-bold text-center text-white text-8xl">WHAT THE FAQS</h1>
         <p className="mb-8 text-lg leading-8 text-center text-white">
           JOBIT은 모든 기업과 연결되어있지 않지만, 매우 많은 기업과 연결되어있습니다.
@@ -45,18 +51,56 @@ const Inquire = () => {
       </section>
 
       {/* 질문 */}
-      <section className="w-full">
+      <section className="w-full mb-10">
         <h2 className="my-10 text-3xl font-bold text-center">자주 묻는 질문</h2>
-        <div>
-          {/* 질문 리스트 */}
-          <div>
-            {QAList.map((qa, index) => (
-              <div key={index} className="w-3/5 mx-auto mb-6">
-                <h3 className="mb-2 text-xl font-semibold">{qa.question}</h3>
-                <p className="text-gray-600">{qa.answer}</p>
+        {/* 질문 리스트 */}
+        <div className="flex flex-col items-center gap-4">
+          {QAList.map((qa, index) => {
+            const isOpen = openIndex === index
+
+            return (
+              <div
+                key={index}
+                onClick={() => toggleQA(index)}
+                className={`
+          w-3/5 px-8 py-6 rounded-2xl cursor-pointer
+          transition-all duration-300
+          border border-gray-300
+          ${
+            isOpen
+              ? 'bg-blue-50 border-blue-400 shadow-md'
+              : 'bg-white border-gray-200 hover:shadow-md hover:border-gray-400 hover:bg-gray-50'
+          }
+        `}>
+                {/* 질문 */}
+                <h3 className="flex items-center justify-between text-lg font-semibold text-gray-900">
+                  <span className="leading-relaxed">{qa.question}</span>
+
+                  <span
+                    className={`
+              transition-transform duration-300
+              ${isOpen ? 'rotate-180 text-blue-500' : 'text-gray-400'}
+            `}>
+                    {isOpen ? <ChevronUp /> : <ChevronDown />}
+                  </span>
+                </h3>
+
+                {/* 답변 */}
+                <div
+                  className={`
+            overflow-hidden
+            transition-all
+            duration-500
+            ease-in-out
+            ${isOpen ? 'max-h-60 opacity-100 mt-4' : 'max-h-0 opacity-0'}
+          `}>
+                  <div className="pt-4 border-gray-300 border-t-1">
+                    <p className="leading-7 text-gray-600">{qa.answer}</p>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
+            )
+          })}
         </div>
       </section>
     </div>

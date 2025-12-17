@@ -38,14 +38,17 @@ export type RouteItem = {
   path: string
   element: React.ReactNode
 }
-
+// 공개 라우트 설정
 export const publicRoutes: RouteItem[] = [
   // 홈페이지
   { path: '/', element: <Home /> },
+  
   // 시작페이지
   { path: '/start', element: <Start /> },
+
   // 로그인
   { path: '/login', element: <Login /> },
+
   // 회원가입
   { path: '/register', element: <Register /> },
 
@@ -61,7 +64,15 @@ export const publicRoutes: RouteItem[] = [
   { path: '/jobs/:id', element: <DetailJobs /> },
   //문의페이지
   { path: '/inquire', element: <Inquire /> },
+  //------------------------------------- Footer ---------------------------------------------
 
+  { path: '/contact', element: <Contact /> },
+  { path: '/privacy', element: <Privacy /> },
+  { path: '/terms', element: <Terms /> },
+]
+
+// 보호된 라우트 설정
+export const privateRoutes: RouteItem[] = [
   //------------------------------------- 구직자 ---------------------------------------------
 
   // 공고 이력서 작성
@@ -80,7 +91,7 @@ export const publicRoutes: RouteItem[] = [
 
   // 재직자 급여 로그
   { path: '/paylog', element: <PayLogPage /> },
-
+  
   //------------------------------------- 재직자 ---------------------------------------------
 
   // 출퇴근 관리
@@ -103,13 +114,4 @@ export const publicRoutes: RouteItem[] = [
   // 재직자 급여 정산
   { path: '/payroll', element: <PayrollPage /> },
 
-  //------------------------------------- Footer ---------------------------------------------
-
-  { path: '/contact', element: <Contact /> },
-  { path: '/privacy', element: <Privacy /> },
-  { path: '/terms', element: <Terms /> },
-]
-
-export const privateRoutes: RouteItem[] = [
-  { path: '/', element: <Home /> },
 ]

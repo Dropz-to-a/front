@@ -21,19 +21,11 @@ export const registerUser = async (data: UserRegisterData) => {
 
 export const loginUser = async (data: UserLoginData) => {
   const response = await api.post('/api/auth/login', data, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
   })
-
-  const { accessToken } = response.data
-
-  if (accessToken) {
-    localStorage.setItem('jwtToken', accessToken)
-  }
-
-  return response.data
+  return response.data 
 }
+
 
 export const OnBoardUser = async (data: UserOnBoardData) => {
   const response = await api.post('/api/onboarding/user', data, {

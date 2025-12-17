@@ -174,17 +174,8 @@ const ResumeViewPage = () => {
             </section>
 
             <section>
-              <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">연수 및 활동</h4>
+              <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">연수 및 봉사활동</h4>
               <p>{DUMMY_APPLICATION.activity}</p>
-            </section>
-
-            <section>
-              <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">가족 및 취미</h4>
-              <p>
-                <b>가족:</b> {DUMMY_APPLICATION.family}
-                <br />
-                <b>취미:</b> {DUMMY_APPLICATION.hobby}
-              </p>
             </section>
 
             <section>

@@ -19,7 +19,7 @@ const onlyDigits = (v: string) => v.replace(/\D/g, '')
 
 // 자동 하이픈 포맷 (010-1234-5678 / 010-123-4567 모두 대응)
 const formatPhone = (value: string) => {
-  const digits = onlyDigits(value).slice(0, 11) // ✅ 최대 11자리 제한
+  const digits = onlyDigits(value).slice(0, 11) //  최대 11자리 제한
 
   if (digits.length <= 3) return digits
   if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
@@ -41,7 +41,7 @@ const RegisterForm: FC = () => {
     watch,
   } = useForm<RegisterFormValue>({ mode: 'onChange' })
 
-  // ✅ phone 입력값이 바뀔 때마다 하이픈 자동 적용
+  //  phone 입력값이 바뀔 때마다 하이픈 자동 적용
   const phoneWatch = watch('phone')
   useEffect(() => {
     if (phoneWatch == null) return
@@ -57,7 +57,7 @@ const RegisterForm: FC = () => {
     const requestBody: RegisterFormValue = {
       username,
       email,
-      phone: onlyDigits(phone), // ✅ 백엔드로는 숫자만 보냄
+      phone: onlyDigits(phone), //  백엔드로는 숫자만 보냄
       password,
       roleCode: type === 'company' ? 'ROLE_COMPANY' : 'ROLE_USER',
     }

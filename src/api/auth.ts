@@ -27,7 +27,7 @@ export const loginUser = async (data: UserLoginData) => {
   const { accessToken } = response.data
 
   if (accessToken) {
-    localStorage.setItem('accessToken', accessToken)
+    localStorage.setItem('JwtToken', accessToken)
   }
 
   return response.data

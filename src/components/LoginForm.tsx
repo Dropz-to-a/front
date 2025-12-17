@@ -28,7 +28,7 @@ const LoginForm: FC = () => {
 
     try {
       const response = await loginUser(requestBody)
-      console.log('로그인 성공:', response.data)
+      console.log('로그인 성공:', response.accessToken)
       navigate('/')
       alert('로그인에 성공했습니다!')
     } catch (err) {

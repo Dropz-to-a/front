@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // axios 인스턴스 생성
 const apiClient = axios.create({
-  baseURL: 'http://3.39.222.186:8080', // API 기본 URL로 교체
+  baseURL: import.meta.env.VITE_API_BASE_URL, // API 기본 URL로 교체
   timeout: 10000, // 요청 타임아웃 설정
 })
 

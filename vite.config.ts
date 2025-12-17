@@ -22,6 +22,13 @@ export default defineConfig({
         changeOrigin: true, // 호스트 헤더를 변경하여 요청 전송
         secure: false, // HTTPS 사용 시 필요
       },
+      //추후 외부 API 연동 시 양식 
+      '/example': {
+        target: 'https://api.example.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/external-api/, ''), // 경로 앞부분 제거
+      },
     },
   },
 

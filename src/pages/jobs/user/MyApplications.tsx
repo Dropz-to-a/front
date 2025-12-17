@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '@/components/Header'
 import { JOBS_DATA } from './Jobs'
-import { Trash2, FileText, CalendarDays } from 'lucide-react'
+import { Trash2, FileText, CalendarDays, Search } from 'lucide-react'
 import type { AppliedJob } from '@/types/Application'
 
 type AppliedItem = {
@@ -11,24 +11,23 @@ type AppliedItem = {
   applicationStatus: '지원완료' | '검토중' | '합격' | '불합격'
   note: string
 }
-
 export default function MyApplications() {
   const [appliedList, setAppliedList] = useState<AppliedItem[]>([])
 
-  // ✅ 로컬스토리지에서 불러오기
+  //  로컬스토리지에서 불러오기
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('appliedJobs') || '[]')
     setAppliedList(stored)
   }, [])
 
-  // ✅ 지원 삭제
+  // 지원 삭제
   const handleRemove = (id: string) => {
     const updated = appliedList.filter(x => x.id !== id)
     setAppliedList(updated)
     localStorage.setItem('appliedJobs', JSON.stringify(updated))
   }
 
-  // ✅ JOBS_DATA에서 지원한 공고 필터링
+  //  JOBS_DATA에서 지원한 공고 필터링
   const appliedJobs = appliedList
     .map(item => {
       const job = JOBS_DATA.find(j => j.id === item.id)
@@ -62,7 +61,7 @@ export default function MyApplications() {
           <div className="flex flex-col gap-4">
             {appliedJobs.map((job: AppliedJob) => (
               <div
-                key={job.id} // ✅ 여기 수정!
+                key={job.id} 
                 className="flex flex-col w-full px-6 py-4 transition bg-white border border-gray-200 shadow-sm rounded-2xl hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
                 {/* 좌측 정보 */}
                 <div className="flex items-center gap-4">
@@ -91,8 +90,15 @@ export default function MyApplications() {
                     to={`/jobs/${job.id}`}
                     state={{ job }}
                     className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline">
-                    <FileText className="w-4 h-4" />
+                    <Search className="w-4 h-4" />
                     상세보기
+                  </Link>
+                  <Link
+                    to={`/resume/${job.id}`}
+                    state={{ job }}
+                    className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline">
+                    <FileText className="w-4 h-4" />
+                    지원서 보기
                   </Link>
 
                   <button

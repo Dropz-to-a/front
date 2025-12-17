@@ -59,9 +59,6 @@ const Header = () => {
             <Link to="/profile" style={{ color: 'white' }}>
               프로필
             </Link>
-            <Link to="/profile-edit" style={{ color: 'white' }}>
-              프로필수정
-            </Link>
           </>
         )}
 

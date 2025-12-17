@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '@/components/Header'
-import FallingText from '@/components/NotFound/FallingText'
+// import FallingText from '@/components/NotFound/FallingText'
 import Footer from '@/components/Footer'
 
 const NotFound = () => {
@@ -26,7 +26,7 @@ const NotFound = () => {
           height: `calc(100vh - ${headerHeight}px)`,
         }}>
         {/* FallingText (화면 전체) */}
-        <div className="absolute inset-0">
+        {/* <div className="absolute inset-0">
           <FallingText
             className="flex items-center justify-center white-space: nowrap"
             text="❓ ❓ ❓ ❓ ❓ ❓ ❓ ❓ ❓ "
@@ -37,7 +37,7 @@ const NotFound = () => {
             fontSize="5rem"
             mouseConstraintStiffness={0.8}
           />
-        </div>
+        </div> */}
 
         {/* 404 텍스트와 설명 */}
         <div className="relative z-10 text-center">

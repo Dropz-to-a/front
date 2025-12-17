@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { loginThunk } from '@/features/auth/authSlice'
+import { getOnBoardedFromToken } from '@/utils/jwt'
 //api 호출 대신 thunk 사용해서 값 불러옴 
 type LoginFormValue = {
   id: string
@@ -29,7 +30,17 @@ const LoginForm: FC = () => {
     const result = await dispatch(loginThunk({ id, password }))
 
     if (loginThunk.fulfilled.match(result)) {
-      const userType = result.payload.userType
+      const { token, userType } = result.payload
+
+      const onboarded = token ? getOnBoardedFromToken(token) : null
+
+      // 이미 온보딩 완료면 홈으로
+      if (onboarded === true) {
+        navigate('/', { replace: true })
+        return
+      }
+
+      // 미완료면 온보딩으로
       navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', { replace: true })
     } else {
       alert(error ?? '로그인 실패')

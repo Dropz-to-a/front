@@ -9,6 +9,9 @@ export function FormInput<T extends Record<string, unknown>>({
   value,
   rules,
   error,
+  min,
+  max,
+  readOnly,
 }: FormInputProps<T>) {
   return (
     <div className="flex flex-col items-start w-full mb-2">
@@ -20,6 +23,9 @@ export function FormInput<T extends Record<string, unknown>>({
         id={String(name)}
         type={type}
         placeholder={placeholder}
+        min={min}
+        max={max}
+        readOnly={readOnly}
         className={`${className} w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg`}
         {...value(name, rules)}
       />

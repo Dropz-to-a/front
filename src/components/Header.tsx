@@ -9,7 +9,10 @@ const Header = () => {
   //  Redux에서 가져오기
   const { token, userType, username } = useAppSelector(s => s.auth)
 
+  const noLoggedIn = !token
   const isLoggedIn = !!token
+  // const isCompany = userType === 'company'
+
 
   const handleLogout = () => {
     dispatch(logout())
@@ -37,6 +40,10 @@ const Header = () => {
 
       {/* 메뉴 */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+
+        {/*  비로그인 메뉴 */}
+        {noLoggedIn && (
+          <>
         <Link to="/" style={{ color: 'white' }}>
           홈
         </Link>
@@ -46,12 +53,38 @@ const Header = () => {
         <Link to="/jobs" style={{ color: 'white' }}>
           공고
         </Link>
+          </>
+        )}
 
-        {/* ✅ 개인(유저) 메뉴 */}
+        {/*  구직자 메뉴 */}
         {isLoggedIn && userType === 'user' && (
           <>
+            <Link to="/" style={{ color: 'white' }}>
+              홈
+            </Link>
+            <Link to="/about" style={{ color: 'white' }}>
+              소개
+            </Link>
+            <Link to="/jobs" style={{ color: 'white' }}>
+              공고
+            </Link>
             <Link to="/my-applications" style={{ color: 'white' }}>
               지원목록
+            </Link>
+            <Link to="/profile" style={{ color: 'white' }}>
+              프로필
+            </Link>
+          </>
+        )}
+
+        {/*  재직자 메뉴 */}
+        {/* {isLoggedIn && userType === 'user' && (
+          <>
+            <Link to="/attendance" style={{ color: 'white' }}>
+              출퇴근 관리
+            </Link>
+            <Link to="/work-dashboard" style={{ color: 'white' }}>
+              근무 대시보드
             </Link>
             <Link to="/paylog" style={{ color: 'white' }}>
               급여내역
@@ -60,9 +93,9 @@ const Header = () => {
               프로필
             </Link>
           </>
-        )}
+        )} */}
 
-        {/* ✅ 기업 메뉴 */}
+        {/*  기업 메뉴 */}
         {isLoggedIn && userType === 'company' && (
           <>
             <Link to="/jobmanage" style={{ color: 'white' }}>

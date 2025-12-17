@@ -1,8 +1,18 @@
+import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 
-export default function GuestGuard({ children }: { children: React.ReactNode }) {
-  const token = useAppSelector(s => s.auth.token) || localStorage.getItem('jwtToken')
-  if (token) return <Navigate to="/" replace />  // 로그인 했으면 홈으로
-  return <>{children}</>                         // ✅ 핵심: children 렌더
+interface GuestGuardProps {
+  children: React.ReactNode
 }
+
+/*
+ * 비로그인 전용 페이지 보호 (로그인 상태면 접근 불가 → /about 리다이렉트)
+*/
+const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
+  const token = useAppSelector(s => s.auth.token)
+  if (token) return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+export default GuestGuard

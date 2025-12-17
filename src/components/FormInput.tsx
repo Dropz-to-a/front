@@ -21,18 +21,21 @@ export function FormInput<T extends Record<string, unknown>>({
   value, // register
   rules,
   error,
+  min,
+  max,
+  readOnly,
   format, //  추가
 }: FormInputProps<T> & { format?: FormatKind }) {
   const reg = value(name, {
     ...rules,
     ...(format === 'businessNumber'
       ? {
-        setValueAs: (v: unknown) => onlyDigits(String(v ?? '')).slice(0, 10), //  백엔드는 숫자만
-        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-          const raw = e.target.value
-          e.target.value = formatBizNo(raw) // 화면은 888-88-88888
-        },
-      }
+          setValueAs: (v: unknown) => onlyDigits(String(v ?? '')).slice(0, 10), //  백엔드는 숫자만
+          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+            const raw = e.target.value
+            e.target.value = formatBizNo(raw) // 화면은 888-88-88888
+          },
+        }
       : {}),
   })
 
@@ -45,6 +48,9 @@ export function FormInput<T extends Record<string, unknown>>({
       <input
         id={String(name)}
         type={type}
+        min={min}
+        max={max}
+        readOnly={readOnly}
         placeholder={placeholder}
         maxLength={format === 'businessNumber' ? 12 : undefined} // 10 + 하이픈2
         inputMode={format === 'businessNumber' ? 'numeric' : undefined}

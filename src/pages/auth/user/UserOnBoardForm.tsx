@@ -56,7 +56,7 @@ const UserOnBoardForm: FC = () => {
 
       toastShownRef.current = true
 
-      showSuccessToast('온보딩이 완료되었습니다!')
+      showSuccessToast('온보딩이 완료되었습니다!') // main 페이지로 이동해도 onboared 여부는 false로 유지됨.
 
       setTimeout(() => {
         navigate('/')

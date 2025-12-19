@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { loginThunk } from '@/features/auth/authSlice'
-import { getOnBoardedFromToken } from '@/utils/jwt'
+// import { getOnBoardedFromToken } from '@/utils/jwt'
 //api 호출 대신 thunk 사용해서 값 불러옴 
 type LoginFormValue = {
   id: string

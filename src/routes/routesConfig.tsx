@@ -58,7 +58,7 @@ export const LoginHateRoutes: RouteItem[] = [
 export const publicRoutes: RouteItem[] = [
   // 홈페이지
   { path: '/', element: <Home /> },
-  
+
   // 시작페이지
   { path: '/start', element: <Start /> },
 

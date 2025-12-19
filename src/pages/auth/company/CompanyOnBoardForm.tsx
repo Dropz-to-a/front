@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, type FC } from 'react'
+import { useState, useRef, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from '../../../components/FormInput'
 import { OnBoardCompany } from '../../../api'
 
 import DaumPostcode from 'react-daum-postcode'
+import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
 
 type OnBoardFormValue = {
   companyName: string
@@ -19,6 +20,8 @@ const CompanyOnBoardForm: FC = () => {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [isPostOpen, setIsPostOpen] = useState(false)
+
+  const toastShownRef = useRef(false)
 
   const {
     register,
@@ -47,21 +50,32 @@ const CompanyOnBoardForm: FC = () => {
   const handleSubmit = async () => {
     const values = getValues()
 
+    if (toastShownRef.current) return
+
     try {
       await OnBoardCompany(values)
-      alert('온보딩이 완료되었습니다!')
-      navigate('/')
+
+      toastShownRef.current = true
+      showSuccessToast('온보딩이 완료되었습니다!')
+
+      setTimeout(() => {
+        navigate('/')
+      }, 2000)
     } catch (err: any) {
       const status = err.response?.status
-      const message = err.response?.data?.message
 
       if (status === 409) {
-        alert(message || '이미 온보딩이 완료된 사용자입니다.')
-        navigate('/')
+        toastShownRef.current = true
+        showErrorToast('이미 온보딩이 완료된 회사입니다!\n잠시 뒤 홈으로 이동합니다.')
+
+        setTimeout(() => {
+          navigate('/')
+        }, 2000)
         return
       }
 
-      alert('온보딩 중 오류가 발생했습니다. 다시 시도해주세요.')
+      toastShownRef.current = true
+      showErrorToast('온보딩 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
     }
   }
 
@@ -92,11 +106,11 @@ const CompanyOnBoardForm: FC = () => {
             rules={{
               required: '사업자등록번호를 입력하세요.',
               validate: (v: any) =>
-                String(v ?? '').replace(/\D/g, '').length === 10 || '사업자등록번호는 10자리입니다.',
+                String(v ?? '').replace(/\D/g, '').length === 10 ||
+                '사업자등록번호는 10자리입니다.',
             }}
             error={errors.businessNumber}
           />
-
 
           <div className="flex justify-end mt-6">
             <button

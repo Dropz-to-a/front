@@ -1,11 +1,29 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Download } from 'lucide-react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 import Header from '@/components/Header'
-import { JOBS_DATA } from '@/pages/jobs/user/Jobs'
+import { jobPostingApi, type PublicJobPosting } from '@/api/jobPostingApi'
+import type { Job } from '@/pages/jobs/user/Jobs'
+
+// API 응답을 Job 타입으로 변환
+const convertToJob = (posting: PublicJobPosting): Job => {
+  return {
+    id: String(posting.postingId),
+    company: posting.companyName,
+    title: posting.title,
+    description: '',
+    location: posting.locationText,
+    salaryNote: posting.salaryMin > 0 || posting.salaryMax > 0
+      ? `${posting.salaryMin > 0 ? posting.salaryMin.toLocaleString() : '협의'} ~ ${posting.salaryMax > 0 ? posting.salaryMax.toLocaleString() : '협의'}만원`
+      : undefined,
+    status: '모집 중',
+    category: '기타',
+    applyUrl: `/jobs/${posting.postingId}`,
+  }
+}
 
 const DUMMY_APPLICATION = {
   name: '박지우',
@@ -29,9 +47,36 @@ const DUMMY_APPLICATION = {
 
 const ResumeViewPage = () => {
   const navigate = useNavigate()
-  const { id } = useParams()
-  const job = JOBS_DATA.find(j => j.id === id)
+  const { id } = useParams<{ id: string }>()
+  const [job, setJob] = useState<Job | null>(null)
+  const [loading, setLoading] = useState(true)
   const resumeRef = useRef<HTMLDivElement>(null)
+
+  const loadJob = useCallback(async () => {
+    if (!id) {
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      const data = await jobPostingApi.getPublicList()
+      const foundPosting = data.find(p => String(p.postingId) === id)
+      
+      if (foundPosting) {
+        const convertedJob = convertToJob(foundPosting)
+        setJob(convertedJob)
+      }
+    } catch (e: unknown) {
+      console.error('[ResumeView] 공고 조회 실패:', e)
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
+  useEffect(() => {
+    loadJob()
+  }, [loadJob])
 
   /** ✅ 색상 oklch → 안전한 rgb로 변환 */
   const sanitizeColors = () => {
@@ -85,6 +130,33 @@ const ResumeViewPage = () => {
     }
 
     pdf.save(`${DUMMY_APPLICATION.name}_이력서.pdf`)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen text-gray-800 bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center flex-1">
+          <p className="text-gray-500">공고 정보를 불러오는 중...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!job) {
+    return (
+      <div className="flex flex-col min-h-screen text-gray-800 bg-gray-50">
+        <Header />
+        <div className="flex flex-col items-center justify-center flex-1">
+          <p className="text-lg text-gray-600">공고를 찾을 수 없습니다.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-4 px-4 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+            이전 페이지로
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (

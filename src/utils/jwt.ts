@@ -50,19 +50,41 @@ export const getUserTypeFromToken = (token: string): 'user' | 'company' | null =
 //  onBoarded 꺼내기
 // ---------------------------
 const toBool = (v: unknown): boolean | null => {
+    console.log('[JWT] toBool 입력값:', v, '타입:', typeof v)
+    
     if (v === true) return true
     if (v === false) return false
 
+    // 숫자 처리: 1 = true, 0 = false
+    if (typeof v === 'number') {
+        if (v === 1) return true
+        if (v === 0) return false
+    }
+
     if (typeof v === 'string') {
         const s = v.trim().toLowerCase()
-        if (['true'].includes(s)) return true
-        if (['false'].includes(s)) return false
+        if (['true', '1', 'yes'].includes(s)) return true
+        if (['false', '0', 'no'].includes(s)) return false
     }
+    
     return null
 }
 
 export const getOnBoardedFromToken = (token: string): boolean | null => {
+    console.log('[JWT] 토큰 디코딩 시작, 토큰 길이:', token?.length)    
+    
     const p = decodeJwt<JobitJwtPayload>(token)
-    if (!p) return null
-    return toBool(p.onboarded)
+    
+    if (!p) {
+        console.error('[JWT] 토큰 디코딩 실패')
+        return null
+    }
+    
+    console.log('[JWT] 디코딩된 페이로드:', JSON.stringify(p, null, 2))
+    console.log('[JWT] onboarded 필드 값:', p.onboarded, '타입:', typeof p.onboarded)
+    
+    const result = toBool(p.onboarded)
+    console.log('[JWT] 최종 온보딩 여부:', result)
+    
+    return result
 }

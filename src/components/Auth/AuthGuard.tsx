@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "@/store";
 
@@ -8,12 +8,27 @@ interface AuthGuardProps {
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const token = useAppSelector((s) => s.auth.token);
-  const onboard = useAppSelector((s) => s.auth.onboarded);
+  const onboarded = useAppSelector((s) => s.auth.onboarded);
+  const userType = useAppSelector((s) => s.auth.userType);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 온보딩 미완료 사용자가 보호된 라우트에 접근하려고 하면 온보딩 페이지로 리디렉션
+  useEffect(() => {
+    if (token && onboarded !== true) {
+      const currentPath = location.pathname;
+      const isOnboardingPage = currentPath === '/user/onboarding' || currentPath === '/company/onboarding';
+      
+      if (!isOnboardingPage) {
+        const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding';
+        console.log('[AuthGuard] 온보딩 미완료 → 온보딩 페이지로 리디렉션:', onboardingPath);
+        navigate(onboardingPath, { replace: true });
+      }
+    }
+  }, [token, onboarded, userType, location.pathname, navigate]);
+
   // 로그인 안 되어 있음 → 모달 + 리다이렉트 UI
-  if (!token && onboard === true) {
+  if (!token && onboarded === true) {
     return (
       <>
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -47,6 +62,16 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
         {children}
       </>
     );
+  }
+
+  // 온보딩 미완료 사용자는 온보딩 페이지로 리디렉션 중이므로 아무것도 렌더링하지 않음
+  if (token && onboarded !== true) {
+    const currentPath = location.pathname;
+    const isOnboardingPage = currentPath === '/user/onboarding' || currentPath === '/company/onboarding';
+    
+    if (!isOnboardingPage) {
+      return null; // 리디렉션 중
+    }
   }
 
   return <>{children}</>;

@@ -30,19 +30,27 @@ const LoginForm: FC = () => {
     const result = await dispatch(loginThunk({ id, password }))
 
     if (loginThunk.fulfilled.match(result)) {
-      const { token, userType } = result.payload
+      const { token, userType, onboarded } = result.payload
 
-      const onboarded = token ? getOnBoardedFromToken(token) : null
+      console.log('[LoginForm] 로그인 성공, 리디렉션 결정:', {
+        token: token ? '있음' : '없음',
+        userType,
+        onboarded,
+      })
 
       // 이미 온보딩 완료면 홈으로
       if (onboarded === true) {
+        console.log('[LoginForm] 온보딩 완료 → 홈으로 이동')
         navigate('/', { replace: true })
         return
       }
 
       // 미완료면 온보딩으로
-      navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', { replace: true })
+      const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding'
+      console.log('[LoginForm] 온보딩 미완료 → 온보딩 페이지로 이동:', onboardingPath)
+      navigate(onboardingPath, { replace: true })
     } else {
+      console.error('[LoginForm] 로그인 실패:', error)
       alert(error ?? '로그인 실패')
     }
   }

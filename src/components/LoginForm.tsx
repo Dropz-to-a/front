@@ -7,6 +7,7 @@ import { loginThunk } from '@/features/auth/authSlice'
 
 import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
 
+// import { getOnBoardedFromToken } from '@/utils/jwt'
 //api 호출 대신 thunk 사용해서 값 불러옴
 type LoginFormValue = {
   id: string
@@ -43,7 +44,7 @@ const LoginForm: FC = () => {
       navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', {
         replace: true,
       })
-    } else {
+    } else if (loginThunk.rejected.match(result)) {
       toastShownRef.current = true
       showErrorToast('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }

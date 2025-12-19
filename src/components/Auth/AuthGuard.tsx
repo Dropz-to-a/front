@@ -8,11 +8,12 @@ interface AuthGuardProps {
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const token = useAppSelector((s) => s.auth.token);
+  const onboard = useAppSelector((s) => s.auth.onboarded);
   const navigate = useNavigate();
   const location = useLocation();
 
   // 로그인 안 되어 있음 → 모달 + 리다이렉트 UI
-  if (!token) {
+  if (!token && onboard === true) {
     return (
       <>
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

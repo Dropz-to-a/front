@@ -1,16 +1,5 @@
 import axios, { AxiosError } from "axios";
 
-type ClockReq = { employeeAccountId: number; companyAccountId: number };
-
-export type AttendanceItem = {
-    attendanceId: number;
-    employeeAccountId: number;
-    companyAccountId: number;
-    checkType: "IN" | "OUT";
-    checkedAt: string;
-    status: "SUCCESS" | string;
-};
-
 type ApiErrorRes = { code?: string; message?: string };
 
 export const api = axios.create({
@@ -41,7 +30,7 @@ api.interceptors.response.use(
             localStorage.removeItem('jwtToken');
             window.location.href = '/login';
         } else if (error.response?.status === 403) {
-            console.error('권한 없음: 회사 계정으로 로그인해야 합니다.');
+            console.error('권한 없음');
         }
         return Promise.reject(error);
     }
@@ -57,36 +46,33 @@ const parseAxiosError = (e: unknown) => {
     };
 };
 
-export const attendanceApi = {
-    async clockIn(body: ClockReq) {
+export type Application = {
+    applicationId: number;
+    postingId: number;
+    appliedAt: string;
+    status: "PENDING" | "REVIEWING" | "ACCEPTED" | "REJECTED";
+    note?: string;
+};
+
+export const applicationApi = {
+    /** 내 지원 목록 조회 */
+    async getMyApplications() {
         try {
-            const { data } = await api.post("/api/attendance/clock-in", body);
+            const { data } = await api.get<Application[]>("/api/applications");
             return data;
         } catch (e) {
             throw parseAxiosError(e);
         }
     },
 
-    async clockOut(body: ClockReq) {
+    /** 지원 삭제 */
+    async delete(applicationId: number) {
         try {
-            const { data } = await api.post("/api/attendance/clock-out", body);
-            return data;
-        } catch (e) {
-            throw parseAxiosError(e);
-        }
-    },
-
-    async getHistory(params: {
-        companyId: number;
-        fromDate: string;
-        toDate: string;
-        employeeId?: number;
-    }) {
-        try {
-            const { data } = await api.get<AttendanceItem[]>("/api/attendance/history", { params });
+            const { data } = await api.delete(`/api/applications/${applicationId}`);
             return data;
         } catch (e) {
             throw parseAxiosError(e);
         }
     },
 };
+

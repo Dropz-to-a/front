@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useRef, useEffect, type FC } from 'react'
+import { useState, useRef, useEffect, useCallback, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from '../../../components/FormInput'
-import { OnBoardCompany } from '../../../api'
+import { OnBoardCompany, checkBusinessExists, type BusinessExistsResponse } from '../../../api'
 
 import DaumPostcode from 'react-daum-postcode'
 import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
@@ -20,6 +20,10 @@ const CompanyOnBoardForm: FC = () => {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [isPostOpen, setIsPostOpen] = useState(false)
+  const [businessValidation, setBusinessValidation] = useState<{
+    status: 'idle' | 'checking' | 'valid' | 'invalid'
+    data?: BusinessExistsResponse
+  }>({ status: 'idle' })
 
   const toastShownRef = useRef(false)
 
@@ -28,7 +32,69 @@ const CompanyOnBoardForm: FC = () => {
     formState: { errors },
     getValues,
     setValue,
+    watch,
   } = useForm<OnBoardFormValue>({ mode: 'onChange' })
+
+  const businessNumber = watch('businessNumber')
+
+  // 사업자 등록번호 검증
+  const validateBusinessNumber = useCallback(
+    async (number: string) => {
+      // 하이픈 제거하고 숫자만 추출
+      const cleanNumber = number.replace(/\D/g, '')
+
+      // 10자리가 아니면 검증하지 않음
+      if (cleanNumber.length !== 10) {
+        setBusinessValidation({ status: 'idle' })
+        return
+      }
+
+      try {
+        setBusinessValidation({ status: 'checking' })
+        const result = await checkBusinessExists({ businessNumber: cleanNumber })
+
+        if (result.exists) {
+          setBusinessValidation({ status: 'valid', data: result })
+          // 회사명이 있으면 자동으로 입력
+          if (result.companyName) {
+            setValue('companyName', result.companyName, { shouldValidate: true })
+          }
+        } else {
+          setBusinessValidation({ status: 'invalid', data: result })
+        }
+      } catch (err: any) {
+        console.error('사업자 등록번호 검증 실패:', err)
+        setBusinessValidation({
+          status: 'invalid',
+          data: {
+            exists: false,
+            message: err.response?.data?.message || '사업자 등록번호 검증 중 오류가 발생했습니다.',
+          },
+        })
+      }
+    },
+    [setValue]
+  )
+
+  // 사업자 등록번호 변경 시 검증 (디바운싱)
+  useEffect(() => {
+    if (!businessNumber) {
+      setBusinessValidation({ status: 'idle' })
+      return
+    }
+
+    const cleanNumber = businessNumber.replace(/\D/g, '')
+    if (cleanNumber.length !== 10) {
+      setBusinessValidation({ status: 'idle' })
+      return
+    }
+
+    const timer = setTimeout(() => {
+      validateBusinessNumber(businessNumber)
+    }, 500) // 500ms 디바운싱
+
+    return () => clearTimeout(timer)
+  }, [businessNumber, validateBusinessNumber])
 
   // 다음 단계로 이동
   const handleNext = () => {
@@ -127,6 +193,76 @@ const CompanyOnBoardForm: FC = () => {
             }}
             error={errors.businessNumber}
           />
+
+          {/* 사업자 등록번호 검증 결과 */}
+          {businessValidation.status !== 'idle' && (
+            <div className="mt-2">
+              {businessValidation.status === 'checking' && (
+                <div className="flex items-center gap-2 text-sm text-blue-600">
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  <span>사업자 등록번호를 확인하는 중...</span>
+                </div>
+              )}
+
+              {businessValidation.status === 'valid' && businessValidation.data && (
+                <div className="p-3 text-sm bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-700 font-semibold">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span>정상적인 사업자입니다</span>
+                  </div>
+                  {businessValidation.data.companyName && (
+                    <p className="mt-1 text-green-600">
+                      회사명:{' '}
+                      <span className="font-semibold">{businessValidation.data.companyName}</span>
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {businessValidation.status === 'invalid' && businessValidation.data && (
+                <div className="p-3 text-sm bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-red-700 font-semibold">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    <span>사업자 등록번호 검증 실패</span>
+                  </div>
+                  <div className="mt-2 text-red-600">
+                    {businessValidation.data.status && (
+                      <p className="font-semibold">
+                        사업 상태:{' '}
+                        {businessValidation.data.status === '계속사업자'
+                          ? '계속사업자'
+                          : businessValidation.data.status === '휴업자'
+                          ? '휴업자'
+                          : businessValidation.data.status === '폐업자'
+                          ? '폐업자'
+                          : businessValidation.data.status}
+                      </p>
+                    )}
+                    {businessValidation.data.message && (
+                      <p className="mt-1">{businessValidation.data.message}</p>
+                    )}
+                    {!businessValidation.data.message && !businessValidation.data.status && (
+                      <p>등록된 사업자 등록번호가 아니거나 유효하지 않습니다.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end mt-6">
             <button

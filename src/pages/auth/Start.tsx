@@ -32,7 +32,8 @@ const Start: React.FC = () => {
           <img
             src="/SVG JOBIT LOGO.svg"
             alt="JOBIT"
-            className="w-72 md:w-80 lg:w-[360px] h-auto object-contain"
+            className="w-72 md:w-80 lg:w-[360px] h-auto object-contain select-none"
+            draggable={false}
           />
         </div>
 
@@ -44,6 +45,7 @@ const Start: React.FC = () => {
                 src={TextBg}
                 alt=""
                 className="absolute left-1/2 -translate-x-1/2 bottom-[-12px] w-[180px] lg:w-[150px] max-w-none h-auto z-0 pointer-events-none select-none"
+                draggable={false}
               />
               <span className="relative z-10 font-extrabold text-white">
                 취업
@@ -103,14 +105,7 @@ const Start: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-2">
-            <button
-              onClick={handleLogin}
-              className="h-12 font-bold text-white transition bg-gray-900 rounded-xl hover:bg-gray-800"
-            >
-              {category === "company" ? "기업용 로그인" : "개인용 로그인"}
-            </button>
-
+          <div className="flex flex-col gap-10">
             <button
               onClick={handleRegister}
               className="h-12 font-bold transition border border-gray-300 rounded-xl hover:bg-gray-100"
@@ -118,6 +113,12 @@ const Start: React.FC = () => {
               {category === "company"
                 ? "기업용 회원가입"
                 : "개인용 회원가입"}
+            </button>
+            <button
+              onClick={handleLogin}
+              className="h-12 font-bold text-white transition bg-gray-900 rounded-xl hover:bg-gray-800"
+            >
+              로그인
             </button>
           </div>
         </div>

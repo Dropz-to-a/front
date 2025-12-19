@@ -44,6 +44,7 @@ export type RouteItem = {
 export const LoginHateRoutes: RouteItem[] = [
   // 로그인
   { path: '/login', element: <Login /> },
+  { path: '/start', element: <Start /> },
 
   // 회원가입
   { path: '/register', element: <Register /> },
@@ -79,7 +80,6 @@ export const publicRoutes: RouteItem[] = [
 // 보호된 라우트 설정
 export const privateRoutes: RouteItem[] = [
   //------------------------------------- 구직자 ---------------------------------------------
-
   // 공고 이력서 작성
   { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
   // 공고 지원완료

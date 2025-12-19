@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '@/components/Header'
-import { JOBS_DATA } from '@/pages/jobs/user/Jobs'
+import { jobPostingApi, type JobPosting } from '@/api/jobPostingApi'
 
 // ✅ 더미 지원자 데이터
 const ALL_APPLICANTS_DATA = [
@@ -52,8 +52,25 @@ const ALL_APPLICANTS_DATA = [
 const JobCompletedAdmin = () => {
   const companyId = localStorage.getItem('companyId') || 'dropz'
   const [selectedJob, setSelectedJob] = useState<string>('all')
+  const [jobs, setJobs] = useState<JobPosting[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const jobs = JOBS_DATA.filter(j => j.company === companyId)
+  const loadJobs = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await jobPostingApi.getList()
+      // 회사 계정의 공고만 필터링 (실제로는 API에서 자동으로 필터링됨)
+      setJobs(data)
+    } catch (e: unknown) {
+      console.error('[JobCompletedAdmin] 공고 목록 조회 실패:', e)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadJobs()
+  }, [loadJobs])
 
   const filteredApplicants =
     selectedJob === 'all'
@@ -92,17 +109,21 @@ const JobCompletedAdmin = () => {
         {/* 공고 선택 */}
         <div className="flex items-center gap-3 mb-8">
           <label className="text-sm font-medium text-gray-600">공고 선택:</label>
-          <select
-            value={selectedJob}
-            onChange={e => setSelectedJob(e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="all">전체 공고</option>
-            {jobs.map(job => (
-              <option key={job.id} value={job.id}>
-                {job.title}
-              </option>
-            ))}
-          </select>
+          {loading ? (
+            <p className="text-sm text-gray-500">공고 목록을 불러오는 중...</p>
+          ) : (
+            <select
+              value={selectedJob}
+              onChange={e => setSelectedJob(e.target.value)}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+              <option value="all">전체 공고</option>
+              {jobs.map(job => (
+                <option key={job.postingId} value={String(job.postingId)}>
+                  {job.title}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* 지원자 목록 */}
@@ -118,7 +139,7 @@ const JobCompletedAdmin = () => {
             </thead>
             <tbody>
               {filteredApplicants.map((a, i) => {
-                const job = jobs.find(j => j.id === a.jobId)
+                const job = jobs.find(j => String(j.postingId) === a.jobId)
                 return (
                   <tr key={i} className="transition border-t hover:bg-gray-50">
                     <td className="p-3 font-medium text-gray-800">{a.name}</td>

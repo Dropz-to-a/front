@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useRef, type FC } from 'react'
+import { useState, useRef, useEffect, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from '../../../components/FormInput'
@@ -78,6 +78,22 @@ const CompanyOnBoardForm: FC = () => {
       showErrorToast('온보딩 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
     }
   }
+
+  useEffect(() => {
+    if (!isPostOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsPostOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isPostOpen])
 
   return (
     <div className="flex flex-col justify-center w-3/5 text-center bg-gray-50 p-14 rounded-r-3xl">
@@ -187,8 +203,12 @@ const CompanyOnBoardForm: FC = () => {
 
           {/* 다음 주소 팝업 */}
           {isPostOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-              <div className="relative w-[500px] h-[600px] bg-white rounded-xl shadow-lg overflow-hidden">
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+              onClick={() => setIsPostOpen(false)}>
+              <div
+                className="relative w-[500px] h-[600px] bg-white rounded-xl shadow-lg overflow-hidden"
+                onClick={e => e.stopPropagation()}>
                 {/* 닫기 버튼 */}
                 <button
                   type="button"

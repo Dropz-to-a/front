@@ -23,7 +23,7 @@ const initialState: AuthState = {
   error: null,
 }
 
-//로그인 thunk: 토큰 저장 + role/username 디코딩 + 상태 저장 
+//로그인 thunk: 토큰 저장 + role/username 디코딩 + 상태 저장
 export const loginThunk = createAsyncThunk(
   'auth/login',
   async (payload: UserLoginData, { rejectWithValue }) => {
@@ -48,7 +48,7 @@ export const loginThunk = createAsyncThunk(
     } catch (e: any) {
       return rejectWithValue(e?.message ?? '로그인 실패')
     }
-  }
+  },
 )
 
 const authSlice = createSlice({
@@ -81,7 +81,7 @@ const authSlice = createSlice({
         state.loading = false
         state.token = action.payload.token
         state.userType = action.payload.userType
-        state.username = action.payload.username ?? null 
+        state.username = action.payload.username ?? null
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false

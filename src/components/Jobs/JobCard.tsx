@@ -33,6 +33,28 @@ export const JobCard = ({ job }: { job: Job }) => {
               <p className="text-sm text-gray-500 truncate">{job.company}</p>
             </div>
             <h3 className="mt-1 text-base font-semibold text-gray-900 line-clamp-2">{job.title}</h3>
+            {job.location && (
+              <p className="mt-1 text-xs text-gray-400 flex items-center gap-1">
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                {job.location}
+              </p>
+            )}
           </div>
           <Dday d={job.dday} />
         </div>

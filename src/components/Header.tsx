@@ -1,36 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-
-interface CurrentUser {
-  id: string
-  email: string
-  name: string
-  userType: 'personal' | 'company'
-}
+import { useAppDispatch, useAppSelector } from '@/store'
+import { logout } from '@/features/auth/authSlice'
 
 const Header = () => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
-  const [user, setUser] = useState<CurrentUser | null>(null)
+  //  Redux에서 가져오기
+  const { token, userType, username } = useAppSelector(s => s.auth)
 
-  // ✔ 실제 로그인 정보 불러오기
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('currentUser')
-      if (stored) {
-        setUser(JSON.parse(stored))
-      }
-    } catch {
-      setUser(null)
-    }
-  }, [])
+  const noLoggedIn = !token
+  const isLoggedIn = !!token
+  // const isCompany = userType === 'company'
 
-  // ✔ 로그아웃 처리 (실제 로직)
+
   const handleLogout = () => {
-    localStorage.removeItem('currentUser')
-    localStorage.removeItem('token') // JWT 제거
-    setUser(null)
-
+    dispatch(logout())
     navigate('/')
   }
 
@@ -42,16 +27,23 @@ const Header = () => {
         alignItems: 'center',
         padding: '10px 20px',
         backgroundColor: '#2E80FF',
-      }}>
+        borderBottom: '1px solid #ddd',
+      }}
+    >
       {/* 로고 */}
       <div
         style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-        onClick={() => navigate('/')}>
+        onClick={() => navigate('/')}
+      >
         <img src="/logo.svg" alt="Logo" style={{ width: '150px', height: '40px' }} />
       </div>
 
       {/* 메뉴 */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+
+        {/*  비로그인 메뉴 */}
+        {noLoggedIn && (
+          <>
         <Link to="/" style={{ color: 'white' }}>
           홈
         </Link>
@@ -61,12 +53,38 @@ const Header = () => {
         <Link to="/jobs" style={{ color: 'white' }}>
           공고
         </Link>
+          </>
+        )}
 
-        {/* 개인회원 메뉴 */}
-        {user?.userType === 'personal' && (
+        {/*  구직자 메뉴 */}
+        {isLoggedIn && userType === 'user' && (
           <>
+            <Link to="/" style={{ color: 'white' }}>
+              홈
+            </Link>
+            <Link to="/about" style={{ color: 'white' }}>
+              소개
+            </Link>
+            <Link to="/jobs" style={{ color: 'white' }}>
+              공고
+            </Link>
             <Link to="/my-applications" style={{ color: 'white' }}>
               지원목록
+            </Link>
+            <Link to="/profile" style={{ color: 'white' }}>
+              프로필
+            </Link>
+          </>
+        )}
+
+        {/*  재직자 메뉴 */}
+        {/* {isLoggedIn && userType === 'user' && (
+          <>
+            <Link to="/attendance" style={{ color: 'white' }}>
+              출퇴근 관리
+            </Link>
+            <Link to="/work-dashboard" style={{ color: 'white' }}>
+              근무 대시보드
             </Link>
             <Link to="/paylog" style={{ color: 'white' }}>
               급여내역
@@ -74,14 +92,11 @@ const Header = () => {
             <Link to="/profile" style={{ color: 'white' }}>
               프로필
             </Link>
-            <Link to="/profile-edit" style={{ color: 'white' }}>
-              프로필수정
-            </Link>
           </>
-        )}
+        )} */}
 
-        {/* 기업회원 메뉴 */}
-        {user?.userType === 'company' && (
+        {/*  기업 메뉴 */}
+        {isLoggedIn && userType === 'company' && (
           <>
             <Link to="/jobmanage" style={{ color: 'white' }}>
               공고관리
@@ -101,9 +116,11 @@ const Header = () => {
 
       {/* 로그인/회원가입/로그아웃 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        {user ? (
+        {isLoggedIn ? (
           <>
-            <span style={{ color: 'white', fontSize: '14px' }}>{user.name}님 환영합니다.</span>
+            <span style={{ color: 'white', fontSize: '14px' }}>
+              {username}님 환영합니다.
+            </span>
             <button
               onClick={handleLogout}
               style={{
@@ -114,7 +131,8 @@ const Header = () => {
                 border: 'none',
                 cursor: 'pointer',
                 fontWeight: 600,
-              }}>
+              }}
+            >
               로그아웃
             </button>
           </>
@@ -128,7 +146,8 @@ const Header = () => {
                 borderRadius: '6px',
                 padding: '4px 10px',
                 fontWeight: 600,
-              }}>
+              }}
+            >
               로그인
             </Link>
 
@@ -140,7 +159,8 @@ const Header = () => {
                 borderRadius: '6px',
                 padding: '4px 10px',
                 fontWeight: 600,
-              }}>
+              }}
+            >
               회원가입
             </Link>
           </>

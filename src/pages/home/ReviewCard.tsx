@@ -57,7 +57,7 @@ const REVIEWS: Review[] = [
 
 export default function ReviewSection() {
   // 무한 루프용으로 2세트
-  const loop = [...REVIEWS, ...REVIEWS]
+  // const loop = [...REVIEWS, ...REVIEWS]
 
   return (
     <div className="relative w-full py-6 overflow-hidden">

@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
-
-import { loginUser } from '../api'
-
+import { useAppDispatch, useAppSelector } from '@/store'
+import { loginThunk } from '@/features/auth/authSlice'
+//api 호출 대신 thunk 사용해서 값 불러옴
 type LoginFormValue = {
   id: string
   password: string
@@ -13,29 +13,13 @@ type LoginFormValue = {
 
 const LoginForm: FC = () => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+  // (선택) auth 상태로 로딩/에러 표시하고 싶을 때
+  const { loading, error } = useAppSelector(state => state.auth)
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const type = queryParams.get('type') || 'personal'
-
-  const handleLogin = async () => {
-    const { id, password } = getValues()
-    const requestBody: LoginFormValue = {
-      id,
-      password,
-    }
-
-    console.log('로그인 요청 본문:', requestBody)
-
-    try {
-      const response = await loginUser(requestBody)
-      console.log('로그인 성공:', response.accessToken)
-      navigate('/')
-      alert('로그인에 성공했습니다!')
-    } catch (err) {
-      console.error('로그인 실패:', err)
-      alert('아이디 또는 비밀번호를 확인해주세요.')
-    }
-  }
 
   const {
     handleSubmit,
@@ -44,17 +28,44 @@ const LoginForm: FC = () => {
     getValues,
   } = useForm<LoginFormValue>({ mode: 'onChange' })
 
+  const handleLogin = async () => {
+    const { id, password } = getValues()
+    const result = await dispatch(loginThunk({ id, password }))
+
+    if (loginThunk.fulfilled.match(result)) {
+      const { token, userType, onboarded } = result.payload
+
+      console.log('[LoginForm] 로그인 성공, 리디렉션 결정:', {
+        token: token ? '있음' : '없음',
+        userType,
+        onboarded,
+      })
+
+      // 이미 온보딩 완료면 홈으로
+      if (onboarded === true) {
+        console.log('[LoginForm] 온보딩 완료 → 홈으로 이동')
+        navigate('/', { replace: true })
+        return
+      }
+
+      // 미완료면 온보딩으로
+      const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding'
+      console.log('[LoginForm] 온보딩 미완료 → 온보딩 페이지로 이동:', onboardingPath)
+      navigate(onboardingPath, { replace: true })
+    } else {
+      console.error('[LoginForm] 로그인 실패:', error)
+      alert(error ?? '로그인 실패')
+    }
+  }
+
   return (
     <div className="flex flex-col justify-center w-3/5 text-center bg-gray-50 p-14 rounded-r-3xl">
-      {/* 헤더 */}
-      <div className={`mb-10`}>
+      <div className="mb-10">
         <h1 className="mb-4 text-5xl font-semibold">로그인</h1>
         <p className="text-gray-400">계정에 로그인하여 시작하세요</p>
       </div>
 
-      {/* 폼 시작 */}
       <form className="flex flex-col" onSubmit={handleSubmit(handleLogin)}>
-        {/* 로그인 폼 */}
         <FormInput
           label="아이디"
           name="id"
@@ -71,7 +82,6 @@ const LoginForm: FC = () => {
           error={errors.id}
         />
 
-        {/* 비밀번호 */}
         <FormInput
           label="비밀번호"
           name="password"
@@ -80,22 +90,23 @@ const LoginForm: FC = () => {
           value={register}
           rules={{
             required: true,
-            minLength: {
-              value: 2,
-              message: '비밀번호는 최소 2자 이상이어야 합니다.',
-            },
+            minLength: { value: 2, message: '비밀번호는 최소 2자 이상이어야 합니다.' },
           }}
           error={errors.password}
         />
 
-        {/* 버튼 및 링크 */}
         <div className="mt-2">
           <input
             type="submit"
-            value="로그인"
-            className="w-full h-12 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+            value={loading ? '로그인 중...' : '로그인'}
+            disabled={loading}
+            className="w-full h-12 text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-60"
           />
         </div>
+
+        {/* (선택) 에러 문구 */}
+        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+
         <span className="mt-6">
           계정이 없으신가요?{' '}
           <a href={`/register?type=${type}`} className="text-blue-500 hover:underline">

@@ -1,10 +1,13 @@
-import type { FC } from 'react'
+import { useRef, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { loginThunk } from '@/features/auth/authSlice'
-//api 호출 대신 thunk 사용해서 값 불러옴 
+
+import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
+
+//api 호출 대신 thunk 사용해서 값 불러옴
 type LoginFormValue = {
   id: string
   password: string
@@ -17,6 +20,8 @@ const LoginForm: FC = () => {
   // (선택) auth 상태로 로딩/에러 표시하고 싶을 때
   const { loading, error } = useAppSelector(state => state.auth)
 
+  const toastShownRef = useRef(false)
+
   const {
     handleSubmit,
     register,
@@ -28,11 +33,21 @@ const LoginForm: FC = () => {
     const { id, password } = getValues()
     const result = await dispatch(loginThunk({ id, password }))
 
+    if (toastShownRef.current) return
+
     if (loginThunk.fulfilled.match(result)) {
       const userType = result.payload.userType
-      navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', { replace: true })
+      toastShownRef.current = true
+      showSuccessToast('로그인에 성공했습니다!')
+
+      setTimeout(() => {
+        navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', {
+          replace: true,
+        })
+      }, 2000)
     } else {
-      alert(error ?? '로그인 실패')
+      toastShownRef.current = true
+      showErrorToast('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }
   }
 

@@ -33,9 +33,17 @@ export const loginThunk = createAsyncThunk(
       const token = data?.accessToken
       if (!token) return rejectWithValue('accessToken이 없습니다.')
 
+      console.log('[AuthSlice] 로그인 성공, 토큰 받음')
+      
       const userType = getUserTypeFromToken(token)
       const username = getUsernameFromToken(token)
       const onboarded = getOnBoardedFromToken(token) 
+
+      console.log('[AuthSlice] 추출된 정보:', {
+        userType,
+        username,
+        onboarded,
+      })
 
       localStorage.setItem('jwtToken', token)
 
@@ -46,8 +54,13 @@ export const loginThunk = createAsyncThunk(
       else localStorage.removeItem('username')
 
       //  onboarded 저장
-      if (onboarded !== null) localStorage.setItem('onboarded', String(onboarded))
-      else localStorage.removeItem('onboarded')
+      if (onboarded !== null) {
+        localStorage.setItem('onboarded', String(onboarded))
+        console.log('[AuthSlice] 온보딩 상태 저장:', onboarded)
+      } else {
+        localStorage.removeItem('onboarded')
+        console.warn('[AuthSlice] 온보딩 상태를 추출할 수 없음')
+      }
 
       return { token, userType, username, onboarded } 
     } catch (e: any) {

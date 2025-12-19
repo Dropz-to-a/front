@@ -42,7 +42,7 @@ export type RouteItem = {
 export const publicRoutes: RouteItem[] = [
   // 홈페이지
   { path: '/', element: <Home /> },
-  
+
   // 시작페이지
   { path: '/start', element: <Start /> },
 
@@ -91,7 +91,7 @@ export const privateRoutes: RouteItem[] = [
 
   // 재직자 급여 로그
   { path: '/paylog', element: <PayLogPage /> },
-  
+
   //------------------------------------- 재직자 ---------------------------------------------
 
   // 출퇴근 관리
@@ -113,5 +113,4 @@ export const privateRoutes: RouteItem[] = [
   { path: '/contracts', element: <Contracts /> },
   // 재직자 급여 정산
   { path: '/payroll', element: <PayrollPage /> },
-
 ]

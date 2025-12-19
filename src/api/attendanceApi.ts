@@ -18,6 +18,35 @@ export const api = axios.create({
     withCredentials: true,
 });
 
+// 요청 인터셉터: JWT 토큰을 헤더에 추가
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// 응답 인터셉터: 401/403 에러 처리
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            console.error('인증 실패! 로그인 페이지로 리디렉션...');
+            localStorage.removeItem('jwtToken');
+            window.location.href = '/login';
+        } else if (error.response?.status === 403) {
+            console.error('권한 없음: 회사 계정으로 로그인해야 합니다.');
+        }
+        return Promise.reject(error);
+    }
+);
+
 const parseAxiosError = (e: unknown) => {
     const err = e as AxiosError<ApiErrorRes>;
     return {

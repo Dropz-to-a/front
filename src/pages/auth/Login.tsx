@@ -1,10 +1,21 @@
+import type { FC } from 'react'
 
-const Login = () => {
+import AuthBackground from '@/components/AuthBackground'
+import LoginForm from '@/components/LoginForm'
+import AuthIntro from '@/components/AuthIntro'
+import JobitLogo from '/logo_white.svg'
+
+const Login: FC = () => {
   return (
-    <div>
-      Login Component
-    </div>
-  );
-};
+    <AuthBackground>
+      <AuthIntro
+        img={JobitLogo}
+        title={'만나서 반가워요!'}
+        description={'당신이 누군지 저희에게 알려주세요!'}
+      />
+      <LoginForm />
+    </AuthBackground>
+  )
+}
 
-export default Login;
+export default Login

@@ -1,230 +1,231 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Header from "../../../components/Header";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import Header from '@/components/Header'
+import { jobPostingApi, type JobPosting, type UpdateJobPostingRequest } from '@/api/jobPostingApi'
 
 export default function JobEdit() {
-    const navigate = useNavigate();
-    const location = useLocation() as { state?: { job?: Job } };
+  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const [loading, setLoading] = useState(false)
+  const [loadingData, setLoadingData] = useState(true)
+  const [form, setForm] = useState<UpdateJobPostingRequest>({
+    title: '',
+    description: '',
+    employmentType: 'FULL_TIME',
+    locationText: '',
+    salaryMin: 0,
+    salaryMax: 0,
+  })
+  const [job, setJob] = useState<JobPosting | null>(null)
 
-    const [form, setForm] = useState<Partial<Job>>(location.state?.job ?? {});
-    const [selectedDate, setSelectedDate] = useState<string>("");
 
-    useEffect(() => {
-        if (location.state?.job) {
-            const existingJob = location.state.job;
-            setForm(existingJob);
+  useEffect(() => {
+    if (!id) {
+      alert('잘못된 접근입니다.')
+      navigate('/jobmanage')
+      return
+    }
 
-            // D-day → 날짜 복원
-            const today = new Date();
-            const targetDate = new Date(today.getTime() + (existingJob.dday ?? 0) * 86400000);
-            setSelectedDate(targetDate.toISOString().split("T")[0]);
-        } else {
-            alert("잘못된 접근입니다. 공고 관리 페이지로 이동합니다.");
-            navigate("/jobmanage");
-        }
-    }, [location.state?.job, navigate]);
+    loadJob()
+  }, [id, navigate])
 
-    //  D-day 재계산
-    const calculateDday = (targetDate: string) => {
-        const today = new Date();
-        const target = new Date(targetDate);
-        const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        return diff >= 0 ? diff : 0;
-    };
+  const loadJob = async () => {
+    try {
+      setLoadingData(true)
+      const jobs = await jobPostingApi.getList()
+      const foundJob = jobs.find(j => j.postingId === Number(id))
+      
+      if (!foundJob) {
+        alert('공고를 찾을 수 없습니다.')
+        navigate('/jobmanage')
+        return
+      }
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
-    };
+      if (foundJob.status === 'CLOSED') {
+        alert('마감된 공고는 수정할 수 없습니다.')
+        navigate('/jobmanage')
+        return
+      }
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, files } = e.target;
-        if (!files?.length) return;
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setForm((prev) => ({ ...prev, [name]: reader.result as string }));
-        };
-        reader.readAsDataURL(files[0]);
-    };
+      setJob(foundJob)
+      setForm({
+        title: foundJob.title,
+        description: foundJob.description,
+        employmentType: 'FULL_TIME', // API 응답에 없으면 기본값
+        locationText: foundJob.locationText,
+        salaryMin: foundJob.salaryMin,
+        salaryMax: foundJob.salaryMax,
+      })
+    } catch (e: any) {
+      alert(e?.message ?? '공고 정보를 불러오는데 실패했습니다.')
+      navigate('/jobmanage')
+    } finally {
+      setLoadingData(false)
+    }
+  }
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const date = e.target.value;
-        setSelectedDate(date);
-        const ddayValue = calculateDday(date);
-        setForm((prev) => ({ ...prev, dday: ddayValue }));
-    };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target
+    if (name === 'salaryMin' || name === 'salaryMax') {
+      setForm(prev => ({ ...prev, [name]: Number(value) || 0 }))
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }))
+    }
+  }
 
-    //  수정 저장
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const stored = JSON.parse(localStorage.getItem("customJobs") || "[]");
-        const updatedJobs = stored.map((job: Job) =>
-            job.id === form.id ? { ...job, ...form } : job
-        );
-        localStorage.setItem("customJobs", JSON.stringify(updatedJobs));
-        alert("공고가 수정되었습니다 ✅");
-        navigate("/jobmanage");
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
+    if (!id || !job) return
+
+    if (!form.title || !form.description) {
+      alert('제목과 설명은 필수 입력 항목입니다.')
+      return
+    }
+
+    try {
+      setLoading(true)
+      await jobPostingApi.update(Number(id), form)
+      alert('공고가 수정되었습니다 ✅')
+      navigate('/jobmanage')
+    } catch (e: any) {
+      alert(e?.message ?? '공고 수정에 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loadingData) {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
-            <Header />
-            <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-10">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">공고 수정</h1>
-                <p className="text-gray-500 mb-8">기존 공고 정보를 수정할 수 있습니다.</p>
+      <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        <Header />
+        <main className="flex-1 w-full max-w-3xl px-4 py-10 mx-auto">
+          <div className="p-10 text-center text-gray-500">공고 정보를 불러오는 중...</div>
+        </main>
+      </div>
+    )
+  }
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* 회사명 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">회사명 *</label>
-                        <input
-                            type="text"
-                            name="company"
-                            value={form.company || ""}
-                            onChange={handleChange}
-                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                            readOnly
-                        />
-                    </div>
+  if (!job) {
+    return null
+  }
 
-                    {/* 제목 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">공고 제목 *</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={form.title || ""}
-                            onChange={handleChange}
-                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                        />
-                    </div>
+  return (
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <Header />
+      <main className="flex-1 w-full max-w-3xl px-4 py-10 mx-auto">
+        <h1 className="mb-2 text-2xl font-bold text-gray-900">공고 수정</h1>
+        <p className="mb-8 text-gray-500">기존 공고 정보를 수정할 수 있습니다.</p>
 
-                    {/* 설명 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">공고 설명 *</label>
-                        <textarea
-                            name="description"
-                            value={form.description || ""}
-                            onChange={handleChange}
-                            rows={5}
-                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* 공고 제목 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">공고 제목 *</label>
+            <input
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500"
+              placeholder="예: 프론트엔드 개발자 채용"
+              required
+            />
+          </div>
 
-                    {/* 분야 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">분야</label>
-                        <select
-                            name="category"
-                            value={form.category || "개발"}
-                            onChange={handleChange}
-                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                        >
-                            <option value="개발">개발</option>
-                            <option value="디자인">디자인</option>
-                            <option value="마케팅">마케팅</option>
-                            <option value="운영">운영</option>
-                            <option value="영업">영업</option>
-                            <option value="기타">기타</option>
-                        </select>
-                    </div>
+          {/* 설명 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">공고 설명 *</label>
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              rows={5}
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500"
+              placeholder="담당 업무, 자격 요건 등을 자세히 작성해주세요."
+              required
+            />
+          </div>
 
-                    {/* 지역 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">근무 지역</label>
-                        <input
-                            type="text"
-                            name="location"
-                            value={form.location || ""}
-                            onChange={handleChange}
-                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                        />
-                    </div>
+          {/* 고용형태 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">고용형태 *</label>
+            <select
+              name="employmentType"
+              value={form.employmentType}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500">
+              <option value="FULL_TIME">정규직</option>
+              <option value="PART_TIME">파트타임</option>
+              <option value="CONTRACT">계약직</option>
+              <option value="INTERN">인턴</option>
+            </select>
+          </div>
 
-                    {/* 급여 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">급여/조건 참고 문구</label>
-                        <input
-                            type="text"
-                            name="salaryNote"
-                            value={form.salaryNote || ""}
-                            onChange={handleChange}
-                            className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                        />
-                    </div>
+          {/* 지역 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">근무 지역</label>
+            <input
+              type="text"
+              name="locationText"
+              value={form.locationText}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500"
+              placeholder="예: 서울특별시 강남구"
+            />
+          </div>
 
-                    {/* 마감일 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">마감일 선택</label>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                            className="mt-1 w-60 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500"
-                        />
-                        {selectedDate && (
-                            <p className="mt-1 text-sm text-gray-500">
-                                D-{form.dday} ({selectedDate})
-                            </p>
-                        )}
-                    </div>
+          {/* 급여 */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">최소 급여 (만원)</label>
+              <input
+                type="number"
+                name="salaryMin"
+                value={form.salaryMin || ''}
+                onChange={handleChange}
+                min="0"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500"
+                placeholder="예: 3000"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">최대 급여 (만원)</label>
+              <input
+                type="number"
+                name="salaryMax"
+                value={form.salaryMax || ''}
+                onChange={handleChange}
+                min="0"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500"
+                placeholder="예: 5000"
+              />
+            </div>
+          </div>
 
-                    {/* 이미지/로고 업로드 */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">공고 이미지</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                name="imageUrl"
-                                onChange={handleFileChange}
-                                className="mt-1 block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
-                            />
-                            {form.imageUrl && (
-                                <img
-                                    src={form.imageUrl}
-                                    alt="공고 미리보기"
-                                    className="mt-3 w-full h-40 object-cover rounded-lg border border-gray-200"
-                                />
-                            )}
-                        </div>
+          {/* 버튼 */}
+          <div className="flex justify-end gap-3 pt-6">
+            <button
+              type="button"
+              onClick={() => navigate('/jobmanage')}
+              className="px-6 py-2 font-semibold text-gray-700 transition bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              취소
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 font-semibold text-white transition bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+              {loading ? '수정 중...' : '수정 완료'}
+            </button>
+          </div>
+        </form>
+      </main>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">회사 로고</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                name="logoUrl"
-                                onChange={handleFileChange}
-                                className="mt-1 block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"
-                            />
-                            {form.logoUrl && (
-                                <img
-                                    src={form.logoUrl}
-                                    alt="로고 미리보기"
-                                    className="mt-3 w-24 h-24 object-contain rounded-lg border border-gray-200"
-                                />
-                            )}
-                        </div>
-                    </div>
-
-                    {/* 버튼 */}
-                    <div className="pt-6 flex justify-end">
-                        <button
-                            type="submit"
-                            className="rounded-lg bg-indigo-600 text-white px-6 py-2 font-semibold hover:bg-indigo-700 transition"
-                        >
-                            수정 완료
-                        </button>
-                    </div>
-                </form>
-            </main>
-
-            <footer className="text-center text-gray-400 py-6 text-sm">
-                © 2025 JOBIT — 기업용 공고 수정 페이지
-            </footer>
-        </div>
-    );
+      <footer className="py-6 text-sm text-center text-gray-400">
+        © 2025 JOBIT — 기업용 공고 수정 페이지
+      </footer>
+    </div>
+  )
 }

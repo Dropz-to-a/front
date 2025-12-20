@@ -1,206 +1,202 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import Header from "../../../components/Header";
+import { useState } from 'react'
+import Header from '@/components/Header'
+import { ChevronRight, ChevronDown, User, FileText, CheckCircle, FolderTree } from 'lucide-react'
 
-/** ===== 유틸 컴포넌트 ===== */
-const Badge = ({ children }: { children: React.ReactNode }) => (
-    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium text-gray-700 bg-white border-gray-200">
-        {children}
-    </span>
-);
+type Employee = {
+  id: string
+  name: string
+  position: string
+  status: '요청 중' | '진행 중' | '완료'
+  startDate: string
+  endDate?: string
+  fileUrl?: string
+}
 
-const Dday = ({ d }: { d?: number }) => {
-    if (d === undefined) return null;
-    if (d < 0) return <span className="text-xs font-semibold text-gray-400">마감</span>;
-    if (d === 0) return <span className="text-xs font-semibold text-rose-600">D-DAY</span>;
-    return <span className="text-xs font-semibold text-indigo-600">D-{d}</span>;
-};
+type Department = {
+  id: string
+  name: string
+  employees: Employee[]
+}
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <section className="rounded-2xl border border-gray-200 bg-white p-6">
-        <h3 className="mb-3 text-lg font-semibold text-gray-900">{title}</h3>
-        <div className="prose prose-sm max-w-none text-gray-700">{children}</div>
-    </section>
-);
+export default function DepartmentTreePage() {
+  const [departments] = useState<Department[]>([
+    {
+      id: 'dev',
+      name: '개발팀',
+      employees: [
+        {
+          id: '1',
+          name: '박지우',
+          position: '프론트엔드 개발자',
+          status: '진행 중',
+          startDate: '2025-10-20',
+          endDate: '2026-10-20',
+          fileUrl: '/contracts/sample1.pdf',
+        },
+        {
+          id: '2',
+          name: '이민재',
+          position: '백엔드 엔지니어',
+          status: '요청 중',
+          startDate: '2025-10-25',
+        },
+      ],
+    },
+    {
+      id: 'design',
+      name: '디자인팀',
+      employees: [
+        {
+          id: '3',
+          name: '김가은',
+          position: 'UI 디자이너',
+          status: '완료',
+          startDate: '2024-09-01',
+          endDate: '2025-09-01',
+          fileUrl: '/contracts/sample2.pdf',
+        },
+      ],
+    },
+    { id: 'ops', name: '운영팀', employees: [] },
+  ])
 
-/** ===== 페이지 ===== */
-export default function DetailJobManage() {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
-    const location = useLocation() as { state?: { job?: Job } };
+  const [expanded, setExpanded] = useState<string[]>(['dev'])
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
 
-    const [job, setJob] = useState<Job | null>(location.state?.job ?? null);
+  const toggleExpand = (id: string) => {
+    setExpanded(prev => (prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id]))
+  }
 
-    useEffect(() => {
-        if (!location.state?.job) {
-            // 실제 서비스라면 fetch(`/api/company/jobs/${id}`)로 교체
-            setJob({
-                id: id || "1",
-                title: "프론트엔드 개발자 채용",
-                company: "드롭즈 주식회사",
-                logoUrl: "/logo.svg",
-                imageUrl: "https://source.unsplash.com/featured/?office",
-                location: "서울 강남구",
-                salary: "연 4,000~6,000만 원",
-                description:
-                    "React 및 TypeScript 기반의 프론트엔드 서비스 개발. 유지보수 및 퍼포먼스 개선 담당.",
-                category: "개발",
-                status: "모집 중",
-                applicants: 5,
-                date: "2025-10-15",
-            });
-        }
-    }, [id, location.state?.job]);
+  return (
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <Header />
 
-    const handleStatusChange = () => {
-        if (!job) return;
-        setJob({
-            ...job,
-            status: job.status === "모집 중" ? "마감됨" : "모집 중",
-        });
-    };
+      <main className="flex flex-col flex-1 w-full gap-6 px-6 py-10 mx-auto md:flex-row max-w-7xl">
+        {/* ===== 좌측 트리 ===== */}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 w-full md:w-[320px] flex-shrink-0 overflow-y-auto max-h-[80vh]">
+          <div className="flex items-center gap-2 mb-4">
+            <FolderTree className="w-6 h-6 text-indigo-600" />
+            <h2 className="text-2xl font-bold text-gray-800">부서별 재직자 관리</h2>
+          </div>
 
-    const handleDelete = () => {
-        if (confirm("정말 이 공고를 삭제하시겠습니까?")) {
-            alert("공고가 삭제되었습니다.");
-            navigate("/jobmanage");
-        }
-    };
+          <div className="space-y-2">
+            {departments.map(dept => (
+              <div key={dept.id} className="relative group">
+                <button
+                  onClick={() => toggleExpand(dept.id)}
+                  className="flex items-center w-full gap-2 px-3 py-2 font-semibold text-left text-gray-800 transition-all duration-150 rounded-md hover:bg-indigo-50">
+                  {expanded.includes(dept.id) ? (
+                    <ChevronDown className="w-5 h-5 text-indigo-500" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-indigo-500" />
+                  )}
+                  {dept.name}
+                  <span className="ml-auto text-sm text-gray-500">{dept.employees.length}명</span>
+                </button>
 
-    if (!job) return <div className="text-center py-40 text-gray-500">로딩 중...</div>;
-
-    return (
-        <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-            <Header />
-
-            {/* 헤더 영역 */}
-            <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-6">
-                <nav className="text-sm text-gray-500">
-                    <Link to="/jobmanage" className="hover:underline">
-                        공고 관리
-                    </Link>
-                    <span className="mx-2">/</span>
-                    <span className="text-gray-700">{job.title}</span>
-                </nav>
-
-                <div className="mt-4 flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-3">
-                            {job.logoUrl && (
-                                <img
-                                    src={job.logoUrl}
-                                    alt={job.company}
-                                    className="h-8 w-auto object-contain"
-                                />
-                            )}
-                            <p className="truncate text-sm text-gray-500">{job.company}</p>
+                {expanded.includes(dept.id) && (
+                  <div className="pl-4 mt-2 space-y-1 border-l border-gray-200 ml-7">
+                    {dept.employees.length > 0 ? (
+                      dept.employees.map(emp => (
+                        <div
+                          key={emp.id}
+                          onClick={() => setSelectedEmployee(emp)}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-md cursor-pointer text-sm transition-all ${
+                            selectedEmployee?.id === emp.id
+                              ? 'bg-indigo-100 text-indigo-700 shadow-sm'
+                              : 'hover:bg-gray-100 text-gray-700'
+                          }`}>
+                          <User className="w-4 h-4" />
+                          <span>
+                            {emp.name} <span className="text-gray-500">— {emp.position}</span>
+                          </span>
                         </div>
-                        <h1 className="mt-2 text-2xl font-bold text-gray-900">{job.title}</h1>
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                            <Badge>💰 {job.salary}</Badge>
-                            <Badge>📍 {job.location}</Badge>
-                            <Dday d={3} />
-                        </div>
-                    </div>
-
-                    {/* 상단 버튼 */}
-                    <div className="flex shrink-0 items-center gap-2">
-                        <button
-                            onClick={handleStatusChange}
-                            className="rounded-lg border border-yellow-300 bg-yellow-100 px-3 py-2 text-sm font-semibold text-yellow-700 hover:bg-yellow-200"
-                        >
-                            상태 변경 ({job.status})
-                        </button>
-                        <Link
-                            to="/jobedit"
-                            state={{ job }} 
-                            className="rounded-lg border border-blue-300 bg-blue-100 px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-200"
-                        >
-                            수정
-                        </Link>
-                        <button
-                            onClick={handleDelete}
-                            className="rounded-lg border border-red-300 bg-red-100 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-200"
-                        >
-                            삭제
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* 본문 */}
-            <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 px-4 pb-12 lg:grid-cols-3">
-                {/* 왼쪽 상세 */}
-                <div className="lg:col-span-2 space-y-6">
-                    {job.imageUrl && (
-                        <div className="overflow-hidden rounded-2xl border border-gray-200">
-                            <img src={job.imageUrl} alt={job.title} className="w-full object-cover" />
-                        </div>
+                      ))
+                    ) : (
+                      <p className="ml-2 text-sm text-gray-400">인원이 없습니다.</p>
                     )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
-                    <Section title="포지션 소개">
-                        <p className="whitespace-pre-wrap">{job.description}</p>
-                    </Section>
+        {/* ===== 우측 상세 ===== */}
+        <div className="flex-1 p-8 bg-white border border-gray-200 shadow-md rounded-2xl">
+          {selectedEmployee ? (
+            <>
+              <div className="flex items-center justify-between pb-3 mb-4 border-b">
+                <h3 className="flex items-center gap-2 text-xl font-bold text-gray-800">
+                  <User className="w-5 h-5 text-indigo-600" />
+                  {selectedEmployee.name}
+                </h3>
+                <StatusBadge status={selectedEmployee.status} />
+              </div>
 
-                    {/* ✅ 지원자 관리로 이동 버튼 */}
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-gray-700 font-medium mb-1">
-                                지원자 관리 페이지에서 지원 현황을 확인할 수 있습니다.
-                            </p>
-                            <p className="text-sm text-gray-500">
-                                현재 지원자 수: <span className="font-semibold">{job.applicants}</span>명
-                            </p>
-                        </div>
-                        <Link
-                            to={`/jobs/${job.id}/completed/admin`}
-                            className="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-indigo-700 transition"
-                        >
-                            지원자 관리로 이동 →
-                        </Link>
-                    </div>
-                </div>
+              <div className="space-y-3 text-sm text-gray-700">
+                <p>
+                  <b>직책:</b> {selectedEmployee.position}
+                </p>
+                <p>
+                  <b>계약 기간:</b> {selectedEmployee.startDate}{' '}
+                  {selectedEmployee.endDate && `~ ${selectedEmployee.endDate}`}
+                </p>
+              </div>
 
-                {/* 우측 요약 */}
-                <aside className="lg:sticky lg:top-6 h-max space-y-4">
-                    <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                        <div className="space-y-2 text-sm text-gray-600">
-                            <p>
-                                <span className="mr-2 text-gray-400">상태</span>
-                                <span
-                                    className={`font-semibold ${job.status === "모집 중" ? "text-green-600" : "text-gray-500"
-                                        }`}
-                                >
-                                    {job.status}
-                                </span>
-                            </p>
-                            <p>
-                                <span className="mr-2 text-gray-400">등록일</span>
-                                {job.date}
-                            </p>
-                            <p>
-                                <span className="mr-2 text-gray-400">분야</span>
-                                {job.category}
-                            </p>
-                        </div>
+              {selectedEmployee.fileUrl ? (
+                <a
+                  href={selectedEmployee.fileUrl}
+                  download
+                  className="inline-flex items-center gap-2 px-5 py-2 mt-6 text-sm font-semibold text-indigo-700 transition-all bg-indigo-100 rounded-md hover:bg-indigo-200">
+                  <FileText className="w-4 h-4" />
+                  계약서 다운로드
+                </a>
+              ) : (
+                <p className="mt-3 text-xs text-gray-400">계약서 파일 없음</p>
+              )}
 
-                        <div className="mt-5 flex flex-col gap-2">
-                            <Link
-                                to="/contracts"
-                                className="w-full text-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-                            >
-                                계약 관리로 이동
-                            </Link>
-                            <button
-                                onClick={() => navigate("/jobmanage")}
-                                className="w-full text-center rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100"
-                            >
-                                목록으로 돌아가기
-                            </button>
-                        </div>
-                    </div>
-                </aside>
+              {selectedEmployee.status === '요청 중' && (
+                <button
+                  onClick={() => alert(`${selectedEmployee.name}님에게 계약 요청 전송됨`)}
+                  className="px-5 py-2 mt-4 text-sm text-yellow-700 bg-yellow-100 rounded-md hover:bg-yellow-200">
+                  계약 요청
+                </button>
+              )}
+
+              {selectedEmployee.status === '진행 중' && (
+                <button
+                  onClick={() => alert(`${selectedEmployee.name}님 계약 완료 처리됨`)}
+                  className="px-5 py-2 mt-4 text-sm text-green-700 bg-green-100 rounded-md hover:bg-green-200">
+                  완료 처리
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+              <CheckCircle className="w-10 h-10 mb-2 text-gray-300" />
+              <p>직원을 선택하면 상세 계약 정보를 볼 수 있습니다.</p>
             </div>
-        </main>
-    );
+          )}
+        </div>
+      </main>
+    </div>
+  )
+}
+
+/** ===== 상태 배지 ===== */
+const StatusBadge = ({ status }: { status: Employee['status'] }) => {
+  const color =
+    status === '완료'
+      ? 'bg-green-100 text-green-700'
+      : status === '진행 중'
+        ? 'bg-blue-100 text-blue-700'
+        : 'bg-yellow-100 text-yellow-700'
+
+  return (
+    <span
+      className={`px-2 py-1 rounded-md text-xs font-semibold border ${color} border-opacity-50`}>
+      {status}
+    </span>
+  )
 }

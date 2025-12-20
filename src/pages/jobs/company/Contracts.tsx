@@ -19,66 +19,51 @@ export default function Contracts() {
   ============================ */
   const [departments, setDepartments] = useState<Department[]>([
     {
-      id: "dev",
-      name: "개발팀",
+      id: 'dev',
+      name: '개발팀',
       employees: [
         {
-          id: "1",
-          name: "박지우",
-          position: "프론트엔드 개발자",
-          status: "진행 중",
-          startDate: "2025-10-20",
-          endDate: "2026-10-20",
-          fileUrl: "/contracts/sample1.pdf",
+          id: '1',
+          name: '박지우',
+          position: '프론트엔드 개발자',
+          status: '진행 중',
+          startDate: '2025-10-20',
+          endDate: '2026-10-20',
+          fileUrl: '/contracts/sample1.pdf',
         },
         {
-          id: "2",
-          name: "이민재",
-          position: "백엔드 엔지니어",
-          status: "요청 중",
-          startDate: "2025-10-25",
+          id: '2',
+          name: '이민재',
+          position: '백엔드 엔지니어',
+          status: '요청 중',
+          startDate: '2025-10-25',
         },
       ],
     },
     {
-      id: "design",
-      name: "디자인팀",
+      id: 'design',
+      name: '디자인팀',
       employees: [
         {
-          id: "3",
-          name: "김가은",
-          position: "UI 디자이너",
-          status: "완료",
-          startDate: "2024-09-01",
-          endDate: "2025-09-01",
-          fileUrl: "/contracts/sample2.pdf",
+          id: '3',
+          name: '김가은',
+          position: 'UI 디자이너',
+          status: '완료',
+          startDate: '2024-09-01',
+          endDate: '2025-09-01',
+          fileUrl: '/contracts/sample2.pdf',
         },
       ],
     },
-    { id: "ops", name: "운영팀", employees: [] },
-  ]);
+    { id: 'ops', name: '운영팀', employees: [] },
+  ])
 
-  const [expanded, setExpanded] = useState<string[]>(["dev"]);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [expanded, setExpanded] = useState<string[]>(['dev'])
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
 
-  /* ============================
-      DragOverlay 상태
-  ============================ */
-  const [activeEmployee, setActiveEmployee] = useState<Employee | null>(null);
-  const [activeDeptId, setActiveDeptId] = useState<string | null>(null);
-
-  const onDragStart = (event: DragStartEvent) => {
-    const empId = String(event.active.id);
-    const deptId = event.active.data.current?.deptId;
-    if (!deptId) return;
-
-    const found =
-      departments.flatMap((d) => d.employees).find((e) => e.id === empId) ||
-      null;
-
-    setActiveEmployee(found);
-    setActiveDeptId(deptId);
-  };
+  const toggleExpand = (id: string) => {
+    setExpanded(prev => (prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id]))
+  }
 
   const onDragEnd = (event: DragEndEvent) => {
     setActiveEmployee(null);

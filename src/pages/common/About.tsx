@@ -1,5 +1,5 @@
-import Footer from '../../components/Footer'
-import Header from '../../components/Header'
+import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 
 const About = () => {
   return (
@@ -15,8 +15,7 @@ const About = () => {
             <p className="max-w-2xl mx-auto mt-4 text-lg text-gray-600">
               공정한 계약과 안전한 협업을 위한 일자리 매칭 플랫폼입니다.
               <br />
-              프리랜서와 고용주 모두가 신뢰할 수 있는 환경에서 성장할 수 있도록
-              지원합니다.
+              프리랜서와 고용주 모두가 신뢰할 수 있는 환경에서 성장할 수 있도록 지원합니다.
             </p>
           </div>
         </section>
@@ -210,11 +209,7 @@ function FeatureBlock({
       className={`flex flex-col items-center gap-10 md:flex-row ${
         reverse ? 'md:flex-row-reverse' : ''
       }`}>
-      <img
-        src={img}
-        alt={title}
-        className="object-cover w-full shadow-md md:w-1/2 rounded-2xl"
-      />
+      <img src={img} alt={title} className="object-cover w-full shadow-md md:w-1/2 rounded-2xl" />
       <div className="text-left md:w-1/2">
         <h3 className="text-2xl font-semibold text-indigo-600">{title}</h3>
         <p className="mt-4 leading-relaxed text-gray-700">{desc}</p>

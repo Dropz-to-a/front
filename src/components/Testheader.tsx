@@ -1,3 +1,5 @@
+
+
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -14,6 +16,9 @@ const Header = () => {
 
     const [user, setUser] = useState<CurrentUser | null>(null);
     const [openTestPanel, setOpenTestPanel] = useState(false); // ⭐ 테스트 패널 열림 상태
+
+
+    //배포 테스트4
 
     // 로그인 정보 불러오기
     useEffect(() => {
@@ -115,8 +120,8 @@ const Header = () => {
                 {/* 개인회원 재직자 모드 */}
                 {user?.userType === "personal" && user.mode === "employee" && (
                     <>
-                        <Link to="/work-dashboard" style={{ color: "white" }}>근무 대시보드</Link>
                         <Link to="/paylog" style={{ color: "white" }}>급여조회</Link>
+                        <Link to="/work-dashboard" style={{ color: "white" }}>근무 관리</Link>
                         <Link to="/attendance" style={{ color: "white" }}>출퇴근 기록</Link>
                         <Link to="/profile" style={{ color: "white" }}>내 정보</Link>
                     </>
@@ -137,23 +142,6 @@ const Header = () => {
 
             {/* 우측 영역 (로그인 + 테스트 패널) */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                {/* 모드 전환 버튼 */}
-                {user?.userType === "personal" && (
-                    <button
-                        onClick={toggleMode}
-                        style={{
-                            backgroundColor: "#FFD43B",
-                            color: "#333",
-                            borderRadius: "6px",
-                            padding: "4px 10px",
-                            border: "none",
-                            cursor: "pointer",
-                            fontWeight: 600,
-                        }}
-                    >
-                        {user.mode === "job-seeker" ? "재직자 모드" : "구직자 모드"}
-                    </button>
-                )}
 
                 {/* 로그인 / 로그아웃 */}
                 {user ? (

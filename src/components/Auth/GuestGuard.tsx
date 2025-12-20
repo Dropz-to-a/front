@@ -2,6 +2,8 @@ import React, { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 
+import { showErrorToast } from '@/components/Toast/toast'
+
 interface GuestGuardProps {
   children: React.ReactNode
 }
@@ -24,6 +26,7 @@ const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
     // 1️⃣ 온보딩 완료 → 홈
     if (onboarded === true) {
       if (location.pathname !== '/') {
+        showErrorToast('이미 온보딩이 완료된 상태입니다.')
         navigate('/', { replace: true })
       }
       return

@@ -45,9 +45,40 @@ export const OnBoardCompany = async (data: CompanyOnBoardData) => {
   return response.data
 }
 
-export type BusinessExistsRequest = {
-  businessNumber: string
-}
+// // 기업 정보 조회
+// export const getCompanyInfo = async () => {
+//   const response = await api.get('/api/company/info', {
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   })
+//   return response.data
+// }
+
+// // 기업 정보 수정
+// export const updateCompanyInfo = async (data: any) => {
+//   const response = await api.patch('/api/company/info', data, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   })
+//   return response.data
+// }
+
+// // 공개 기업 정보 조회 (사용자용)
+// export const getPublicCompanyInfo = async (companyId?: number) => {
+//   const url = companyId ? `/api/company/${companyId}/info` : '/api/company/info/public'
+//   const response = await api.get(url, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   })
+//   return response.data
+// }
+
+// export type BusinessExistsRequest = {
+//   businessNumber: string
+// }
 
 // Apick API 실제 응답 형식
 type ApickApiResponse = {

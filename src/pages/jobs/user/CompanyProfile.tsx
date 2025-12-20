@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Header from '@/components/Header'
 import { getPublicCompanyInfo } from '@/api/auth'
 import type { CompanyInfo } from '@/types/company'
 import {
-  Building2,
+  /* Building2, */
   MapPin,
   Globe,
   Users,
@@ -58,11 +59,10 @@ export default function CompanyProfile() {
         <Header />
         <main className="flex-1 w-full max-w-5xl px-4 py-10 mx-auto">
           <div className="p-10 text-center">
-            <p className="text-red-600 mb-4">{error || '기업 정보를 찾을 수 없습니다.'}</p>
+            <p className="mb-4 text-red-600">{error || '기업 정보를 찾을 수 없습니다.'}</p>
             <button
               onClick={() => navigate(-1)}
-              className="px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
-            >
+              className="px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
               이전 페이지로
             </button>
           </div>
@@ -78,15 +78,14 @@ export default function CompanyProfile() {
         {/* 뒤로가기 버튼 */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 mb-6 text-gray-600 hover:text-gray-900 transition"
-        >
+          className="flex items-center gap-2 mb-6 text-gray-600 transition hover:text-gray-900">
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm font-medium">이전 페이지로</span>
         </button>
 
         {/* 헤더 섹션 */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-6">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+        <div className="p-8 mb-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
+          <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center justify-center w-16 h-16 text-2xl font-bold text-white rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600">
@@ -129,8 +128,7 @@ export default function CompanyProfile() {
                       href={company.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-indigo-600 hover:underline"
-                    >
+                      className="text-sm text-indigo-600 hover:underline">
                       {company.website}
                     </a>
                   </div>
@@ -142,12 +140,14 @@ export default function CompanyProfile() {
 
         {/* 회사 소개 */}
         {company.description && (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-6">
+          <div className="p-6 mb-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
             <div className="flex items-center gap-2 mb-4">
               <FileText className="w-5 h-5 text-indigo-600" />
               <h2 className="text-xl font-semibold text-gray-900">회사 소개</h2>
             </div>
-            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.description}</p>
+            <p className="leading-relaxed text-gray-700 whitespace-pre-wrap">
+              {company.description}
+            </p>
           </div>
         )}
 
@@ -155,38 +155,43 @@ export default function CompanyProfile() {
         {(company.values || company.mission) && (
           <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
             {company.values && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-5 h-5 text-indigo-600" />
                   <h2 className="text-xl font-semibold text-gray-900">기업가치</h2>
                 </div>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.values}</p>
+                <p className="leading-relaxed text-gray-700 whitespace-pre-wrap">
+                  {company.values}
+                </p>
               </div>
             )}
 
             {company.mission && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+              <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
                 <div className="flex items-center gap-2 mb-4">
                   <Target className="w-5 h-5 text-indigo-600" />
                   <h2 className="text-xl font-semibold text-gray-900">목표/미션</h2>
                 </div>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.mission}</p>
+                <p className="leading-relaxed text-gray-700 whitespace-pre-wrap">
+                  {company.mission}
+                </p>
               </div>
             )}
           </div>
         )}
 
         {/* 채용 공고 링크 */}
-        <div className="bg-indigo-50 rounded-2xl border border-indigo-200 p-6">
+        <div className="p-6 border border-indigo-200 bg-indigo-50 rounded-2xl">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-indigo-900 mb-1">이 회사의 채용 공고 보기</h3>
+              <h3 className="mb-1 text-lg font-semibold text-indigo-900">
+                이 회사의 채용 공고 보기
+              </h3>
               <p className="text-sm text-indigo-700">현재 모집 중인 채용 공고를 확인해보세요</p>
             </div>
             <Link
               to="/jobs"
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-            >
+              className="flex items-center gap-2 px-4 py-2 text-white transition bg-indigo-600 rounded-lg hover:bg-indigo-700">
               <Briefcase className="w-4 h-4" />
               채용 공고 보기
             </Link>
@@ -196,4 +201,3 @@ export default function CompanyProfile() {
     </div>
   )
 }
-

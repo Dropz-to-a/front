@@ -1,39 +1,23 @@
 import type { FC } from 'react'
-import { useLocation } from 'react-router-dom'
+// import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { loginThunk } from '@/features/auth/authSlice'
 // import { getOnBoardedFromToken } from '@/utils/jwt'
-//api 호출 대신 thunk 사용해서 값 불러옴 
+//api 호출 대신 thunk 사용해서 값 불러옴
 type LoginFormValue = {
   id: string
   password: string
 }
 
-const LoginForm: FC = () => {
+const LoginForm: FC<{ type: string | null }> = ({ type }) => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
-  const handleLogin = async () => {
-    const { id, password } = getValues()
-    const requestBody: LoginFormValue = {
-      id,
-      password,
-    }
-
-    console.log('로그인 요청 본문:', requestBody)
-
-    try {
-      const response = await loginUser(requestBody)
-      console.log('로그인 성공:', response.data)
-      navigate('/')
-      alert('로그인에 성공했습니다!')
-    } catch (err) {
-      console.error('로그인 실패:', err)
-      alert('아이디 또는 비밀번호를 확인해주세요.')
-    }
-  }
+  // (선택) auth 상태로 로딩/에러 표시하고 싶을 때
+  const { loading, error } = useAppSelector(state => state.auth)
 
   const {
     handleSubmit,

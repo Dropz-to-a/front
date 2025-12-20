@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { FormInput } from './FormInput'
@@ -26,22 +26,8 @@ const formatPhone = (value: string) => {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
 }
 
-// 숫자만 남기기
-const onlyDigits = (v: string) => v.replace(/\D/g, '')
-
-// 자동 하이픈 포맷 (010-1234-5678 / 010-123-4567 모두 대응)
-const formatPhone = (value: string) => {
-  const digits = onlyDigits(value).slice(0, 11) //  최대 11자리 제한
-
-  if (digits.length <= 3) return digits
-  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
-}
-
 const RegisterForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
-  const queryParams = new URLSearchParams(location.search)
-  const type = queryParams.get('type') || 'personal'
 
   const {
     handleSubmit,
@@ -140,7 +126,8 @@ const RegisterForm: FC<{ type: string }> = ({ type }) => {
             validate: (v: string) => {
               const digits = onlyDigits(v)
               return (
-                (digits.length === 10 || digits.length === 11) ||
+                digits.length === 10 ||
+                digits.length === 11 ||
                 '유효한 전화번호(10~11자리)를 입력하세요.'
               )
             },

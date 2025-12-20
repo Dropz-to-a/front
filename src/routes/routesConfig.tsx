@@ -28,7 +28,6 @@ import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
 import ResumeViewPage from '@/pages/jobs/ResumeView'
 import Start from '@/pages/auth/Start'
 
-import Inquire from '@/pages/common/Inquire'
 import UserOnBoard from '@/pages/auth/user/OnBoarding'
 import CompanyOnBoard from '@/pages/auth/company/OnBoarding'
 
@@ -40,7 +39,6 @@ export type RouteItem = {
   path: string
   element: React.ReactNode
 }
-
 
 // 로그인 거부 라우트 설정
 export const LoginHateRoutes: RouteItem[] = [
@@ -71,8 +69,6 @@ export const publicRoutes: RouteItem[] = [
   { path: '/jobs', element: <Jobs /> },
   { path: '/jobs/:id', element: <DetailJobs /> },
   { path: '/company/:companyId', element: <CompanyProfile /> },
-  //문의페이지
-  { path: '/inquire', element: <Inquire /> },
   //------------------------------------- Footer ---------------------------------------------
 
   { path: '/contact', element: <Contact /> },
@@ -99,7 +95,7 @@ export const privateRoutes: RouteItem[] = [
 
   // 재직자 급여 로그
   { path: '/paylog', element: <PayLogPage /> },
-  
+
   //------------------------------------- 재직자 ---------------------------------------------
 
   // 출퇴근 관리
@@ -124,5 +120,4 @@ export const privateRoutes: RouteItem[] = [
   { path: '/contracts', element: <Contracts /> },
   // 재직자 급여 정산
   { path: '/payroll', element: <PayrollPage /> },
-
 ]

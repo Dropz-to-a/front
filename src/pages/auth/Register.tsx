@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation } from 'react-router-dom'
 
 import AuthBackground from '@/components/AuthBackground'
 import RegisterForm from '@/components/RegisterForm'

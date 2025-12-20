@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/contracts/AttendanceCalendar.tsx
 
 import { useState, useEffect } from "react";
@@ -29,9 +30,10 @@ export default function AttendanceCalendar({
 
     const days = ["일", "월", "화", "수", "목", "금", "토"];
 
-    const dateCells = Array.from({ length: firstDay }).map(() => null).concat(
-        Array.from({ length: lastDate }, (_, i) => i + 1)
-    );
+    const dateCells: (number | null)[] = [
+        ...Array.from({ length: firstDay }, () => null),
+        ...Array.from({ length: lastDate }, (_, i) => i + 1)
+    ];
 
     // 출석 기록 점 색 표시
     const getStatusDot = (day: number) => {

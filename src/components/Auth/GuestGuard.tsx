@@ -2,8 +2,6 @@ import React, { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 
-import { showErrorToast } from '@/components/Toast/toast'
-
 interface GuestGuardProps {
   children: React.ReactNode
 }
@@ -18,29 +16,15 @@ const GuestGuard: React.FC<GuestGuardProps> = ({ children }) => {
 
   const token = useAppSelector(s => s.auth.token)
   const onboarded = useAppSelector(s => s.auth.onboarded)
-  const userType = useAppSelector(s => s.auth.userType)
+  // const userType = useAppSelector(s => s.auth.userType)
 
   useEffect(() => {
     if (!token) return
 
-    // 1️⃣ 온보딩 완료 → 홈
-    if (onboarded === true) {
-      if (location.pathname !== '/') {
-        showErrorToast('이미 온보딩이 완료된 상태입니다.')
-        navigate('/', { replace: true })
-      }
-      return
+    if (onboarded === true && location.pathname.includes('onboarding')) {
+      navigate('/', { replace: true })
     }
-
-    // 2️⃣ 온보딩 미완료 → 온보딩
-    if (onboarded === false) {
-      const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding'
-
-      if (location.pathname !== onboardingPath) {
-        navigate(onboardingPath, { replace: true })
-      }
-    }
-  }, [token, onboarded, userType, location.pathname, navigate])
+  }, [token, onboarded, location.pathname, navigate])
 
   return <>{children}</>
 }

@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form'
 import { FormInput } from '../../../components/FormInput'
 import { OnBoardCompany, checkBusinessExists, type BusinessExistsResponse } from '../../../api'
 
+import { useAppSelector } from '@/store'
+
 import DaumPostcode from 'react-daum-postcode'
 import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
 
@@ -24,6 +26,8 @@ const CompanyOnBoardForm: FC = () => {
     status: 'idle' | 'checking' | 'valid' | 'invalid'
     data?: BusinessExistsResponse
   }>({ status: 'idle' })
+
+  const onboarded = useAppSelector(s => s.auth.onboarded)
 
   const toastShownRef = useRef(false)
 
@@ -86,6 +90,14 @@ const CompanyOnBoardForm: FC = () => {
     },
     [setValue]
   )
+
+  useEffect(() => {
+    if (onboarded === true && !toastShownRef.current) {
+      toastShownRef.current = true
+      showErrorToast('이미 온보딩이 완료된 회사입니다.')
+      navigate('/', { replace: true })
+    }
+  }, [onboarded, navigate])
 
   // 사업자 등록번호 변경 시 검증 (디바운싱)
   useEffect(() => {

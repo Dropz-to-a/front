@@ -84,6 +84,7 @@ const authSlice = createSlice({
       if (action.payload) localStorage.setItem('jwtToken', action.payload)
       else localStorage.removeItem('jwtToken')
     },
+
     logout(state) {
       state.token = null
       state.userType = null

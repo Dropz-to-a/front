@@ -37,14 +37,21 @@ const LoginForm: FC = () => {
     if (toastShownRef.current) return
 
     if (loginThunk.fulfilled.match(result)) {
-      const userType = result.payload.userType
+      const { userType, onboarded } = result.payload
+
       toastShownRef.current = true
       showSuccessToast('로그인에 성공했습니다!')
 
-      navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', {
-        replace: true,
-      })
-    } else if (loginThunk.rejected.match(result)) {
+      if (onboarded === true) {
+        navigate('/', { replace: true })
+      } else {
+        navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', {
+          replace: true,
+        })
+      }
+    }
+
+    if (loginThunk.rejected.match(result)) {
       toastShownRef.current = true
       showErrorToast('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }

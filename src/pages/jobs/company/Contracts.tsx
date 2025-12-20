@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Header from "../../../components/Header";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
-import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
 
 import DepartmentList from "../../../components/contracts/DepartmentList";
 import EmployeeDetail from "../../../components/contracts/EmployeeDetail";
@@ -60,10 +60,23 @@ export default function Contracts() {
 
   const [expanded, setExpanded] = useState<string[]>(['dev'])
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
+  const [activeEmployee, setActiveEmployee] = useState<Employee | null>(null)
+  const [activeDeptId, setActiveDeptId] = useState<string | null>(null)
 
-  const toggleExpand = (id: string) => {
-    setExpanded(prev => (prev.includes(id) ? prev.filter(d => d !== id) : [...prev, id]))
-  }
+  const onDragStart = (event: { active: { id: string | number; data: { current?: { deptId?: string } } } }) => {
+    const { active } = event;
+    const empId = String(active.id);
+    const deptId = active.data.current?.deptId;
+    
+    // active employee 찾기
+    departments.forEach((dept) => {
+      const emp = dept.employees.find((e) => e.id === empId);
+      if (emp) {
+        setActiveEmployee(emp);
+        setActiveDeptId(deptId || null);
+      }
+    });
+  };
 
   const onDragEnd = (event: DragEndEvent) => {
     setActiveEmployee(null);
@@ -114,7 +127,11 @@ export default function Contracts() {
       }),
     });
 
-    res.ok ? alert("출근 완료!") : alert("이미 출근 기록 있음");
+    if (res.ok) {
+      alert("출근 완료!");
+    } else {
+      alert("이미 출근 기록 있음");
+    }
   };
 
   const handleClockOut = async () => {
@@ -129,7 +146,11 @@ export default function Contracts() {
       }),
     });
 
-    res.ok ? alert("퇴근 완료!") : alert("출근 기록 없음 또는 이미 퇴근됨");
+    if (res.ok) {
+      alert("퇴근 완료!");
+    } else {
+      alert("출근 기록 없음 또는 이미 퇴근됨");
+    }
   };
 
   /* ============================
@@ -137,9 +158,6 @@ export default function Contracts() {
   ============================ */
   const [newDeptOpen, setNewDeptOpen] = useState(false);
   const [newDeptName, setNewDeptName] = useState("");
-
-  const [editDept, setEditDept] = useState<Department | null>(null);
-  const [editDeptName, setEditDeptName] = useState("");
 
   const [deleteDept, setDeleteDept] = useState<Department | null>(null);
 
@@ -153,15 +171,6 @@ export default function Contracts() {
     setNewDeptOpen(false);
   };
 
-  const saveDeptName = () => {
-    if (!editDept) return;
-
-    setDepartments((prev) =>
-      prev.map((d) => (d.id === editDept.id ? { ...d, name: editDeptName } : d))
-    );
-
-    setEditDept(null);
-  };
 
   const confirmDeleteDept = () => {
     if (!deleteDept) return;
@@ -237,9 +246,8 @@ export default function Contracts() {
                   prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
                 )
               }
-              onEditDept={(dept) => {
-                setEditDept(dept);
-                setEditDeptName(dept.name);
+              onEditDept={() => {
+                // 부서 수정 기능은 추후 구현 예정
               }}
               onDeleteDept={setDeleteDept}
               setSelectedEmployee={setSelectedEmployee}

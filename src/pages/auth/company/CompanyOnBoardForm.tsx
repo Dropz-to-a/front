@@ -13,7 +13,7 @@ type OnBoardFormValue = {
   businessNumber: string
   address: string
   detailAddress: string
-  zonecode: string
+  postcode: string
 }
 
 const CompanyOnBoardForm: FC = () => {
@@ -55,9 +55,20 @@ const CompanyOnBoardForm: FC = () => {
 
         if (result.exists) {
           setBusinessValidation({ status: 'valid', data: result })
+
+          // 우편번호가 있으면 자동으로 입력
+          if (result.postcode) {
+            setValue('postcode', result.postcode, { shouldValidate: true })
+          }
+
           // 회사명이 있으면 자동으로 입력
           if (result.companyName) {
             setValue('companyName', result.companyName, { shouldValidate: true })
+          }
+
+          // 주소가 있으면 자동으로 입력
+          if (result.address) {
+            setValue('address', result.address, { shouldValidate: true })
           }
         } else {
           setBusinessValidation({ status: 'invalid', data: result })
@@ -170,16 +181,6 @@ const CompanyOnBoardForm: FC = () => {
       {step === 1 && (
         <form className="flex flex-col">
           <FormInput
-            label="회사 이름"
-            name="companyName"
-            placeholder="회사 이름을 입력하세요"
-            type="text"
-            value={register}
-            rules={{ required: true }}
-            error={errors.companyName}
-          />
-
-          <FormInput
             label="사업자등록번호"
             name="businessNumber"
             placeholder="888-88-88888"
@@ -192,6 +193,16 @@ const CompanyOnBoardForm: FC = () => {
                 '사업자등록번호는 10자리입니다.',
             }}
             error={errors.businessNumber}
+          />
+
+          <FormInput
+            label="회사 이름"
+            name="companyName"
+            placeholder="회사 이름을 입력하세요"
+            type="text"
+            value={register}
+            rules={{ required: true }}
+            error={errors.companyName}
           />
 
           {/* 사업자 등록번호 검증 결과 */}
@@ -283,12 +294,12 @@ const CompanyOnBoardForm: FC = () => {
               <FormInput
                 // TODO : readOnly 추가 필요
                 label="우편번호"
-                name="zonecode"
+                name="postcode"
                 placeholder="우편번호"
                 type="text"
                 value={register}
                 rules={{ required: true }}
-                error={errors.zonecode}
+                error={errors.postcode}
               />
             </div>
 
@@ -356,7 +367,7 @@ const CompanyOnBoardForm: FC = () => {
                 <DaumPostcode
                   style={{ width: '100%', height: '100%' }}
                   onComplete={data => {
-                    setValue('zonecode', data.zonecode)
+                    setValue('postcode', data.zonecode) // 다음 우편번호는 zonecode 필드 사용
                     setValue('address', data.address)
                     setIsPostOpen(false)
                   }}

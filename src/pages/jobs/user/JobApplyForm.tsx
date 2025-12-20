@@ -1,13 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, FileText, Send } from 'lucide-react'
 import Header from '@/components/Header'
-import { JOBS_DATA } from './Jobs'
+import { jobPostingApi, type PublicJobPosting } from '@/api/jobPostingApi'
+import type { Job } from './Jobs'
+
+// API 응답을 Job 타입으로 변환
+const convertToJob = (posting: PublicJobPosting): Job => {
+  return {
+    id: String(posting.postingId),
+    company: posting.companyName,
+    title: posting.title,
+    description: '',
+    location: posting.locationText,
+    salaryNote: posting.salaryMin > 0 || posting.salaryMax > 0
+      ? `${posting.salaryMin > 0 ? posting.salaryMin.toLocaleString() : '협의'} ~ ${posting.salaryMax > 0 ? posting.salaryMax.toLocaleString() : '협의'}만원`
+      : undefined,
+    status: '모집 중',
+    category: '기타',
+    applyUrl: `/jobs/${posting.postingId}`,
+  }
+}
 
 const ApplyFormPage = () => {
   const navigate = useNavigate()
-  const { id } = useParams()
-  const job = JOBS_DATA.find(j => j.id === id)
+  const { id } = useParams<{ id: string }>()
+  const [job, setJob] = useState<Job | null>(null)
+  const [loading, setLoading] = useState(true)
 
   const [form, setForm] = useState({
     name: '',
@@ -28,7 +47,31 @@ const ApplyFormPage = () => {
     motivation: '',
   })
 
+  const loadJob = useCallback(async () => {
+    if (!id) {
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      const data = await jobPostingApi.getPublicList()
+      const foundPosting = data.find(p => String(p.postingId) === id)
+      
+      if (foundPosting) {
+        const convertedJob = convertToJob(foundPosting)
+        setJob(convertedJob)
+      }
+    } catch (e: unknown) {
+      console.error('[JobApplyForm] 공고 조회 실패:', e)
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
+
   useEffect(() => {
+    loadJob()
+    
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
     if (currentUser) {
       setForm(prev => ({
@@ -38,7 +81,7 @@ const ApplyFormPage = () => {
         phone: currentUser.phone || '',
       }))
     }
-  }, [])
+  }, [loadJob])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -47,22 +90,43 @@ const ApplyFormPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (!id) return
+
     try {
-      await fetch('/api/applications', {
+      const response = await fetch('/api/applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, jobId: id }),
+        body: JSON.stringify({ ...form, postingId: Number(id) }),
       })
+      
+      if (!response.ok) {
+        throw new Error('지원 제출에 실패했습니다.')
+      }
+      
       navigate(`/jobs/${id}/completed`)
-    } catch {
-      alert('지원 중 오류가 발생했습니다.')
+    } catch (e: unknown) {
+      const error = e as { message?: string }
+      alert(error?.message ?? '지원 중 오류가 발생했습니다.')
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-gray-600 bg-gray-50">
+        <p className="text-lg">공고 정보를 불러오는 중...</p>
+      </div>
+    )
   }
 
   if (!job) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-gray-600 bg-gray-50">
         <p className="text-lg">존재하지 않는 공고입니다.</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-4 px-4 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+          이전 페이지로
+        </button>
       </div>
     )
   }

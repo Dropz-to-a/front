@@ -28,7 +28,7 @@ const Home = () => {
             {/* 좌측: Hero */}
             <div className="max-w-xl">
               <p className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-full">
-                🔒 임금 보호 · 공정 계약 · AI 매칭
+                🔒 임금 보호 · 공정 계약 · 알고리즘 매칭
               </p>
 
               <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-4xl">
@@ -37,7 +37,7 @@ const Home = () => {
               </h1>
 
               <p className="mt-3 text-base text-gray-600 sm:text-lg">
-                AI 추천과 에스크로 정산으로, 공정한 일자리를 경험하세요.
+                알고리즘 추천과 에스크로 정산으로, 공정한 일자리를 경험하세요.
               </p>
 
               {/* 검색바 */}
@@ -76,7 +76,7 @@ const Home = () => {
               {/* 신뢰 문구 */}
               <div className="flex flex-wrap items-center gap-4 mt-6 text-sm text-gray-500">
                 <span>🛡️ 에스크로 임금 보호</span>
-                <span>📄 표준 계약 + AI 검토</span>
+                <span>📄 표준 계약 + 알고리즘 검토</span>
                 <span>⭐ 신뢰 기반 리뷰 시스템</span>
               </div>
             </div>
@@ -91,7 +91,7 @@ const Home = () => {
                   to="/jobs"
                   icon="🔎"
                   title="일자리 찾기"
-                  desc="AI가 성향과 경력으로 맞춤 추천"
+                  desc="알고리즘이 성향과 경력으로 맞춤 추천"
                 />
                 <MiniCard
                   to="/profile"
@@ -103,7 +103,7 @@ const Home = () => {
                   to="/contracts"
                   icon="📄"
                   title="표준 계약 체결"
-                  desc="AI가 위험 문구를 자동 검토"
+                  desc="알고리즘을 활용하여  위험 문구를 자동 검토"
                 />
                 <MiniCard
                   to="/activity"
@@ -134,12 +134,12 @@ const Home = () => {
           <div className="grid gap-6 mt-6 md:grid-cols-2 lg:grid-cols-4">
             <FeatureCard
               icon={<Icon />}
-              title="AI 스마트 매칭"
+              title="알고리즘 스마트 매칭"
               desc="이력/기술/선호 조건을 분석해 적합도 추천"
             />
             <FeatureCard
               icon={<AuditIcon />}
-              title="AI 계약 검토"
+              title="알고리즘 계약 검토"
               desc="불리한 조항 탐지, 대체 문구 제안"
             />
             <FeatureCard
@@ -187,7 +187,7 @@ const Home = () => {
               a="기업이 예치한 금액이 계약 조건 충족 시 자동 정산됩니다. 기한·분쟁 상황별 시나리오가 시스템에 반영돼요."
             />
             <FAQItem
-              q="AI 계약 검토가 실제로 도움이 되나요?"
+              q="알고리즘 계약 검토가 실제로 도움이 되나요?"
               a="위험 문구·불리한 조건을 하이라이트하고 대체 문구를 제안해 초보자도 안전한 계약을 체결할 수 있습니다."
             />
             <FAQItem
@@ -196,7 +196,7 @@ const Home = () => {
             />
             <FAQItem
               q="해외 프로젝트도 가능한가요?"
-              a="다국어 계약 템플릿과 통화 표기를 지원합니다. (베타)"
+              a="크롬 기반 번역을 지원합니다."
             />
           </div>
         </div>

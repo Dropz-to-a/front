@@ -32,27 +32,29 @@ const Start: React.FC = () => {
           <img
             src="/SVG JOBIT LOGO.svg"
             alt="JOBIT"
-            className="w-72 md:w-80 lg:w-[360px] h-auto object-contain"
+            className="w-72 md:w-80 lg:w-[360px] h-auto object-contain select-none"
+            draggable={false}
           />
         </div>
 
         <div>
-          <h1 className="relative text-5xl font-extrabold leading-tight md:text-6xl lg:text-6xl">
+          <h1 className="relative text-5xl font-extrabold leading-tight md:text-6xl lg:text-6xl select-none">
             일자리 추천부터{" "}
             <span className="relative inline-block">
               <img
                 src={TextBg}
                 alt=""
                 className="absolute left-1/2 -translate-x-1/2 bottom-[-12px] w-[180px] lg:w-[150px] max-w-none h-auto z-0 pointer-events-none select-none"
+                draggable={false}
               />
-              <span className="relative z-10 font-extrabold text-white">
+              <span className="relative z-10 font-extrabold text-white select-none">
                 취업
               </span>
             </span>{" "}
             까지
           </h1>
 
-          <p className="mt-6 text-lg font-medium text-gray-500 md:text-xl">
+          <p className="mt-6 text-lg font-medium text-gray-500 md:text-xl select-none">
             기업과 개인 모두에게 최적의 매칭 솔루션 제공
           </p>
         </div>
@@ -103,14 +105,7 @@ const Start: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-2">
-            <button
-              onClick={handleLogin}
-              className="h-12 font-bold text-white transition bg-gray-900 rounded-xl hover:bg-gray-800"
-            >
-              {category === "company" ? "기업용 로그인" : "개인용 로그인"}
-            </button>
-
+          <div className="flex flex-col gap-10">
             <button
               onClick={handleRegister}
               className="h-12 font-bold transition border border-gray-300 rounded-xl hover:bg-gray-100"
@@ -118,6 +113,12 @@ const Start: React.FC = () => {
               {category === "company"
                 ? "기업용 회원가입"
                 : "개인용 회원가입"}
+            </button>
+            <button
+              onClick={handleLogin}
+              className="h-12 font-bold text-white transition bg-gray-900 rounded-xl hover:bg-gray-800"
+            >
+              로그인
             </button>
           </div>
         </div>

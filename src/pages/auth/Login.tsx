@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import AuthBackground from '@/components/AuthBackground'
 import LoginForm from '@/components/LoginForm'
 import AuthIntro from '@/components/AuthIntro'
-import JobitLogo from '@/../public/logo(white).svg'
+import JobitLogo from '/logo_white.svg'
 
 const Login: FC = () => {
   return (

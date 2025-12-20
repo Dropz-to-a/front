@@ -10,6 +10,7 @@
 import api from './Api'
 import axios from 'axios'
 import type { UserRegisterData, UserLoginData, UserOnBoardData } from '../types/index'
+import type { CompanyOnBoardData } from '@/types/company'
 
 export const registerUser = async (data: UserRegisterData) => {
   const response = await api.post('/api/auth/register', data, {
@@ -24,9 +25,8 @@ export const loginUser = async (data: UserLoginData) => {
   const response = await api.post('/api/auth/login', data, {
     headers: { 'Content-Type': 'application/json' },
   })
-  return response.data 
+  return response.data
 }
-
 
 export const OnBoardUser = async (data: UserOnBoardData) => {
   const response = await api.post('/api/onboarding/user', data, {
@@ -34,13 +34,15 @@ export const OnBoardUser = async (data: UserOnBoardData) => {
       'Content-Type': 'application/json',
     },
   })
+  return response.data
+}
 
-  const { accessToken } = response.data
-
-  if (accessToken) {
-    localStorage.setItem('accessToken', accessToken)
-  }
-
+export const OnBoardCompany = async (data: CompanyOnBoardData) => {
+  const response = await api.post('/api/onboarding/company', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
   return response.data
 }
 
@@ -85,6 +87,7 @@ type ApickApiResponse = {
     회사명?: string
     사업자등록번호?: string
     대표명?: string
+    우편번호?: string
     도로명주소?: string
     지번주소?: string
     사업자상태?: string // '정상' | '휴업' | '폐업' 등
@@ -103,11 +106,15 @@ type ApickApiResponse = {
 export type BusinessExistsResponse = {
   exists: boolean
   companyName?: string
+  postcode?: string // 우편번호
+  address?: string // 사업장 주소
   status?: string // '계속사업자' | '휴업자' | '폐업자' 등
   message?: string
 }
 
-export const checkBusinessExists = async (data: BusinessExistsRequest): Promise<BusinessExistsResponse> => {
+export const checkBusinessExists = async (
+  data: BusinessExistsRequest
+): Promise<BusinessExistsResponse> => {
   // multipart/form-data 형식으로 요청
   const formData = new FormData()
   formData.append('biz_no', data.businessNumber)
@@ -130,8 +137,9 @@ export const checkBusinessExists = async (data: BusinessExistsRequest): Promise<
     const companyName = apiResponse.data.회사명
     const businessNumber = apiResponse.data.사업자등록번호
     const representative = apiResponse.data.대표명
+    const postcode = apiResponse.data.우편번호
     const address = apiResponse.data.도로명주소 || apiResponse.data.지번주소
-    
+
     // 필수 필드가 비어있으면 유효하지 않은 사업자로 판단
     if (!companyName || !businessNumber || !representative || !address) {
       return {
@@ -142,7 +150,7 @@ export const checkBusinessExists = async (data: BusinessExistsRequest): Promise<
 
     // 성공한 경우 - 실제 데이터가 있는 경우만
     const status = apiResponse.data.사업자상태 || apiResponse.data.세금상태
-    
+
     // 사업자 상태 확인
     if (status === '폐업' || status === '폐업자') {
       return {
@@ -151,7 +159,7 @@ export const checkBusinessExists = async (data: BusinessExistsRequest): Promise<
         message: '폐업 상태인 사업자입니다.',
       }
     }
-    
+
     if (status === '휴업' || status === '휴업자') {
       return {
         exists: false,
@@ -163,13 +171,15 @@ export const checkBusinessExists = async (data: BusinessExistsRequest): Promise<
     return {
       exists: true,
       companyName: companyName,
+      postcode,
+      address,
       status: status || '계속사업자',
     }
   } else {
     // 실패한 경우 (존재하지 않거나 유효하지 않은 사업자)
     const status = apiResponse.data?.사업자상태 || apiResponse.data?.세금상태
     let message = '등록된 사업자 등록번호가 아니거나 유효하지 않습니다.'
-    
+
     if (status) {
       if (status === '휴업' || status === '휴업자') {
         message = '휴업 상태인 사업자입니다.'

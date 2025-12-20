@@ -3,7 +3,7 @@ export type CompanyOnBoardData = {
   businessNumber: string
   address: string
   detailAddress: string
-  zonecode: string
+  postcode: string
 }
 
 export type CompanyInfo = {

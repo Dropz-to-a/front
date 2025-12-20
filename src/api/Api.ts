@@ -7,7 +7,7 @@ import axios from 'axios'
 const apiClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL, // API 기본 URL로 교체
     timeout: 10000, // 요청 타임아웃 설정
-});     
+});
 
 // 요청 인터셉터 추가 (JWT를 헤더에 포함)
 apiClient.interceptors.request.use(

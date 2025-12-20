@@ -19,6 +19,8 @@ import JobCompletedAdmin from '@/pages/jobs/company/JobCompletedAdmin'
 import JobEdit from '@/pages/jobs/company/JobEdit'
 import JobManage from '@/pages/jobs/company/JobManage'
 import JobRegister from '@/pages/jobs/company/JobRegister'
+import CompanyInfo from '@/pages/jobs/company/CompanyInfo'
+import CompanyProfile from '@/pages/jobs/user/CompanyProfile'
 
 import PayLogPage from '@/pages/payroll/user/PayLog'
 import PayrollPage from '@/pages/payroll/company/Payroll'
@@ -44,6 +46,7 @@ export type RouteItem = {
 export const LoginHateRoutes: RouteItem[] = [
   // 로그인
   { path: '/login', element: <Login /> },
+  { path: '/start', element: <Start /> },
 
   // 회원가입
   { path: '/register', element: <Register /> },
@@ -57,7 +60,7 @@ export const LoginHateRoutes: RouteItem[] = [
 export const publicRoutes: RouteItem[] = [
   // 홈페이지
   { path: '/', element: <Home /> },
-  
+
   // 시작페이지
   { path: '/start', element: <Start /> },
 
@@ -67,6 +70,7 @@ export const publicRoutes: RouteItem[] = [
   // 직업 목록 & 상세
   { path: '/jobs', element: <Jobs /> },
   { path: '/jobs/:id', element: <DetailJobs /> },
+  { path: '/company/:companyId', element: <CompanyProfile /> },
   //문의페이지
   { path: '/inquire', element: <Inquire /> },
   //------------------------------------- Footer ---------------------------------------------
@@ -79,7 +83,6 @@ export const publicRoutes: RouteItem[] = [
 // 보호된 라우트 설정
 export const privateRoutes: RouteItem[] = [
   //------------------------------------- 구직자 ---------------------------------------------
-
   // 공고 이력서 작성
   { path: '/jobs/:id/applyform', element: <JobApplyForm /> },
   // 공고 지원완료
@@ -113,6 +116,9 @@ export const privateRoutes: RouteItem[] = [
   { path: '/jobmanage', element: <JobManage /> },
   { path: '/jobmanage/:id', element: <JobEdit /> },
   { path: '/jobregister', element: <JobRegister /> },
+
+  // 기업 정보 관리
+  { path: '/jobs/company/info', element: <CompanyInfo /> },
 
   // 재직자 관리
   { path: '/contracts', element: <Contracts /> },

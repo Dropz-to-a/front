@@ -110,6 +110,9 @@ const Header = () => {
             <Link to="/jobs/completed/admin" style={{ color: 'white' }}>
               지원자관리
             </Link>
+            <Link to="/jobs/company/info" style={{ color: 'white' }}>
+              기업정보관리
+            </Link>
           </>
         )}
       </nav>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // {
 //   "username": "alvin",
 //   "email": "alvin@example.com",
@@ -43,6 +44,37 @@ export const OnBoardUser = async (data: UserOnBoardData) => {
   return response.data
 }
 
+// 기업 정보 조회
+export const getCompanyInfo = async () => {
+  const response = await api.get('/api/company/info', {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return response.data
+}
+
+// 기업 정보 수정
+export const updateCompanyInfo = async (data: any) => {
+  const response = await api.patch('/api/company/info', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return response.data
+}
+
+// 공개 기업 정보 조회 (사용자용)
+export const getPublicCompanyInfo = async (companyId?: number) => {
+  const url = companyId ? `/api/company/${companyId}/info` : '/api/company/info/public'
+  const response = await api.get(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return response.data
+}
+
 export type BusinessExistsRequest = {
   businessNumber: string
 }
@@ -52,6 +84,10 @@ type ApickApiResponse = {
   data?: {
     회사명?: string
     사업자등록번호?: string
+    대표명?: string
+    도로명주소?: string
+    지번주소?: string
+    사업자상태?: string // '정상' | '휴업' | '폐업' 등
     세금상태?: string // '계속사업자' | '휴업자' | '폐업자' 등
     success?: number
     [key: string]: unknown
@@ -90,23 +126,56 @@ export const checkBusinessExists = async (data: BusinessExistsRequest): Promise<
 
   // API 응답 파싱
   if (apiResponse.api?.success && apiResponse.data?.success === 1) {
-    // 성공한 경우
+    // 필수 필드들이 실제로 채워져 있는지 확인
+    const companyName = apiResponse.data.회사명
+    const businessNumber = apiResponse.data.사업자등록번호
+    const representative = apiResponse.data.대표명
+    const address = apiResponse.data.도로명주소 || apiResponse.data.지번주소
+    
+    // 필수 필드가 비어있으면 유효하지 않은 사업자로 판단
+    if (!companyName || !businessNumber || !representative || !address) {
+      return {
+        exists: false,
+        message: '등록된 사업자 등록번호가 아니거나 유효하지 않습니다.',
+      }
+    }
+
+    // 성공한 경우 - 실제 데이터가 있는 경우만
+    const status = apiResponse.data.사업자상태 || apiResponse.data.세금상태
+    
+    // 사업자 상태 확인
+    if (status === '폐업' || status === '폐업자') {
+      return {
+        exists: false,
+        status: status,
+        message: '폐업 상태인 사업자입니다.',
+      }
+    }
+    
+    if (status === '휴업' || status === '휴업자') {
+      return {
+        exists: false,
+        status: status,
+        message: '휴업 상태인 사업자입니다.',
+      }
+    }
+
     return {
       exists: true,
-      companyName: apiResponse.data.회사명,
-      status: apiResponse.data.세금상태,
+      companyName: companyName,
+      status: status || '계속사업자',
     }
   } else {
     // 실패한 경우 (존재하지 않거나 유효하지 않은 사업자)
-    const status = apiResponse.data?.세금상태
+    const status = apiResponse.data?.사업자상태 || apiResponse.data?.세금상태
     let message = '등록된 사업자 등록번호가 아니거나 유효하지 않습니다.'
     
     if (status) {
-      if (status === '휴업자') {
+      if (status === '휴업' || status === '휴업자') {
         message = '휴업 상태인 사업자입니다.'
-      } else if (status === '폐업자') {
+      } else if (status === '폐업' || status === '폐업자') {
         message = '폐업 상태인 사업자입니다.'
-      } else if (status !== '계속사업자') {
+      } else if (status !== '계속사업자' && status !== '정상') {
         message = `사업 상태: ${status}`
       }
     }

@@ -14,8 +14,39 @@ type RegisterFormValue = {
   roleCode: string
 }
 
+// 숫자만 남기기
+const onlyDigits = (v: string) => v.replace(/\D/g, '')
+
+// 자동 하이픈 포맷 (010-1234-5678 / 010-123-4567 모두 대응)
+const formatPhone = (value: string) => {
+  const digits = onlyDigits(value).slice(0, 11) //  최대 11자리 제한
+
+  if (digits.length <= 3) return digits
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
 const RegisterForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    getValues,
+    setValue,
+    watch,
+  } = useForm<RegisterFormValue>({ mode: 'onChange' })
+
+  //  phone 입력값이 바뀔 때마다 하이픈 자동 적용
+  const phoneWatch = watch('phone')
+  useEffect(() => {
+    if (phoneWatch == null) return
+    const formatted = formatPhone(phoneWatch)
+    if (phoneWatch !== formatted) {
+      setValue('phone', formatted, { shouldValidate: true, shouldDirty: true })
+    }
+  }, [phoneWatch, setValue])
 
   const handleRegister = async () => {
     const { username, email, phone, password } = getValues()
@@ -95,7 +126,8 @@ const RegisterForm: FC<{ type: string }> = ({ type }) => {
             validate: (v: string) => {
               const digits = onlyDigits(v)
               return (
-                (digits.length === 10 || digits.length === 11) ||
+                digits.length === 10 ||
+                digits.length === 11 ||
                 '유효한 전화번호(10~11자리)를 입력하세요.'
               )
             },
@@ -129,7 +161,7 @@ const RegisterForm: FC<{ type: string }> = ({ type }) => {
 
         <span className="mt-6">
           계정이 있으신가요?{' '}
-          <a href={`/login?type=${type}`} className="text-blue-500 hover:underline">
+          <a href={`/login`} className="text-blue-500 hover:underline">
             로그인
           </a>
         </span>

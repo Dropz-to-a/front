@@ -1,25 +1,22 @@
 import type { FC } from 'react'
-import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { loginThunk } from '@/features/auth/authSlice'
+// import { getOnBoardedFromToken } from '@/utils/jwt'
 //api 호출 대신 thunk 사용해서 값 불러옴
 type LoginFormValue = {
   id: string
   password: string
 }
 
-const LoginForm: FC = () => {
+const LoginForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
   // (선택) auth 상태로 로딩/에러 표시하고 싶을 때
   const { loading, error } = useAppSelector(state => state.auth)
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const type = queryParams.get('type') || 'personal'
 
   const {
     handleSubmit,

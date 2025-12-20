@@ -13,24 +13,26 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 온보딩 미완료 사용자가 보호된 라우트에 접근하려고 하면 온보딩 페이지로 리디렉션
-  useEffect(() => {
-    if (token && onboarded !== true) {
-      const currentPath = location.pathname;
-      const isOnboardingPage = currentPath === '/user/onboarding' || currentPath === '/company/onboarding';
-      
-      if (!isOnboardingPage) {
-        const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding';
-        console.log('[AuthGuard] 온보딩 미완료 → 온보딩 페이지로 리디렉션:', onboardingPath);
-        navigate(onboardingPath, { replace: true });
-      }
-    }
-  }, [token, onboarded, userType, location.pathname, navigate]);
+  const currentPath = location.pathname;
+  const isOnboardingPage = currentPath === '/user/onboarding' || currentPath === '/company/onboarding';
 
-  // 로그인 안 되어 있음 → 모달 + 리다이렉트 UI
-  if (!token && onboarded === true) {
+  // 온보딩 미완료 사용자를 온보딩 페이지로 리디렉션
+  useEffect(() => {
+    if (token && onboarded !== true && !isOnboardingPage) {
+      const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding';
+      console.log('[AuthGuard] 온보딩 미완료 → 온보딩 페이지로 리디렉션:', onboardingPath);
+      navigate(onboardingPath, { replace: true });
+    }
+  }, [token, onboarded, userType, isOnboardingPage, navigate]);
+
+  // 1. 토큰이 없으면 → 로그인 필요 (모달 표시하되 뒤 화면은 보여줌)
+  if (!token) {
     return (
       <>
+        {/* 뒤 화면은 그대로 렌더링 */}
+        {children}
+        
+        {/* 모달 오버레이 */}
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white w-80 p-6 rounded-xl shadow-xl text-center">
             <h2 className="text-lg font-semibold mb-3">로그인이 필요합니다</h2>
@@ -57,23 +59,16 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
             </div>
           </div>
         </div>
-
-        {/* 페이지는 그대로 렌더링 */}
-        {children}
       </>
     );
   }
 
-  // 온보딩 미완료 사용자는 온보딩 페이지로 리디렉션 중이므로 아무것도 렌더링하지 않음
-  if (token && onboarded !== true) {
-    const currentPath = location.pathname;
-    const isOnboardingPage = currentPath === '/user/onboarding' || currentPath === '/company/onboarding';
-    
-    if (!isOnboardingPage) {
-      return null; // 리디렉션 중
-    }
+  // 2. 토큰이 있지만 온보딩이 안 되었으면 → 리디렉션 중 (온보딩 페이지가 아니면 아무것도 렌더링하지 않음)
+  if (token && onboarded !== true && !isOnboardingPage) {
+    return null; // 리디렉션 중
   }
 
+  // 3. 토큰이 있고 온보딩도 완료되었으면 → children 렌더링
   return <>{children}</>;
 };
 

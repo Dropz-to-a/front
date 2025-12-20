@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Header from "../../../components/Header";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
+import { DndContext, DragOverlay, type DragEndEvent, type DragOverEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 import DepartmentList from "../../../components/contracts/DepartmentList";
 import EmployeeDetail from "../../../components/contracts/EmployeeDetail";
@@ -74,8 +74,36 @@ export default function Contracts() {
       if (emp) {
         setActiveEmployee(emp);
         setActiveDeptId(deptId || null);
+        
+        // 드래그 시작 시 부서가 닫혀있으면 자동으로 열기
+        if (deptId && !expanded.includes(deptId)) {
+          setExpanded((prev) => [...prev, deptId]);
+        }
       }
     });
+  };
+
+  const onDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    if (!over) return;
+
+    // 드래그 중인 카드가 부서 위에 올라가면 자동으로 열기
+    let overDeptId = over.data.current?.deptId;
+    
+    // 부서 헤더에 올라간 경우도 처리
+    if (!overDeptId && String(over.id).endsWith('-header')) {
+      overDeptId = String(over.id).replace('-header', '');
+    }
+    
+    if (overDeptId && !expanded.includes(overDeptId)) {
+      setExpanded((prev) => {
+        // 이미 열려있지 않으면 추가
+        if (!prev.includes(overDeptId!)) {
+          return [...prev, overDeptId!];
+        }
+        return prev;
+      });
+    }
   };
 
   const onDragEnd = (event: DragEndEvent) => {
@@ -87,29 +115,76 @@ export default function Contracts() {
 
     const empId = String(active.id);
     const fromDept = active.data.current?.deptId;
-    const toDept = over.data.current?.deptId;
+    const overData = over.data.current;
+    
+    // 부서 헤더에 드롭한 경우도 처리
+    let toDept = overData?.deptId;
+    if (!toDept && String(over.id).endsWith('-header')) {
+      toDept = String(over.id).replace('-header', '');
+    }
 
-    if (!fromDept || !toDept || fromDept === toDept) return;
+    if (!fromDept || !toDept) return;
 
-    setDepartments((prev) => {
-      const next = [...prev];
-      let moving: Employee | null = null;
+    // 같은 부서 내에서 순서 변경 (직원 위에 드롭한 경우)
+    if (fromDept === toDept && overData?.type === "EMPLOYEE") {
+      const dept = departments.find((d) => d.id === fromDept);
+      if (!dept) return;
 
-      next.forEach((dept) => {
-        if (dept.id === fromDept) {
-          dept.employees = dept.employees.filter((emp) => {
-            if (emp.id === empId) moving = emp;
-            return emp.id !== empId;
+      const oldIndex = dept.employees.findIndex((e) => e.id === empId);
+      const newIndex = dept.employees.findIndex((e) => e.id === String(over.id));
+
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        setDepartments((prev) =>
+          prev.map((d) =>
+            d.id === fromDept
+              ? { ...d, employees: arrayMove(d.employees, oldIndex, newIndex) }
+              : d
+          )
+        );
+      }
+      return;
+    }
+
+    // 다른 부서로 이동 (부서 영역에 드롭한 경우)
+    if (toDept && fromDept !== toDept) {
+      setDepartments((prev) => {
+        const next = prev.map((d) => ({ ...d, employees: [...d.employees] }));
+        let moving: Employee | null = null;
+
+        // 원래 부서에서 제거
+        next.forEach((dept) => {
+          if (dept.id === fromDept) {
+            const index = dept.employees.findIndex((emp) => emp.id === empId);
+            if (index !== -1) {
+              moving = dept.employees[index];
+              dept.employees.splice(index, 1);
+            }
+          }
+        });
+
+        // 새 부서에 추가
+        if (moving) {
+          next.forEach((dept) => {
+            if (dept.id === toDept && moving) {
+              // 다른 직원 위에 드롭한 경우 해당 위치에 삽입
+              if (overData?.type === "EMPLOYEE") {
+                const overIndex = dept.employees.findIndex((e) => e.id === String(over.id));
+                if (overIndex !== -1) {
+                  dept.employees.splice(overIndex, 0, moving);
+                } else {
+                  dept.employees.push(moving);
+                }
+              } else {
+                // 부서 영역에 드롭한 경우 맨 끝에 추가
+                dept.employees.push(moving);
+              }
+            }
           });
         }
-      });
 
-      next.forEach((dept) => {
-        if (dept.id === toDept && moving) dept.employees.push(moving);
+        return next;
       });
-
-      return next;
-    });
+    }
   };
 
   /* ============================
@@ -212,7 +287,7 @@ export default function Contracts() {
         UI
   ============================ */
   return (
-    <DndContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
+    <DndContext onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
       <DragOverlay>
         {activeEmployee ? (
           <EmployeeCard employee={activeEmployee} deptId={activeDeptId!} isOverlay />

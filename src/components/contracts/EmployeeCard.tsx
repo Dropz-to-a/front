@@ -1,4 +1,5 @@
-import { useDraggable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { User, GripVertical } from "lucide-react";
 import type { Employee } from "../../types/contracts";
 import { useRef } from "react";
@@ -14,14 +15,24 @@ export default function EmployeeCard({
     onSelect?: (emp: Employee) => void;
     isOverlay?: boolean;
 }) {
+    // useSortable은 부서 내 순서 변경과 부서 간 이동 모두 지원
     const {
         attributes,
         listeners,
         setNodeRef,
-    } = useDraggable({
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
         id: employee.id,
         data: { type: "EMPLOYEE", deptId },
     });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
 
     const startPos = useRef<{ x: number; y: number } | null>(null);
     const dragged = useRef(false);
@@ -60,6 +71,7 @@ export default function EmployeeCard({
     return (
         <div
             ref={setNodeRef}
+            style={style}
             {...attributes}
             className="flex items-center justify-between px-3 py-2 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
             onPointerDown={handlePointerDown}

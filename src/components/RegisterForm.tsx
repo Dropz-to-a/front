@@ -1,10 +1,12 @@
-import type { FC } from 'react'
+import { useRef, type FC } from 'react'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { FormInput } from './FormInput'
 import { registerUser } from '../api'
+
+import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
 
 type RegisterFormValue = {
   username: string
@@ -32,6 +34,8 @@ const RegisterForm: FC = () => {
   const queryParams = new URLSearchParams(location.search)
   const type = queryParams.get('type') || 'personal'
 
+  const toastShownRef = useRef(false)
+
   const {
     handleSubmit,
     register,
@@ -54,6 +58,8 @@ const RegisterForm: FC = () => {
   const handleRegister = async () => {
     const { username, email, phone, password } = getValues()
 
+    if (toastShownRef.current) return
+
     const requestBody: RegisterFormValue = {
       username,
       email,
@@ -67,11 +73,13 @@ const RegisterForm: FC = () => {
     try {
       const response = await registerUser(requestBody)
       console.log('회원가입 성공:', response.data)
+      toastShownRef.current = true
+      showSuccessToast('회원가입에 성공했습니다! 로그인 페이지로 이동합니다.')
       navigate(`/login?type=${type}`)
-      alert('회원가입에 성공했습니다! 로그인해주세요.')
     } catch (err) {
       console.error('회원가입 실패:', err)
-      alert('회원가입에 실패했습니다. 다시 시도해주세요.')
+      toastShownRef.current = true
+      showErrorToast('회원가입에 실패했습니다. 다시 시도해주세요.')
     }
   }
 
@@ -129,7 +137,8 @@ const RegisterForm: FC = () => {
             validate: (v: string) => {
               const digits = onlyDigits(v)
               return (
-                (digits.length === 10 || digits.length === 11) ||
+                digits.length === 10 ||
+                digits.length === 11 ||
                 '유효한 전화번호(10~11자리)를 입력하세요.'
               )
             },

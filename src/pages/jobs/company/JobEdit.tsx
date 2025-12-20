@@ -28,6 +28,7 @@ export default function JobEdit() {
     }
 
     loadJob()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, navigate])
 
   const loadJob = async () => {

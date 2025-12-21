@@ -25,7 +25,8 @@ export function FormInput<T extends Record<string, unknown>>({
   max,
   readOnly,
   format, //  추가
-}: FormInputProps<T> & { format?: FormatKind }) {
+  disabled, // disabled prop 추가
+}: FormInputProps<T> & { format?: FormatKind; disabled?: boolean }) {
   const reg = value(name, {
     ...rules,
     ...(format === 'businessNumber'
@@ -51,10 +52,11 @@ export function FormInput<T extends Record<string, unknown>>({
         min={min}
         max={max}
         readOnly={readOnly}
+        disabled={disabled}
         placeholder={placeholder}
         maxLength={format === 'businessNumber' ? 12 : undefined} // 10 + 하이픈2
         inputMode={format === 'businessNumber' ? 'numeric' : undefined}
-        className={`${className} w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg`}
+        className={`${className} w-full h-12 p-2 bg-white border-2 border-gray-300 rounded-lg ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
         {...reg}
       />
 

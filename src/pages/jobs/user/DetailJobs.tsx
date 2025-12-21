@@ -57,21 +57,61 @@ export default function DetailJobs() {
   const [loading, setLoading] = useState<boolean>(!location.state?.job)
   const [error, setError] = useState<string | null>(null)
 
+  // companyId 상태 추가
+  const [companyId, setCompanyId] = useState<string | null>(null)
+
   // 데이터 로드: 우선 API 시도, 실패 시 state/fallback 사용
   useEffect(() => {
     let ignore = false
     const run = async () => {
-      if (!id || location.state?.job) return // 이미 state로 있으면 fetch 생략
+      if (!id || location.state?.job) {
+        // state에서 온 경우 companyId 추출 시도
+        const stateJob = location.state?.job as JobDetail & { companyId?: number | string }
+        if (stateJob?.companyId) {
+          setCompanyId(String(stateJob.companyId))
+        }
+        return
+      }
       setLoading(true)
       try {
-        const res = await fetch(`/api/jobs/${id}`)
+        const res = await fetch(`/api/job-postings/${id}`)
         if (!res.ok) throw new Error('failed')
-        const data: JobDetail = await res.json()
-        if (!ignore) setJob(data)
-      } catch {
-        // 간단한 fallback (실서비스에서는 404 처리 권장)
+        const data = await res.json() as JobDetail & { companyId?: number | string }
         if (!ignore) {
-          setError('공고 정보를 불러오지 못했습니다.')
+          setJob(data)
+          // API 응답에서 companyId 추출
+          if (data.companyId) {
+            setCompanyId(String(data.companyId))
+          }
+        }
+      } catch {
+        // PublicJobPosting API로 재시도
+        try {
+          const { jobPostingApi } = await import('@/api/jobPostingApi')
+          const publicList = await jobPostingApi.getPublicList()
+          const found = publicList.find(p => String(p.postingId) === id)
+          if (found && !ignore) {
+            setJob({
+              id: String(found.postingId),
+              company: found.companyName,
+              title: found.title,
+              description: '',
+              location: found.locationText,
+              salaryNote: found.salaryMin > 0 || found.salaryMax > 0
+                ? `${found.salaryMin > 0 ? found.salaryMin.toLocaleString() : '협의'} ~ ${found.salaryMax > 0 ? found.salaryMax.toLocaleString() : '협의'}만원`
+                : undefined,
+              status: '모집 중',
+              category: '기타',
+              applyUrl: `/jobs/${found.postingId}`,
+              employmentType: found.employmentType,
+            })
+            // PublicJobPosting에는 companyId가 없으므로 null로 설정
+            setCompanyId(null)
+          }
+        } catch {
+          if (!ignore) {
+            setError('공고 정보를 불러오지 못했습니다.')
+          }
         }
       } finally {
         if (!ignore) setLoading(false)
@@ -163,6 +203,18 @@ export default function DetailJobs() {
             </button>
             <button className="px-3 py-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
               북마크
+            </button>
+            <button
+              onClick={() => {
+                if (companyId) {
+                  navigate(`/company/${companyId}`)
+                } else {
+                  // companyId가 없으면 회사명으로 검색 시도 또는 안내
+                  alert(`기업 정보를 불러올 수 없습니다.\n회사명: ${job.company}\n\n회사명으로 검색 기능은 준비 중입니다.`)
+                }
+              }}
+              className="px-3 py-2 text-sm font-medium text-white bg-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-700 transition">
+              기업정보 보기
             </button>
           </div>
         </div>

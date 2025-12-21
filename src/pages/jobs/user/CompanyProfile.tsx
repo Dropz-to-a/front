@@ -3,8 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import Header from '@/components/Header'
 import { getPublicCompanyInfo } from '@/api/auth'
 import type { CompanyInfo } from '@/types/company'
+
+// CompanyInfo 타입에 companyValues 필드 추가 확인
 import {
-  Building2,
   MapPin,
   Globe,
   Users,
@@ -23,23 +24,25 @@ export default function CompanyProfile() {
   const [company, setCompany] = useState<CompanyInfo | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadCompanyInfo()
-  }, [companyId])
-
   const loadCompanyInfo = async () => {
     try {
       setLoading(true)
       setError(null)
       const data = await getPublicCompanyInfo(companyId ? Number(companyId) : undefined)
       setCompany(data)
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('기업 정보 불러오기 실패:', e)
-      setError(e?.response?.data?.message || '기업 정보를 불러오는데 실패했습니다.')
+      const error = e as { response?: { data?: { message?: string } } }
+      setError(error?.response?.data?.message || '기업 정보를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadCompanyInfo()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companyId])
 
   if (loading) {
     return (
@@ -101,41 +104,43 @@ export default function CompanyProfile() {
               </div>
 
               {/* 기본 정보 그리드 */}
-              <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2">
-                {company.foundedYear && (
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm">설립: {company.foundedYear}년</span>
-                  </div>
-                )}
-                {company.employeeCount && (
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Users className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm">직원 수: {company.employeeCount}명</span>
-                  </div>
-                )}
-                {company.address && (
-                  <div className="flex items-start gap-2 text-gray-700 md:col-span-2">
-                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <span className="text-sm">
-                      {company.address} {company.detailAddress}
-                    </span>
-                  </div>
-                )}
-                {company.website && (
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Globe className="w-5 h-5 text-gray-400" />
-                    <a
-                      href={company.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-indigo-600 hover:underline"
-                    >
-                      {company.website}
-                    </a>
-                  </div>
-                )}
-              </div>
+              {(company.foundedYear || company.employeeCount || company.address || company.website) && (
+                <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2">
+                  {company.foundedYear && (
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Calendar className="w-5 h-5 text-gray-400" />
+                      <span className="text-sm">설립: {company.foundedYear}년</span>
+                    </div>
+                  )}
+                  {company.employeeCount && (
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Users className="w-5 h-5 text-gray-400" />
+                      <span className="text-sm">직원 수: {company.employeeCount}명</span>
+                    </div>
+                  )}
+                  {(company.address || company.detailAddress) && (
+                    <div className="flex items-start gap-2 text-gray-700 md:col-span-2">
+                      <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <span className="text-sm">
+                        {company.address} {company.detailAddress}
+                      </span>
+                    </div>
+                  )}
+                  {company.website && (
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Globe className="w-5 h-5 text-gray-400" />
+                      <a
+                        href={company.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-indigo-600 hover:underline"
+                      >
+                        {company.website}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -152,15 +157,15 @@ export default function CompanyProfile() {
         )}
 
         {/* 기업가치 및 목표 */}
-        {(company.values || company.mission) && (
+        {((company.companyValues || company.values) || company.mission) && (
           <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
-            {company.values && (
+            {(company.companyValues || company.values) && (
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-5 h-5 text-indigo-600" />
                   <h2 className="text-xl font-semibold text-gray-900">기업가치</h2>
                 </div>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.values}</p>
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.companyValues || company.values}</p>
               </div>
             )}
 

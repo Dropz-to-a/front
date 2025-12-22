@@ -1,12 +1,12 @@
 import axios from 'axios'
 
 // axios 인스턴스 생성
-// axios 인스턴스 생성
-// .env 파일에서 VITE_API_BASE_URL 값을 가져와 API 기본 URL로 설정합니다.
-// Vite는 import.meta.env를 통해 환경 변수를 제공합니다.
+// Vite 프록시를 사용하기 위해 baseURL을 설정하지 않음 (상대 경로 사용)
+// 프록시 설정: vite.config.ts의 /api 경로가 백엔드로 프록시됨
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL, // API 기본 URL로 교체
+    // baseURL을 설정하지 않으면 상대 경로로 요청이 가고 Vite 프록시가 처리함
     timeout: 10000, // 요청 타임아웃 설정
+    withCredentials: true, // 쿠키 포함
 });
 
 // 요청 인터셉터 추가 (JWT를 헤더에 포함)
@@ -30,7 +30,10 @@ apiClient.interceptors.response.use(
     // 토큰 만료 또는 기타 에러 처리
     if (error.response?.status === 401) {
       console.error('인증 실패! 로그인 페이지로 리디렉션...')
+      localStorage.removeItem('jwtToken')
       window.location.href = '/login'
+    } else if (error.response?.status === 403) {
+      console.error('권한 없음')
     }
     return Promise.reject(error)
   },

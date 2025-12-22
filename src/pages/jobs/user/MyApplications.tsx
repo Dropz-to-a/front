@@ -78,8 +78,14 @@ export default function MyApplications() {
       setAppliedJobs(combined)
     } catch (e: unknown) {
       console.error('[MyApplications] 지원 목록 조회 실패:', e)
-      const error = e as { message?: string }
-      setError(error?.message ?? '지원 목록을 불러오는데 실패했습니다.')
+      const error = e as { status?: number; code?: string; message?: string }
+      
+      // 500 에러인 경우 더 자세한 메시지 표시
+      if (error?.status === 500) {
+        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
+      } else {
+        setError(error?.message ?? '지원 목록을 불러오는데 실패했습니다.')
+      }
     } finally {
       setLoading(false)
     }

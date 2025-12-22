@@ -10,17 +10,24 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Git 소스 코드 체크아웃 (Jenkins 워크스페이스에 저장)
                 checkout scm
                 script {
-                    // 현재 커밋 정보 로그
-                    def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                    def gitBranch = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
+                    def gitCommit = bat(
+                        script: 'git rev-parse HEAD',
+                        returnStdout: true
+                    ).trim()
+
+                    def gitBranch = bat(
+                        script: 'git rev-parse --abbrev-ref HEAD',
+                        returnStdout: true
+                    ).trim()
+
                     echo "Building branch: ${gitBranch}"
                     echo "Commit: ${gitCommit}"
                 }
             }
         }
+
 
         stage('Deploy Frontend to EC2') {
             steps {

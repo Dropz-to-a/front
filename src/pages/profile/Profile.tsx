@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Briefcase,
   MapPin,
@@ -9,24 +9,56 @@ import {
   X,
   Camera,
   BookOpen,
-  Calendar,
-  Wallet,
+  Cake,
+  ShieldCheck,
+  Languages,
 } from 'lucide-react'
 import Header from '@/components/Header'
+
+import { profileApi } from '@/api/ProfileApi'
 
 export default function ProfileUnified() {
   const [isEditing, setIsEditing] = useState(false)
 
-  const [profile, setProfile] = useState({
-    name: '이지은',
-    role: '구직자',
-    email: 'jieun.lee@example.com',
-    phone: '010-5678-1234',
-    location: '서울시 마포구',
-    joinDate: '2024-03-15',
-    bio: '안녕하세요! 5년 차 마케팅 전문가 이지은입니다. 브랜드 전략과 디지털 캠페인을 중심으로 소비자와 소통하며, 데이터를 기반으로 한 마케팅 성과 향상을 이끌어왔습니다.',
-    trustScore: 95,
+  const [profile, setProfile] = useState<{
+    name: string
+    role: string
+    email: string
+    phone: string
+    birth: string
+    address: string
+    detailAddress: string
+    licenses: string[]
+    foreignLangs: string[]
+    motivation: string
+    experience: {
+      company: string
+      role: string
+      years: string
+      summary: string
+    }[]
+    skills: string[]
+    preferences: {
+      jobType: string
+      salary: string
+      workStyle: string
+      startDate: string
+    }
+  }>({
+    // 초기값
+    name: '',
+    role: '',
+    email: '',
+    phone: '',
+    birth: '',
+    address: '',
+    detailAddress: '',
+    skills: [],
+    licenses: [],
+    foreignLangs: [],
+    motivation: '',
     experience: [
+      // 사용할 지 미정
       {
         company: 'ABC 마케팅 에이전시',
         role: '브랜드 전략 매니저',
@@ -42,7 +74,6 @@ export default function ProfileUnified() {
         summary: 'SNS 퍼포먼스 캠페인 기획 및 운영, ROAS 320% 달성.',
       },
     ],
-    skills: ['브랜드 기획', '디지털 마케팅', '콘텐츠 전략', 'SNS 광고 운영'],
     preferences: {
       jobType: '정규직',
       salary: '4,200만 원 이상',
@@ -51,17 +82,39 @@ export default function ProfileUnified() {
     },
   })
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await profileApi.getMyProfile()
+        console.log('프로필 응답:', data)
+
+        setProfile(prev => ({
+          ...prev,
+          name: data.name ?? '',
+          email: data.email ?? '',
+          phone: data.phone ?? '',
+          birth: data.birth ?? '',
+          address: data.address ?? '',
+          detailAddress: data.detailAddress ?? '',
+          skills: data.skills ?? [],
+          foreignLangs: data.foreignLangs ?? [],
+          licenses: data.licenses ?? [],
+          motivation: data.motivation ?? '',
+        }))
+      } catch (e) {
+        console.error('프로필 조회 실패', e)
+      }
+    }
+
+    fetchProfile()
+  }, [])
+
   const [newSkill, setNewSkill] = useState('')
+  const [newlicenses, setNewlicenses] = useState('')
+  const [newforeignLangs, setNewforeignLangs] = useState('')
 
   const handleChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value })
-  }
-
-  const handlePreferenceChange = (field: string, value: string) => {
-    setProfile({
-      ...profile,
-      preferences: { ...profile.preferences, [field]: value },
-    })
   }
 
   const addSkill = () => {
@@ -73,6 +126,28 @@ export default function ProfileUnified() {
 
   const removeSkill = (s: string) => {
     setProfile({ ...profile, skills: profile.skills.filter(x => x !== s) })
+  }
+
+  const addlicenses = () => {
+    if (newlicenses.trim() && !profile.licenses.includes(newlicenses.trim())) {
+      setProfile({ ...profile, licenses: [...profile.licenses, newlicenses.trim()] })
+      setNewlicenses('')
+    }
+  }
+
+  const removelicenses = (s: string) => {
+    setProfile({ ...profile, licenses: profile.licenses.filter(x => x !== s) })
+  }
+
+  const addforeignLangs = () => {
+    if (newforeignLangs.trim() && !profile.foreignLangs.includes(newforeignLangs.trim())) {
+      setProfile({ ...profile, foreignLangs: [...profile.foreignLangs, newforeignLangs.trim()] })
+      setNewforeignLangs('')
+    }
+  }
+
+  const removeforeignLangs = (s: string) => {
+    setProfile({ ...profile, foreignLangs: profile.foreignLangs.filter(x => x !== s) })
   }
 
   // const handleSave = () => {
@@ -90,7 +165,7 @@ export default function ProfileUnified() {
           <div className="flex flex-col items-start gap-6 md:flex-row">
             {/* 아바타 */}
             <div className="relative">
-              <div className="flex items-center justify-center w-40 h-40 text-5xl font-bold text-white rounded-full shadow-md bg-gradient-to-tr from-indigo-500 to-sky-400">
+              <div className="flex items-center justify-center w-40 h-40 text-5xl font-bold text-white rounded-full shadow-md bg-linear-to-tr from-indigo-500 to-sky-400">
                 {profile.name[0]}
               </div>
               {isEditing && (
@@ -123,13 +198,13 @@ export default function ProfileUnified() {
               <div className="mt-3">
                 {isEditing ? (
                   <textarea
-                    value={profile.bio}
-                    onChange={e => handleChange('bio', e.target.value)}
+                    value={profile.motivation}
+                    onChange={e => handleChange('motivation', e.target.value)}
                     rows={3}
                     className="w-full px-4 py-2 text-sm border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none"
                   />
                 ) : (
-                  <p className="text-gray-700 leading-relaxed text-[15px]">{profile.bio}</p>
+                  <p className="text-gray-700 leading-relaxed text-[15px]">{profile.motivation}</p>
                 )}
               </div>
 
@@ -141,15 +216,15 @@ export default function ProfileUnified() {
 
                   {
                     icon: MapPin,
-                    label: '지역',
-                    key: 'location',
-                    value: profile.location,
+                    label: '주소',
+                    key: 'address',
+                    value: profile.address,
                   },
                   {
-                    icon: Calendar,
-                    label: '가입일',
-                    key: 'joinDate',
-                    value: profile.joinDate,
+                    icon: Cake,
+                    label: '생년월일',
+                    key: 'birth',
+                    value: profile.birth,
                   },
                 ].map(({ icon: Icon, label, key, value }) => (
                   <div
@@ -157,7 +232,7 @@ export default function ProfileUnified() {
                     className="flex items-center gap-2 p-3 text-sm text-gray-700 bg-gray-50 rounded-xl">
                     <Icon className="w-4 h-4 text-indigo-500" />
                     <span className="font-medium">{label}:</span>
-                    {isEditing && key !== 'joinDate' ? (
+                    {isEditing && key !== 'birth' ? (
                       <input
                         value={value}
                         onChange={e => handleChange(key, e.target.value)}
@@ -233,36 +308,79 @@ export default function ProfileUnified() {
           </div>
         </div>
 
-        {/* 희망 근무 조건 */}
+        {/* 자격증 */}
         <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-3xl">
           <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-800">
-            <Wallet className="w-5 h-5 text-green-600" /> 희망 근무 조건
+            <ShieldCheck className="w-5 h-5 text-indigo-500" /> 보유 자격증
           </h2>
-          <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
-            {Object.entries(profile.preferences).map(([key, value]) => {
-              const labels: Record<string, string> = {
-                jobType: '고용 형태',
-                salary: '희망 연봉',
-                workStyle: '근무 형태',
-                startDate: '시작 가능일',
-              }
-              return (
-                <div
-                  key={key}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                  <span className="font-medium text-gray-700">{labels[key]}</span>
-                  {isEditing ? (
-                    <input
-                      value={value}
-                      onChange={e => handlePreferenceChange(key, e.target.value)}
-                      className="text-right bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none"
-                    />
-                  ) : (
-                    <span className="text-gray-600">{value}</span>
-                  )}
-                </div>
-              )
-            })}
+          <div className="flex flex-wrap gap-2">
+            {profile.licenses.map((s, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-medium">
+                {s}
+                {isEditing && (
+                  <button
+                    onClick={() => removelicenses(s)}
+                    className="p-1 rounded-full hover:bg-indigo-200">
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+            {isEditing && (
+              <div className="flex gap-2 mt-1">
+                <input
+                  value={newlicenses}
+                  onChange={e => setNewlicenses(e.target.value)}
+                  placeholder="새로운 기술 입력"
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                />
+                <button
+                  onClick={addlicenses}
+                  className="px-3 text-xs text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                  추가
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 언어 */}
+        <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-3xl">
+          <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-800">
+            <Languages className="w-5 h-5 text-indigo-500" /> 외국어 능력
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {profile.foreignLangs.map((s, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-medium">
+                {s}
+                {isEditing && (
+                  <button
+                    onClick={() => removeforeignLangs(s)}
+                    className="p-1 rounded-full hover:bg-indigo-200">
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+            {isEditing && (
+              <div className="flex gap-2 mt-1">
+                <input
+                  value={newforeignLangs}
+                  onChange={e => setNewforeignLangs(e.target.value)}
+                  placeholder="새로운 외국어 입력"
+                  className="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+                />
+                <button
+                  onClick={addforeignLangs}
+                  className="px-3 text-xs text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                  추가
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

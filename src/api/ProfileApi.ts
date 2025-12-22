@@ -1,40 +1,7 @@
-import axios, { AxiosError } from 'axios'
+import { AxiosError } from 'axios'
+import apiClient from './Api'
 
 type ApiErrorRes = { code?: string; message?: string }
-
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
-  withCredentials: true,
-})
-
-// 요청 인터셉터: JWT 토큰을 헤더에 추가
-api.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('jwtToken')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  },
-)
-
-// 응답 인터셉터: 401/403 에러 처리
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      console.error('인증 실패! 로그인 페이지로 리디렉션...')
-      localStorage.removeItem('jwtToken')
-      window.location.href = '/login'
-    } else if (error.response?.status === 403) {
-      console.error('권한 없음')
-    }
-    return Promise.reject(error)
-  },
-)
 
 const parseAxiosError = (e: unknown) => {
   const err = e as AxiosError<ApiErrorRes>
@@ -61,25 +28,55 @@ export type Profile = {
   motivation?: string
 }
 
+export type UpdateProfileRequest = {
+  name?: string
+  email?: string
+  phone?: string
+  birth?: string
+  address?: string
+  detailAddress?: string
+  zonecode?: string
+  skills?: string[]
+  licenses?: string[]
+  foreignLangs?: string[]
+  activities?: string[]
+  motivation?: string
+}
+
 // 프로필 API
 export const profileApi = {
   // 내 프로필 조회
   async getMyProfile() {
     try {
-      const { data } = await api.get<Profile>('/api/profile/me')
+      // 헤더는 apiClient의 인터셉터에서 자동 설정됨
+      const { data } = await apiClient.get<Profile>('/api/profile/me')
       return data
     } catch (e) {
-      throw parseAxiosError(e)
+      const error = parseAxiosError(e)
+      console.error('[profileApi.getMyProfile]', error)
+      throw error
     }
   },
 
   // 내 프로필 수정
-  async updateMyProfile() {
+  async updateMyProfile(body: UpdateProfileRequest) {
     try {
-      const { data } = await api.patch<Profile>('/api/profile/me')
+      // 조회 API와 동일한 방식으로 호출 (헤더는 apiClient의 인터셉터에서 자동 설정됨)
+      const token = localStorage.getItem('jwtToken')
+      console.log('[profileApi.updateMyProfile] 토큰 존재:', !!token)
+      console.log('[profileApi.updateMyProfile] 요청 본문:', body)
+      
+      const { data } = await apiClient.patch<Profile>('/api/profile/me', body)
       return data
     } catch (e) {
-      throw parseAxiosError(e)
+      const error = parseAxiosError(e)
+      console.error('[profileApi.updateMyProfile] 에러 상세:', {
+        status: error.status,
+        code: error.code,
+        message: error.message,
+        response: (e as AxiosError)?.response?.data,
+      })
+      throw error
     }
   },
 }

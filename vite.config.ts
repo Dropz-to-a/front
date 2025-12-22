@@ -57,9 +57,20 @@ export default defineConfig(({ mode }) => {
       },
       // 일반 API는 백엔드로
       '/api': {
-        target: 'http://localhost:8080', // 실제 백엔드 서버 주소 (예: Spring Boot)
+        target: env.VITE_API_BASE_URL || 'http://localhost:8080', // 환경 변수 또는 기본값
         changeOrigin: true, // 호스트 헤더를 변경하여 요청 전송
         secure: false, // HTTPS 사용 시 필요
+        configure: (proxy) => {
+          // CORS preflight 요청 처리
+          proxy.on('proxyReq', (proxyReq, req) => {
+            // OPTIONS 요청에 대한 CORS 헤더 설정
+            if (req.method === 'OPTIONS') {
+              proxyReq.setHeader('Access-Control-Allow-Origin', '*')
+              proxyReq.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+              proxyReq.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            }
+          })
+        },
       },
     },
   },

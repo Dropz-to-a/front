@@ -104,7 +104,7 @@ const LoginForm: FC = () => {
         </div>
 
         {/* (선택) 에러 문구 */}
-        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+        {/* {error && <p className="mt-3 text-sm text-red-500">{error}</p>} */}
 
         <span className="mt-6">
           계정이 없으신가요?{' '}

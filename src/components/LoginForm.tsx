@@ -19,7 +19,7 @@ const LoginForm: FC = () => {
   const dispatch = useAppDispatch()
 
   // (선택) auth 상태로 로딩/에러 표시하고 싶을 때
-  const { loading, error } = useAppSelector(state => state.auth)
+  const { loading,  } = useAppSelector(state => state.auth)
 
   const toastShownRef = useRef(false)
 

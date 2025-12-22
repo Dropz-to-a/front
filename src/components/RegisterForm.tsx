@@ -131,9 +131,9 @@ const RegisterForm: FC = () => {
           value={register}
           rules={{
             required: true,
-            // ✅ 하이픈 포함한 길이 제한 (최대: 010-1234-5678 = 13)
+            //  하이픈 포함한 길이 제한 (최대: 010-1234-5678 = 13)
             maxLength: { value: 13, message: '전화번호가 너무 깁니다.' },
-            // ✅ 숫자만 10~11자리여야 함 (전송용 기준)
+            //  숫자만 10~11자리여야 함 (전송용 기준)
             validate: (v: string) => {
               const digits = onlyDigits(v)
               return (

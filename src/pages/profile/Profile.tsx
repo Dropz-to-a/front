@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   Briefcase,
   MapPin,
@@ -19,6 +19,8 @@ import { profileApi } from '@/api/ProfileApi'
 
 export default function ProfileUnified() {
   const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [originalProfile, setOriginalProfile] = useState<typeof profile | null>(null)
 
   const [profile, setProfile] = useState<{
     name: string
@@ -82,13 +84,13 @@ export default function ProfileUnified() {
     },
   })
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await profileApi.getMyProfile()
-        console.log('프로필 응답:', data)
+  const fetchProfile = useCallback(async () => {
+    try {
+      const data = await profileApi.getMyProfile()
+      console.log('프로필 응답:', data)
 
-        setProfile(prev => ({
+      setProfile(prev => {
+        const updatedProfile = {
           ...prev,
           name: data.name ?? '',
           email: data.email ?? '',
@@ -100,14 +102,18 @@ export default function ProfileUnified() {
           foreignLangs: data.foreignLangs ?? [],
           licenses: data.licenses ?? [],
           motivation: data.motivation ?? '',
-        }))
-      } catch (e) {
-        console.error('프로필 조회 실패', e)
-      }
+        }
+        setOriginalProfile(updatedProfile)
+        return updatedProfile
+      })
+    } catch (e) {
+      console.error('프로필 조회 실패', e)
     }
-
-    fetchProfile()
   }, [])
+
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
 
   const [newSkill, setNewSkill] = useState('')
   const [newlicenses, setNewlicenses] = useState('')
@@ -150,10 +156,44 @@ export default function ProfileUnified() {
     setProfile({ ...profile, foreignLangs: profile.foreignLangs.filter(x => x !== s) })
   }
 
-  // const handleSave = () => {
-  //   alert('변경사항이 저장되었습니다!');
-  //   setIsEditing(false);
-  // };
+  const handleSave = async () => {
+    try {
+      setIsSaving(true)
+      
+      await profileApi.updateMyProfile({
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+        birth: profile.birth,
+        address: profile.address,
+        detailAddress: profile.detailAddress,
+        skills: profile.skills,
+        licenses: profile.licenses,
+        foreignLangs: profile.foreignLangs,
+        motivation: profile.motivation,
+      })
+
+      // 저장 후 원본 프로필 업데이트 및 프로필 다시 불러오기
+      setOriginalProfile(profile)
+      setIsEditing(false)
+      await fetchProfile()
+      alert('변경사항이 저장되었습니다!')
+    } catch (e: unknown) {
+      const error = e as { message?: string }
+      alert(error?.message ?? '프로필 저장에 실패했습니다.')
+      console.error('프로필 저장 실패:', e)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleCancel = () => {
+    // 원본 프로필로 복원
+    if (originalProfile) {
+      setProfile(originalProfile)
+    }
+    setIsEditing(false)
+  }
 
   return (
     <div className="min-h-screen bg-[#f9fafb]">
@@ -182,16 +222,28 @@ export default function ProfileUnified() {
                   <h1 className="mb-1 text-3xl font-bold text-gray-800">{profile.name}</h1>
                   <p className="text-sm text-gray-600">역할: {profile.role}</p>
                 </div>
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-sm ${
-                    isEditing
-                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  }`}>
-                  {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
-                  {isEditing ? '저장하기' : '프로필 수정'}
-                </button>
+                <div className="flex gap-2">
+                  {isEditing && (
+                    <button
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                      <X className="w-4 h-4" />
+                      취소
+                    </button>
+                  )}
+                  <button
+                    onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                    disabled={isSaving}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all shadow-sm ${
+                      isEditing
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200 disabled:opacity-50 disabled:cursor-not-allowed'
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    }`}>
+                    {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+                    {isSaving ? '저장 중...' : isEditing ? '저장하기' : '프로필 수정'}
+                  </button>
+                </div>
               </div>
 
               {/* 자기소개 */}

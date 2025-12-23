@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, FileText, Send } from 'lucide-react'
 import Header from '@/components/Header'
 import { jobPostingApi, type PublicJobPosting } from '@/api/jobPostingApi'
+import { profileApi } from '@/api/ProfileApi'
+import { applicationApi } from '@/api/applicationApi'
 import type { Job } from './Jobs'
 
 // API 응답을 Job 타입으로 변환
@@ -69,19 +71,45 @@ const ApplyFormPage = () => {
     }
   }, [id])
 
+  // 프로필 정보 로드 (온보딩 데이터)
+  const loadProfile = useCallback(async () => {
+    try {
+      const profile = await profileApi.getMyProfile()
+      if (profile) {
+        // 주소와 상세주소를 합쳐서 표시
+        const fullAddress = [profile.address, profile.detailAddress]
+          .filter(Boolean)
+          .join(' ')
+          .trim()
+
+        setForm(prev => ({
+          ...prev,
+          name: profile.name || '',
+          email: profile.email || '',
+          phone: profile.phone || '',
+          birth: profile.birth || '',
+          address: fullAddress || '',
+        }))
+      }
+    } catch (e) {
+      console.error('[JobApplyForm] 프로필 로드 실패:', e)
+      // 프로필 로드 실패 시 localStorage에서 기본 정보 가져오기 (fallback)
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
+      if (currentUser) {
+        setForm(prev => ({
+          ...prev,
+          name: currentUser.name || '',
+          email: currentUser.email || '',
+          phone: currentUser.phone || '',
+        }))
+      }
+    }
+  }, [])
+
   useEffect(() => {
     loadJob()
-    
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null')
-    if (currentUser) {
-      setForm(prev => ({
-        ...prev,
-        name: currentUser.name || '',
-        email: currentUser.email || '',
-        phone: currentUser.phone || '',
-      }))
-    }
-  }, [loadJob])
+    loadProfile()
+  }, [loadJob, loadProfile])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -93,15 +121,25 @@ const ApplyFormPage = () => {
     if (!id) return
 
     try {
-      const response = await fetch('/api/applications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, postingId: Number(id) }),
+      await applicationApi.create({
+        postingId: Number(id),
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        birth: form.birth,
+        address: form.address,
+        height: form.height || undefined,
+        weight: form.weight || undefined,
+        blood: form.blood || undefined,
+        education: form.education || undefined,
+        military: form.military || undefined,
+        license: form.license || undefined,
+        foreignLang: form.foreignLang || undefined,
+        activity: form.activity || undefined,
+        family: form.family || undefined,
+        hobby: form.hobby || undefined,
+        motivation: form.motivation,
       })
-      
-      if (!response.ok) {
-        throw new Error('지원 제출에 실패했습니다.')
-      }
       
       navigate(`/jobs/${id}/completed`)
     } catch (e: unknown) {

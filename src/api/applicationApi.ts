@@ -21,7 +21,39 @@ export type Application = {
     note?: string;
 };
 
+export type CreateApplicationRequest = {
+    postingId: number;
+    name: string;
+    email: string;
+    phone: string;
+    birth: string;
+    address: string;
+    height?: string;
+    weight?: string;
+    blood?: string;
+    education?: string;
+    military?: string;
+    license?: string;
+    foreignLang?: string;
+    activity?: string;
+    family?: string;
+    hobby?: string;
+    motivation: string;
+};
+
 export const applicationApi = {
+    /** 지원 제출 */
+    async create(body: CreateApplicationRequest) {
+        try {
+            const { data } = await apiClient.post<Application>("/api/applications", body);
+            return data;
+        } catch (e) {
+            const error = parseAxiosError(e);
+            console.error('[applicationApi.create]', error);
+            throw error;
+        }
+    },
+
     /** 내 지원 목록 조회 */
     async getMyApplications() {
         try {

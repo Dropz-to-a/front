@@ -11,7 +11,7 @@ type AuthState = {
   token: string | null
   userType: UserType
   username: string | null
-  onboarded: boolean | null   
+  onboarded: boolean | null
   loading: boolean
   error: string | null
 }
@@ -20,11 +20,17 @@ const initialState: AuthState = {
   token: localStorage.getItem('jwtToken'),
   userType: (localStorage.getItem('userType') as UserType) ?? null,
   username: localStorage.getItem('username'),
-  onboarded: localStorage.getItem('onboarded') === 'true' ? true : localStorage.getItem('onboarded') === 'false' ? false : null, // ✅ 추가
+  onboarded:
+    localStorage.getItem('onboarded') === 'true'
+      ? true
+      : localStorage.getItem('onboarded') === 'false'
+      ? false
+      : null, // ✅ 추가
   loading: false,
   error: null,
 }
 
+//로그인 thunk: 토큰 저장 + role/username 디코딩 + 상태 저장
 export const loginThunk = createAsyncThunk(
   'auth/login',
   async (payload: UserLoginData, { rejectWithValue }) => {
@@ -34,10 +40,10 @@ export const loginThunk = createAsyncThunk(
       if (!token) return rejectWithValue('accessToken이 없습니다.')
 
       console.log('[AuthSlice] 로그인 성공, 토큰 받음')
-      
+
       const userType = getUserTypeFromToken(token)
       const username = getUsernameFromToken(token)
-      const onboarded = getOnBoardedFromToken(token) 
+      const onboarded = getOnBoardedFromToken(token)
 
       console.log('[AuthSlice] 추출된 정보:', {
         userType,
@@ -62,7 +68,7 @@ export const loginThunk = createAsyncThunk(
         console.warn('[AuthSlice] 온보딩 상태를 추출할 수 없음')
       }
 
-      return { token, userType, username, onboarded } 
+      return { token, userType, username, onboarded }
     } catch (e: any) {
       return rejectWithValue(e?.message ?? '로그인 실패')
     }
@@ -78,6 +84,7 @@ const authSlice = createSlice({
       if (action.payload) localStorage.setItem('jwtToken', action.payload)
       else localStorage.removeItem('jwtToken')
     },
+
     logout(state) {
       state.token = null
       state.userType = null
@@ -102,7 +109,7 @@ const authSlice = createSlice({
         state.token = action.payload.token
         state.userType = action.payload.userType
         state.username = action.payload.username ?? null
-        state.onboarded = action.payload.onboarded ?? null 
+        state.onboarded = action.payload.onboarded ?? null
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false

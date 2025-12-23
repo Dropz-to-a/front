@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import Header from '@/components/Header'
 import { FormInput } from '@/components/FormInput'
-import { getCompanyInfo, updateCompanyInfo, checkBusinessExists, type BusinessExistsResponse } from '@/api/auth'
+import { getCompanyInfo, updateCompanyInfo } from '@/api/auth'
 import DaumPostcode from 'react-daum-postcode'
 import { Building2, MapPin, Save, ArrowLeft, Sparkles, FileText } from 'lucide-react'
 
@@ -14,7 +14,7 @@ type CompanyInfoForm = {
   address: string
   detailAddress: string
   zonecode: string
-  values?: string
+  companyValues?: string
   mission?: string
   industry?: string
   description?: string
@@ -29,10 +29,6 @@ export default function CompanyInfo() {
   const [saving, setSaving] = useState(false)
   const [isPostOpen, setIsPostOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [businessValidation, setBusinessValidation] = useState<{
-    status: 'idle' | 'checking' | 'valid' | 'invalid'
-    data?: BusinessExistsResponse
-  }>({ status: 'idle' })
 
   const {
     register,
@@ -42,8 +38,6 @@ export default function CompanyInfo() {
     watch,
     reset,
   } = useForm<CompanyInfoForm>({ mode: 'onChange' })
-
-  const businessNumber = watch('businessNumber')
 
   // 기업 정보 불러오기
   useEffect(() => {
@@ -61,7 +55,7 @@ export default function CompanyInfo() {
         address: data.address || '',
         detailAddress: data.detailAddress || '',
         zonecode: data.zonecode || '',
-        values: data.values || '',
+        companyValues: data.companyValues || '',
         mission: data.mission || '',
         industry: data.industry || '',
         description: data.description || '',
@@ -77,49 +71,6 @@ export default function CompanyInfo() {
     }
   }
 
-  // 사업자 등록번호 검증 및 자동완성
-  useEffect(() => {
-    if (!businessNumber || !isEditing) {
-      setBusinessValidation({ status: 'idle' })
-      return
-    }
-
-    const cleanNumber = businessNumber.replace(/\D/g, '')
-    if (cleanNumber.length !== 10) {
-      setBusinessValidation({ status: 'idle' })
-      return
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        setBusinessValidation({ status: 'checking' })
-        const result = await checkBusinessExists({ businessNumber: cleanNumber })
-        
-        if (result.exists) {
-          setBusinessValidation({ status: 'valid', data: result })
-          
-          // 자동완성: 회사명
-          if (result.companyName) {
-            setValue('companyName', result.companyName, { shouldValidate: true })
-          }
-          
-        } else {
-          setBusinessValidation({ status: 'invalid', data: result })
-        }
-      } catch (err: any) {
-        console.error('사업자 등록번호 검증 실패:', err)
-        setBusinessValidation({
-          status: 'invalid',
-          data: {
-            exists: false,
-            message: err.response?.data?.message || '사업자 등록번호 검증 중 오류가 발생했습니다.',
-          },
-        })
-      }
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [businessNumber, isEditing, setValue])
 
   // 저장 처리
   const onSubmit = async (data: CompanyInfoForm) => {
@@ -192,7 +143,8 @@ export default function CompanyInfo() {
                 value={register}
                 rules={{ required: '회사명을 입력하세요.' }}
                 error={errors.companyName}
-                readOnly={!isEditing}
+                readOnly={true}
+                disabled={true}
               />
 
               <div>
@@ -209,62 +161,14 @@ export default function CompanyInfo() {
                       String(v ?? '').replace(/\D/g, '').length === 10 || '사업자등록번호는 10자리입니다.',
                   }}
                   error={errors.businessNumber}
-                  readOnly={!isEditing}
+                  readOnly={true}
+                  disabled={true}
                 />
 
-                {/* 사업자 등록번호 검증 결과 */}
-                {isEditing && businessValidation.status !== 'idle' && (
-                  <div className="mt-2">
-                    {businessValidation.status === 'checking' && (
-                      <div className="flex items-center gap-2 text-sm text-blue-600">
-                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                        <span>사업자 등록번호를 확인하는 중...</span>
-                      </div>
-                    )}
-
-                    {businessValidation.status === 'valid' && businessValidation.data && (
-                      <div className="p-3 text-sm bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-center gap-2 text-green-700 font-semibold">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span>정상적인 사업자입니다 - 정보가 자동완성되었습니다</span>
-                        </div>
-                        {businessValidation.data.companyName && (
-                          <p className="mt-1 text-green-600">
-                            회사명: <span className="font-semibold">{businessValidation.data.companyName}</span>
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {businessValidation.status === 'invalid' && businessValidation.data && (
-                      <div className="p-3 text-sm bg-red-50 border border-red-200 rounded-lg">
-                        <div className="flex items-center gap-2 text-red-700 font-semibold">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                          <span>사업자 등록번호 검증 실패</span>
-                        </div>
-                        <div className="mt-2 text-red-600">
-                          {businessValidation.data.status && (
-                            <p className="font-semibold">
-                              사업 상태: {
-                                businessValidation.data.status === '계속사업자' ? '계속사업자' :
-                                businessValidation.data.status === '휴업자' ? '휴업자' :
-                                businessValidation.data.status === '폐업자' ? '폐업자' :
-                                businessValidation.data.status
-                              }
-                            </p>
-                          )}
-                          {businessValidation.data.message && (
-                            <p className="mt-1">{businessValidation.data.message}</p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {/* 중요 정보는 수정 불가 안내 */}
+                <p className="mt-2 text-xs text-gray-500">
+                  ⚠️ 사업자등록번호는 수정할 수 없습니다.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -409,14 +313,14 @@ export default function CompanyInfo() {
                 </label>
                 {isEditing ? (
                   <textarea
-                    {...register('values')}
+                    {...register('companyValues')}
                     rows={3}
                     placeholder="우리 회사의 핵심 가치를 입력해주세요. 예: 혁신, 고객 중심, 투명성 등"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 ) : (
                   <p className="px-4 py-2 text-gray-700 bg-gray-50 rounded-lg whitespace-pre-wrap min-h-[80px]">
-                    {watch('values') || '기업가치를 입력해주세요.'}
+                    {watch('companyValues') || '기업가치를 입력해주세요.'}
                   </p>
                 )}
               </div>

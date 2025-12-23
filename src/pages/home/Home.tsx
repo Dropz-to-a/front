@@ -100,7 +100,7 @@ const Home = () => {
                   desc="역량·경력·희망근무 입력하고 노출"
                 />
                 <MiniCard
-                  to="/contracts"
+                  to="/my-applications"
                   icon="📄"
                   title="표준 계약 체결"
                   desc="알고리즘을 활용하여  위험 문구를 자동 검토"

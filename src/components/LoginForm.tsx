@@ -1,9 +1,12 @@
-import type { FC } from 'react'
+import { useRef, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { FormInput } from './FormInput'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { loginThunk } from '@/features/auth/authSlice'
+
+import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
+
 // import { getOnBoardedFromToken } from '@/utils/jwt'
 //api 호출 대신 thunk 사용해서 값 불러옴
 type LoginFormValue = {
@@ -16,7 +19,9 @@ const LoginForm: FC<{ type: string }> = ({ type }) => {
   const dispatch = useAppDispatch()
 
   // (선택) auth 상태로 로딩/에러 표시하고 싶을 때
-  const { loading, error } = useAppSelector(state => state.auth)
+  const { loading,  } = useAppSelector(state => state.auth)
+
+  const toastShownRef = useRef(false)
 
   const {
     handleSubmit,
@@ -29,29 +34,26 @@ const LoginForm: FC<{ type: string }> = ({ type }) => {
     const { id, password } = getValues()
     const result = await dispatch(loginThunk({ id, password }))
 
+    if (toastShownRef.current) return
+
     if (loginThunk.fulfilled.match(result)) {
-      const { token, userType, onboarded } = result.payload
+      const { userType, onboarded } = result.payload
 
-      console.log('[LoginForm] 로그인 성공, 리디렉션 결정:', {
-        token: token ? '있음' : '없음',
-        userType,
-        onboarded,
-      })
+      toastShownRef.current = true
+      showSuccessToast('로그인에 성공했습니다!')
 
-      // 이미 온보딩 완료면 홈으로
       if (onboarded === true) {
-        console.log('[LoginForm] 온보딩 완료 → 홈으로 이동')
         navigate('/', { replace: true })
-        return
+      } else {
+        navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', {
+          replace: true,
+        })
       }
+    }
 
-      // 미완료면 온보딩으로
-      const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding'
-      console.log('[LoginForm] 온보딩 미완료 → 온보딩 페이지로 이동:', onboardingPath)
-      navigate(onboardingPath, { replace: true })
-    } else {
-      console.error('[LoginForm] 로그인 실패:', error)
-      alert(error ?? '로그인 실패')
+    if (loginThunk.rejected.match(result)) {
+      toastShownRef.current = true
+      showErrorToast('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }
   }
 
@@ -102,7 +104,7 @@ const LoginForm: FC<{ type: string }> = ({ type }) => {
         </div>
 
         {/* (선택) 에러 문구 */}
-        {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
+        {/* {error && <p className="mt-3 text-sm text-red-500">{error}</p>} */}
 
         <span className="mt-6">
           계정이 없으신가요?{' '}

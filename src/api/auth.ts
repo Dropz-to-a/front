@@ -48,7 +48,7 @@ export const OnBoardCompany = async (data: CompanyOnBoardData) => {
 
 // 기업 정보 조회
 export const getCompanyInfo = async () => {
-  const response = await api.get('/api/company/info', {
+  const response = await api.get('/api/company/profile/me', {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -58,7 +58,7 @@ export const getCompanyInfo = async () => {
 
 // 기업 정보 수정
 export const updateCompanyInfo = async (data: any) => {
-  const response = await api.patch('/api/company/info', data, {
+  const response = await api.patch('/api/company/profile/me', data, {
     headers: {
       'Content-Type': 'application/json',
     },

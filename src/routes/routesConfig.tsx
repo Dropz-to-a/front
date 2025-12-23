@@ -40,8 +40,6 @@ export type RouteItem = {
   path: string
   element: React.ReactNode
 }
-
-
 // 로그인 거부 라우트 설정
 export const LoginHateRoutes: RouteItem[] = [
   // 로그인
@@ -99,7 +97,7 @@ export const privateRoutes: RouteItem[] = [
 
   // 재직자 급여 로그
   { path: '/paylog', element: <PayLogPage /> },
-  
+
   //------------------------------------- 재직자 ---------------------------------------------
 
   // 출퇴근 관리
@@ -124,5 +122,4 @@ export const privateRoutes: RouteItem[] = [
   { path: '/contracts', element: <Contracts /> },
   // 재직자 급여 정산
   { path: '/payroll', element: <PayrollPage /> },
-
 ]

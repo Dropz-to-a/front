@@ -1,10 +1,12 @@
-import type { FC } from 'react'
+import { useRef, type FC } from 'react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { FormInput } from './FormInput'
 import { registerUser } from '../api'
+
+import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
 
 type RegisterFormValue = {
   username: string
@@ -29,6 +31,8 @@ const formatPhone = (value: string) => {
 const RegisterForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
 
+  const toastShownRef = useRef(false)
+
   const {
     handleSubmit,
     register,
@@ -51,6 +55,8 @@ const RegisterForm: FC<{ type: string }> = ({ type }) => {
   const handleRegister = async () => {
     const { username, email, phone, password } = getValues()
 
+    if (toastShownRef.current) return
+
     const requestBody: RegisterFormValue = {
       username,
       email,
@@ -64,11 +70,13 @@ const RegisterForm: FC<{ type: string }> = ({ type }) => {
     try {
       const response = await registerUser(requestBody)
       console.log('회원가입 성공:', response.data)
+      toastShownRef.current = true
+      showSuccessToast('회원가입에 성공했습니다! 로그인 페이지로 이동합니다.')
       navigate(`/login?type=${type}`)
-      alert('회원가입에 성공했습니다! 로그인해주세요.')
     } catch (err) {
       console.error('회원가입 실패:', err)
-      alert('회원가입에 실패했습니다. 다시 시도해주세요.')
+      toastShownRef.current = true
+      showErrorToast('회원가입에 실패했습니다. 다시 시도해주세요.')
     }
   }
 
@@ -120,9 +128,9 @@ const RegisterForm: FC<{ type: string }> = ({ type }) => {
           value={register}
           rules={{
             required: true,
-            // ✅ 하이픈 포함한 길이 제한 (최대: 010-1234-5678 = 13)
+            //  하이픈 포함한 길이 제한 (최대: 010-1234-5678 = 13)
             maxLength: { value: 13, message: '전화번호가 너무 깁니다.' },
-            // ✅ 숫자만 10~11자리여야 함 (전송용 기준)
+            //  숫자만 10~11자리여야 함 (전송용 기준)
             validate: (v: string) => {
               const digits = onlyDigits(v)
               return (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '@/components/Header'
@@ -21,7 +22,9 @@ const JobManage = () => {
     try {
       setLoading(true)
       const data = await jobPostingApi.getList()
-      setJobs(data)
+      // 모집 중/임시저장 탭에서는 마감된 공고 제외
+      const activeJobs = data.filter(job => job.status !== 'CLOSED')
+      setJobs(activeJobs)
     } catch (e: any) {
       alert(e?.message ?? '공고 목록을 불러오는데 실패했습니다.')
     } finally {
@@ -154,7 +157,7 @@ const JobManage = () => {
                             수정
                           </Link>
                           <Link
-                            to={`/jobs/${job.postingId}/completed/admin`}
+                            to={`/jobs/completed/admin`}
                             onClick={e => e.stopPropagation()}
                             className="px-2 py-1 text-xs text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200">
                             지원자 보기
@@ -182,35 +185,56 @@ const JobManage = () => {
           )
         ) : (
           history.length === 0 ? (
-            <div className="py-20 text-center text-gray-500">마감된 공고 기록이 없습니다.</div>
+            <div className="py-20 text-center">
+              <div className="inline-block p-8 bg-white rounded-2xl shadow-sm border border-gray-200">
+                <div className="text-6xl mb-4">📋</div>
+                <p className="text-lg font-semibold text-gray-700 mb-2">마감된 공고 기록이 없습니다</p>
+                <p className="text-sm text-gray-500">마감된 공고가 있으면 여기에 표시됩니다.</p>
+              </div>
+            </div>
           ) : (
-            <div className="overflow-hidden bg-white shadow rounded-xl">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="text-left text-gray-700 bg-gray-100">
-                    <th className="p-3 text-sm font-semibold">공고 제목</th>
-                    <th className="p-3 text-sm font-semibold">마감일</th>
-                    <th className="p-3 text-sm font-semibold text-right">총 지원자 수</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map(item => (
-                    <tr key={item.postingId} className="transition border-t hover:bg-gray-50">
-                      <td className="p-3 font-medium text-gray-800">{item.title}</td>
-                      <td className="p-3 text-sm text-gray-600">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {history.map(item => (
+                <div
+                  key={item.postingId}
+                  className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 flex-1 pr-2">
+                      {item.title}
+                    </h3>
+                    <span className="flex-shrink-0 px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-600 rounded-md">
+                      마감됨
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <span className="font-medium">마감일:</span>
+                      <span>
                         {new Date(item.closedAt).toLocaleDateString('ko-KR', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',
                         })}
-                      </td>
-                      <td className="p-3 text-sm text-gray-600 text-right">
-                        {item.totalApplicants}명
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <span className="font-medium">지원자 수:</span>
+                      <span className="font-semibold text-indigo-600">{item.totalApplicants}명</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100">
+                    <Link
+                      to={`/jobs/completed/admin`}
+                      className="block w-full px-4 py-2 text-sm font-medium text-center text-indigo-700 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition"
+                    >
+                      지원자 관리
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           )
         )}

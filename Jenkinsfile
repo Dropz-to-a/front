@@ -53,7 +53,7 @@ pipeline {
                      echo 'Git pull...' && git pull origin main && \
                      echo 'Installing dependencies...' && npm install && \
                      echo 'Building application...' && npm run build && \
-                     echo 'Reloading nginx...' && sudo systemctl reload nginx && \
+                     echo 'Restarting nginx...' && sudo systemctl restart nginx &&
                      echo 'Deployment completed successfully!'"
                     
                     echo ========================================

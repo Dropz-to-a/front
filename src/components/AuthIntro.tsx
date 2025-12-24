@@ -14,11 +14,6 @@ const LoginIntro = ({ img, title, description }: LoginIntroProps) => {
 
   return (
     <div className="overflow-hidden text-white w-5/7">
-      <div className="flex flex-col items-center justify-center w-full h-full p-12 bg-blue-500 rounded-l-3xl">
-        <div className="rounded-2xl mb-14">
-          <img src={img} alt="Logo" className="w-30 h-30" />
-        </div>
-      </div>
       <div
         className={`relative flex flex-col items-center justify-center w-full h-full p-12
         ${!isLogin && type === 'company' ? 'bg-gray-900' : 'bg-blue-500'} rounded-l-3xl`}>

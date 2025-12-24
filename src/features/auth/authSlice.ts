@@ -9,6 +9,7 @@ type UserType = 'user' | 'company' | null
 
 type AuthState = {
   token: string | null
+  refreshToken: string | null
   userType: UserType
   username: string | null
   onboarded: boolean | null
@@ -18,6 +19,7 @@ type AuthState = {
 
 const initialState: AuthState = {
   token: localStorage.getItem('jwtToken'),
+  refreshToken: localStorage.getItem('refreshToken'),
   userType: (localStorage.getItem('userType') as UserType) ?? null,
   username: localStorage.getItem('username'),
   onboarded:
@@ -37,6 +39,7 @@ export const loginThunk = createAsyncThunk(
     try {
       const data = await loginUser(payload)
       const token = data?.accessToken
+      const refreshToken = data?.refreshToken
       if (!token) return rejectWithValue('accessToken이 없습니다.')
 
       console.log('[AuthSlice] 로그인 성공, 토큰 받음')
@@ -52,6 +55,7 @@ export const loginThunk = createAsyncThunk(
       })
 
       localStorage.setItem('jwtToken', token)
+      localStorage.setItem('refreshToken', refreshToken)
 
       if (userType) localStorage.setItem('userType', userType)
       else localStorage.removeItem('userType')
@@ -87,12 +91,14 @@ const authSlice = createSlice({
 
     logout(state) {
       state.token = null
+      state.refreshToken = null
       state.userType = null
       state.username = null
       state.onboarded = null
       state.loading = false
       state.error = null
       localStorage.removeItem('jwtToken')
+      localStorage.removeItem('refreshToken')
       localStorage.removeItem('userType')
       localStorage.removeItem('username')
       localStorage.removeItem('onboarded')

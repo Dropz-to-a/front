@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Header from '@/components/Header'
@@ -7,10 +6,6 @@ import type { CompanyInfo } from '@/types/company'
 
 // CompanyInfo 타입에 companyValues 필드 추가 확인
 import {
-<<<<<<< HEAD
-  /* Building2, */
-=======
->>>>>>> main
   MapPin,
   Globe,
   Users,
@@ -107,43 +102,10 @@ export default function CompanyProfile() {
               </div>
 
               {/* 기본 정보 그리드 */}
-<<<<<<< HEAD
-              <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2">
-                {company.foundedYear && (
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm">설립: {company.foundedYear}년</span>
-                  </div>
-                )}
-                {company.employeeCount && (
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Users className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm">직원 수: {company.employeeCount}명</span>
-                  </div>
-                )}
-                {company.address && (
-                  <div className="flex items-start gap-2 text-gray-700 md:col-span-2">
-                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                    <span className="text-sm">
-                      {company.address} {company.detailAddress}
-                    </span>
-                  </div>
-                )}
-                {company.website && (
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Globe className="w-5 h-5 text-gray-400" />
-                    <a
-                      href={company.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-indigo-600 hover:underline">
-                      {company.website}
-                    </a>
-                  </div>
-                )}
-              </div>
-=======
-              {(company.foundedYear || company.employeeCount || company.address || company.website) && (
+              {(company.foundedYear ||
+                company.employeeCount ||
+                company.address ||
+                company.website) && (
                 <div className="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2">
                   {company.foundedYear && (
                     <div className="flex items-center gap-2 text-gray-700">
@@ -172,15 +134,13 @@ export default function CompanyProfile() {
                         href={company.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-indigo-600 hover:underline"
-                      >
+                        className="text-sm text-indigo-600 hover:underline">
                         {company.website}
                       </a>
                     </div>
                   )}
                 </div>
               )}
->>>>>>> main
             </div>
           </div>
         </div>
@@ -199,26 +159,17 @@ export default function CompanyProfile() {
         )}
 
         {/* 기업가치 및 목표 */}
-        {((company.companyValues || company.values) || company.mission) && (
+        {(company.companyValues || company.values || company.mission) && (
           <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
-<<<<<<< HEAD
-            {company.values && (
-              <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
-=======
             {(company.companyValues || company.values) && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
->>>>>>> main
+              <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-2xl">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-5 h-5 text-indigo-600" />
                   <h2 className="text-xl font-semibold text-gray-900">기업가치</h2>
                 </div>
-<<<<<<< HEAD
                 <p className="leading-relaxed text-gray-700 whitespace-pre-wrap">
-                  {company.values}
+                  {company.companyValues || company.values}
                 </p>
-=======
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{company.companyValues || company.values}</p>
->>>>>>> main
               </div>
             )}
 

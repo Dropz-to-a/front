@@ -8,10 +8,10 @@ import { setToken } from '@/features/auth/authSlice'
 // Vite 프록시를 사용하기 위해 baseURL을 설정하지 않음 (상대 경로 사용)
 // 프록시 설정: vite.config.ts의 /api 경로가 백엔드로 프록시됨
 const apiClient = axios.create({
-    // baseURL을 설정하지 않으면 상대 경로로 요청이 가고 Vite 프록시가 처리함
-    timeout: 10000, // 요청 타임아웃 설정
-    withCredentials: true, // 쿠키 포함
-});
+  // baseURL을 설정하지 않으면 상대 경로로 요청이 가고 Vite 프록시가 처리함
+  timeout: 10000, // 요청 타임아웃 설정
+  withCredentials: true, // 쿠키 포함
+})
 
 // accessToken이 만료되었는지 검증하는 함수
 const isTokenExpired = (accessToken: string | null): boolean => {
@@ -45,13 +45,13 @@ const processQueue = (error: AxiosError | null, token: string | null = null) => 
       prom.resolve(token)
     }
   })
-  
+
   failedQueue = []
 }
 
 const refreshAccessToken = async (): Promise<string | null> => {
   const refreshToken = localStorage.getItem('refreshToken')
-  
+
   if (!refreshToken) {
     console.error('[Api] refreshToken이 없습니다.')
     return null
@@ -62,22 +62,22 @@ const refreshAccessToken = async (): Promise<string | null> => {
     const response = await axios.post('/api/auth/refresh', {
       refreshToken: refreshToken,
     })
-    
+
     const newToken = response.data?.accessToken
-    
+
     if (!newToken) {
       throw new Error('새로운 accessToken을 받지 못했습니다.')
     }
 
-    const previousToken = localStorage.getItem('jwtToken')
+    // const previousToken = localStorage.getItem('jwtToken')
 
     // localStorage와 Redux store 업데이트
     localStorage.setItem('jwtToken', newToken)
     store.dispatch(setToken(newToken))
 
-    console.log('[Api] 토큰 재발급 성공')
-    console.log('[Api] 이전 accessToken:', previousToken)
-    console.log('[Api] 재발급 받은 accessToken:', newToken)
+    // console.log('[Api] 토큰 재발급 성공')
+    // console.log('[Api] 이전 accessToken:', previousToken)
+    // console.log('[Api] 재발급 받은 accessToken:', newToken)
 
     return newToken
   } catch (error) {
@@ -94,7 +94,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('jwtToken')
-    
+
     // 토큰이 있고 만료되지 않았으면 헤더에 추가
     if (token && !isTokenExpired(token)) {
       config.headers.Authorization = `Bearer ${token}`
@@ -104,7 +104,7 @@ apiClient.interceptors.request.use(
         isRefreshing = true
         const newToken = await refreshAccessToken()
         isRefreshing = false
-        
+
         if (newToken) {
           config.headers.Authorization = `Bearer ${newToken}`
           processQueue(null, newToken)
@@ -128,7 +128,7 @@ apiClient.interceptors.request.use(
           })
       }
     }
-    
+
     return config
   },
   error => {

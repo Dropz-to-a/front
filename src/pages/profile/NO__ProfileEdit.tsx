@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { profileApi } from '@/api/ProfileApi'
+
 import type { ChangeEvent } from 'react'
 import {
   User,
@@ -20,6 +22,7 @@ import {
 
 import Header from '@/components/Header'
 import { Link } from 'react-router'
+import { showErrorToast } from '@/components/Toast/toast'
 
 interface Preferences {
   jobType: string
@@ -87,7 +90,7 @@ const ProfileEdit = () => {
   const handlePreferenceChange = (
     field: keyof Preferences,
 
-    value: string | number,
+    value: string | number
   ): void => {
     setProfile({
       ...profile,
@@ -96,14 +99,52 @@ const ProfileEdit = () => {
   }
 
   // ✅ 저장 처리
-  const handleSave = (): void => {
-    setIsSaving(true)
-    setTimeout(() => {
-      setIsSaving(false)
+  const handleSave = async (): Promise<void> => {
+    try {
+      setIsSaving(true)
+      await profileApi.updateMyProfile({
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+        address: profile.location,
+        skills: profile.skills,
+        motivation: profile.bio,
+      })
       setShowSuccess(true)
       setTimeout(() => setShowSuccess(false), 3000)
-    }, 1500)
+    } catch (e) {
+      console.error('프로필 저장 실패', e)
+      showErrorToast('프로필 저장에 실패했습니다.')
+    } finally {
+      setIsSaving(false)
+    }
   }
+
+  useEffect(() => {
+    profileApi
+      .getMyProfile()
+      .then(data => {
+        setProfile({
+          name: data.name,
+          role: '구직자', // 백엔드에 없으면 임시
+          email: data.email ?? '',
+          phone: data.phone ?? '',
+          location: data.address ?? '',
+          bio: data.motivation ?? '',
+          skills: data.skills ?? [],
+          preferences: {
+            jobType: '정규직',
+            minSalary: 0,
+            maxSalary: 0,
+            workStyle: '',
+            startDate: '',
+          },
+        })
+      })
+      .catch(err => {
+        console.error('프로필 조회 실패', err)
+      })
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-100">

@@ -17,15 +17,22 @@ import {
 } from 'lucide-react'
 import Header from '@/components/Header'
 
-import { profileApi, type Activity } from '@/api/ProfileApi'
+import {
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+  showConfirmToast,
+} from '@/components/Toast/toast'
+
+import { profileApi, type Activities } from '@/api/ProfileApi'
 
 export default function ProfileUnified() {
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [originalProfile, setOriginalProfile] = useState<typeof profile | null>(null)
-  const [activities, setActivities] = useState<Activity[]>([])
-  const [editingActivityId, setEditingActivityId] = useState<number | null>(null)
-  const [isAddingActivity, setIsAddingActivity] = useState(false)
+  const [activities, setActivities] = useState<Activities[]>([])
+  const [editingActivitiesId, setEditingActivitiesId] = useState<number | null>(null)
+  const [isAddingActivities, setIsAddingActivities] = useState(false)
 
   const [profile, setProfile] = useState<{
     name: string
@@ -88,6 +95,8 @@ export default function ProfileUnified() {
         setOriginalProfile(updatedProfile)
         return updatedProfile
       })
+
+      setActivities(data.activities ?? [])
     } catch (e) {
       console.error('프로필 조회 실패', e)
     }
@@ -102,7 +111,7 @@ export default function ProfileUnified() {
   const [newforeignLangs, setNewforeignLangs] = useState('')
 
   // 경력 추가 폼 상태
-  const [newActivity, setNewActivity] = useState({
+  const [newActivities, setNewActivities] = useState({
     userPosition: '',
     companyName: '',
     description: '',
@@ -111,7 +120,7 @@ export default function ProfileUnified() {
   })
 
   // 경력 수정 폼 상태
-  const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
+  const [editingActivities, setEditingActivities] = useState<Activities | null>(null)
 
   const handleChange = (key: string, value: string) => {
     setProfile({ ...profile, [key]: value })
@@ -151,90 +160,97 @@ export default function ProfileUnified() {
   }
 
   // 경력 추가
-  const handleAddActivity = async () => {
-    if (!newActivity.userPosition || !newActivity.companyName || !newActivity.startDate) {
-      alert('직책, 회사명, 시작일은 필수 입력 항목입니다.')
+  const handleAddActivities = async () => {
+    if (!newActivities.userPosition || !newActivities.companyName || !newActivities.startDate) {
+      showInfoToast('직책, 회사명, 시작일은 필수 입력 항목입니다.')
       return
     }
 
     try {
-      const created = await profileApi.createActivity({
-        userPosition: newActivity.userPosition,
-        companyName: newActivity.companyName,
-        description: newActivity.description,
-        startDate: newActivity.startDate,
-        endDate: newActivity.endDate || newActivity.startDate,
+      const created = await profileApi.createActivities({
+        userPosition: newActivities.userPosition,
+        companyName: newActivities.companyName,
+        description: newActivities.description,
+        startDate: newActivities.startDate,
+        endDate: newActivities.endDate || newActivities.startDate,
       })
       setActivities(prev => [...prev, created])
-      setNewActivity({
+      setNewActivities({
         userPosition: '',
         companyName: '',
         description: '',
         startDate: '',
         endDate: '',
       })
-      setIsAddingActivity(false)
-      alert('경력이 추가되었습니다!')
+      setIsAddingActivities(false)
+      showSuccessToast('경력이 추가되었습니다.')
     } catch (e: unknown) {
       const error = e as { message?: string }
-      alert(error?.message ?? '경력 추가에 실패했습니다.')
+      showErrorToast(error?.message ?? '경력 추가에 실패했습니다.')
       console.error('경력 추가 실패:', e)
     }
   }
 
   // 경력 수정 시작
-  const handleStartEditActivity = (activity: Activity) => {
-    setEditingActivityId(activity.id)
-    setEditingActivity({ ...activity })
+  const handleStartEditActivities = (activity: Activities) => {
+    setEditingActivitiesId(activity.id)
+    setEditingActivities({ ...activity })
   }
 
   // 경력 수정 저장
-  const handleSaveActivity = async () => {
-    if (!editingActivity) return
+  const handleSaveActivities = async () => {
+    if (!editingActivities) return
 
-    if (!editingActivity.userPosition || !editingActivity.companyName || !editingActivity.startDate) {
-      alert('직책, 회사명, 시작일은 필수 입력 항목입니다.')
+    if (
+      !editingActivities.userPosition ||
+      !editingActivities.companyName ||
+      !editingActivities.startDate
+    ) {
+      showInfoToast('직책, 회사명, 시작일은 필수 입력 항목입니다.')
       return
     }
 
     try {
-      const updated = await profileApi.updateActivity(editingActivity.id, {
-        userPosition: editingActivity.userPosition,
-        companyName: editingActivity.companyName,
-        description: editingActivity.description,
-        startDate: editingActivity.startDate,
-        endDate: editingActivity.endDate,
+      const updated = await profileApi.updateActivities(editingActivities.id, {
+        userPosition: editingActivities.userPosition,
+        companyName: editingActivities.companyName,
+        description: editingActivities.description,
+        startDate: editingActivities.startDate,
+        endDate: editingActivities.endDate,
       })
       setActivities(prev => prev.map(a => (a.id === updated.id ? updated : a)))
-      setEditingActivityId(null)
-      setEditingActivity(null)
-      alert('경력이 수정되었습니다!')
+      setEditingActivitiesId(null)
+      setEditingActivities(null)
+      showSuccessToast('경력이 수정되었습니다.')
     } catch (e: unknown) {
       const error = e as { message?: string }
-      alert(error?.message ?? '경력 수정에 실패했습니다.')
+      showErrorToast(error?.message ?? '경력 수정에 실패했습니다.')
       console.error('경력 수정 실패:', e)
     }
   }
 
   // 경력 수정 취소
-  const handleCancelEditActivity = () => {
-    setEditingActivityId(null)
-    setEditingActivity(null)
+  const handleCancelEditActivities = () => {
+    setEditingActivitiesId(null)
+    setEditingActivities(null)
   }
 
   // 경력 삭제
-  const handleDeleteActivity = async (activityId: number) => {
-    if (!confirm('정말 이 경력을 삭제하시겠습니까?')) return
-
-    try {
-      await profileApi.deleteActivity(activityId)
-      setActivities(prev => prev.filter(a => a.id !== activityId))
-      alert('경력이 삭제되었습니다!')
-    } catch (e: unknown) {
-      const error = e as { message?: string }
-      alert(error?.message ?? '경력 삭제에 실패했습니다.')
-      console.error('경력 삭제 실패:', e)
-    }
+  const handleDeleteActivities = (activityId: number) => {
+    showConfirmToast({
+      message: '정말 이 경력을 삭제하시겠습니까?',
+      onConfirm: async () => {
+        try {
+          await profileApi.deleteActivities(activityId)
+          setActivities(prev => prev.filter(a => a.id !== activityId))
+          showSuccessToast('경력이 삭제되었습니다.')
+        } catch (e: unknown) {
+          const error = e as { message?: string }
+          showErrorToast(error?.message ?? '경력 삭제에 실패했습니다.')
+          console.error('경력 삭제 실패:', e)
+        }
+      },
+    })
   }
 
   // 날짜 포맷팅 (YYYY-MM-DD -> YYYY.MM 형식)
@@ -247,7 +263,7 @@ export default function ProfileUnified() {
   }
 
   // 경력 기간 표시
-  const formatActivityPeriod = (startDate: string, endDate: string) => {
+  const formatActivitiesPeriod = (startDate: string, endDate: string) => {
     const start = formatDate(startDate)
     const end = endDate ? formatDate(endDate) : '현재'
     return `${start} - ${end}`
@@ -256,7 +272,7 @@ export default function ProfileUnified() {
   const handleSave = async () => {
     try {
       setIsSaving(true)
-      
+
       await profileApi.updateMyProfile({
         name: profile.name,
         email: profile.email,
@@ -274,10 +290,10 @@ export default function ProfileUnified() {
       setOriginalProfile(profile)
       setIsEditing(false)
       await fetchProfile()
-      alert('변경사항이 저장되었습니다!')
+      showSuccessToast('변경사항이 저장되었습니다.')
     } catch (e: unknown) {
       const error = e as { message?: string }
-      alert(error?.message ?? '프로필 저장에 실패했습니다.')
+      showErrorToast(error?.message ?? '프로필 저장에 실패했습니다.')
       console.error('프로필 저장 실패:', e)
     } finally {
       setIsSaving(false)
@@ -406,9 +422,9 @@ export default function ProfileUnified() {
             <h2 className="flex items-center gap-2 text-xl font-semibold text-gray-800">
               <Briefcase className="w-5 h-5 text-indigo-500" /> 주요 경력
             </h2>
-            {isEditing && !isAddingActivity && (
+            {isEditing && !isAddingActivities && (
               <button
-                onClick={() => setIsAddingActivity(true)}
+                onClick={() => setIsAddingActivities(true)}
                 className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all">
                 <Plus className="w-4 h-4" />
                 경력 추가
@@ -417,7 +433,7 @@ export default function ProfileUnified() {
           </div>
 
           {/* 경력 추가 폼 */}
-          {isAddingActivity && (
+          {isAddingActivities && (
             <div className="p-4 mb-4 bg-indigo-50 border border-indigo-200 rounded-xl">
               <h3 className="mb-3 font-semibold text-gray-800">새 경력 추가</h3>
               <div className="space-y-3">
@@ -425,15 +441,19 @@ export default function ProfileUnified() {
                   <input
                     type="text"
                     placeholder="직책 *"
-                    value={newActivity.userPosition}
-                    onChange={e => setNewActivity({ ...newActivity, userPosition: e.target.value })}
+                    value={newActivities.userPosition}
+                    onChange={e =>
+                      setNewActivities({ ...newActivities, userPosition: e.target.value })
+                    }
                     className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                   />
                   <input
                     type="text"
                     placeholder="회사명 *"
-                    value={newActivity.companyName}
-                    onChange={e => setNewActivity({ ...newActivity, companyName: e.target.value })}
+                    value={newActivities.companyName}
+                    onChange={e =>
+                      setNewActivities({ ...newActivities, companyName: e.target.value })
+                    }
                     className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
@@ -441,35 +461,43 @@ export default function ProfileUnified() {
                   <input
                     type="date"
                     placeholder="시작일 *"
-                    value={newActivity.startDate}
-                    onChange={e => setNewActivity({ ...newActivity, startDate: e.target.value })}
+                    min="1900-01-01"
+                    max="9999-12-31"
+                    value={newActivities.startDate}
+                    onChange={e =>
+                      setNewActivities({ ...newActivities, startDate: e.target.value })
+                    }
                     className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                   />
                   <input
                     type="date"
                     placeholder="종료일 (미입력 시 현재)"
-                    value={newActivity.endDate}
-                    onChange={e => setNewActivity({ ...newActivity, endDate: e.target.value })}
+                    min="1900-01-01"
+                    max="9999-12-31"
+                    value={newActivities.endDate}
+                    onChange={e => setNewActivities({ ...newActivities, endDate: e.target.value })}
                     className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                   />
                 </div>
                 <textarea
                   placeholder="업무 내용 및 성과"
-                  value={newActivity.description}
-                  onChange={e => setNewActivity({ ...newActivity, description: e.target.value })}
+                  value={newActivities.description}
+                  onChange={e =>
+                    setNewActivities({ ...newActivities, description: e.target.value })
+                  }
                   rows={3}
                   className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                 />
                 <div className="flex gap-2">
                   <button
-                    onClick={handleAddActivity}
+                    onClick={handleAddActivities}
                     className="flex-1 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
                     추가
                   </button>
                   <button
                     onClick={() => {
-                      setIsAddingActivity(false)
-                      setNewActivity({
+                      setIsAddingActivities(false)
+                      setNewActivities({
                         userPosition: '',
                         companyName: '',
                         description: '',
@@ -487,30 +515,36 @@ export default function ProfileUnified() {
 
           {/* 경력 목록 */}
           <div className="space-y-4">
-            {activities.length === 0 && !isAddingActivity ? (
+            {activities.length === 0 && !isAddingActivities ? (
               <p className="py-8 text-center text-gray-500">등록된 경력이 없습니다.</p>
             ) : (
               activities.map(activity => (
                 <div key={activity.id} className="p-4 bg-gray-50 rounded-xl">
-                  {editingActivityId === activity.id && editingActivity ? (
+                  {editingActivitiesId === activity.id && editingActivities ? (
                     // 수정 모드
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-3">
                         <input
                           type="text"
                           placeholder="직책 *"
-                          value={editingActivity.userPosition}
+                          value={editingActivities.userPosition}
                           onChange={e =>
-                            setEditingActivity({ ...editingActivity, userPosition: e.target.value })
+                            setEditingActivities({
+                              ...editingActivities,
+                              userPosition: e.target.value,
+                            })
                           }
                           className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                         />
                         <input
                           type="text"
                           placeholder="회사명 *"
-                          value={editingActivity.companyName}
+                          value={editingActivities.companyName}
                           onChange={e =>
-                            setEditingActivity({ ...editingActivity, companyName: e.target.value })
+                            setEditingActivities({
+                              ...editingActivities,
+                              companyName: e.target.value,
+                            })
                           }
                           className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                         />
@@ -518,38 +552,44 @@ export default function ProfileUnified() {
                       <div className="grid grid-cols-2 gap-3">
                         <input
                           type="date"
-                          value={editingActivity.startDate}
+                          value={editingActivities.startDate}
                           onChange={e =>
-                            setEditingActivity({ ...editingActivity, startDate: e.target.value })
+                            setEditingActivities({
+                              ...editingActivities,
+                              startDate: e.target.value,
+                            })
                           }
                           className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                         />
                         <input
                           type="date"
-                          value={editingActivity.endDate}
+                          value={editingActivities.endDate}
                           onChange={e =>
-                            setEditingActivity({ ...editingActivity, endDate: e.target.value })
+                            setEditingActivities({ ...editingActivities, endDate: e.target.value })
                           }
                           className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                         />
                       </div>
                       <textarea
                         placeholder="업무 내용 및 성과"
-                        value={editingActivity.description}
+                        value={editingActivities.description}
                         onChange={e =>
-                          setEditingActivity({ ...editingActivity, description: e.target.value })
+                          setEditingActivities({
+                            ...editingActivities,
+                            description: e.target.value,
+                          })
                         }
                         rows={3}
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
                       />
                       <div className="flex gap-2">
                         <button
-                          onClick={handleSaveActivity}
+                          onClick={handleSaveActivities}
                           className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
                           저장
                         </button>
                         <button
-                          onClick={handleCancelEditActivity}
+                          onClick={handleCancelEditActivities}
                           className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
                           취소
                         </button>
@@ -557,34 +597,40 @@ export default function ProfileUnified() {
                     </div>
                   ) : (
                     // 보기 모드
-                    <div>
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-800">{activity.userPosition}</h3>
-                          <p className="mt-1 text-sm text-gray-600">{activity.companyName}</p>
+                    <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm">
+                      {/* 상단: 회사 + 직무 + 액션 */}
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-900">
+                            {activity.companyName}
+                            <span className="ml-2 text-sm font-medium text-gray-500">
+                              · {activity.userPosition}
+                            </span>
+                          </h3>
+                          <p className="mt-1 text-xs text-gray-500">
+                            {formatActivitiesPeriod(activity.startDate, activity.endDate)}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">
-                            {formatActivityPeriod(activity.startDate, activity.endDate)}
-                          </span>
-                          {isEditing && (
-                            <>
-                              <button
-                                onClick={() => handleStartEditActivity(activity)}
-                                className="p-1.5 text-gray-500 rounded hover:bg-gray-200 transition-colors">
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteActivity(activity.id)}
-                                className="p-1.5 text-red-500 rounded hover:bg-red-50 transition-colors">
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                        </div>
+
+                        {isEditing && (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => handleStartEditActivities(activity)}
+                              className="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteActivities(activity.id)}
+                              className="p-2 rounded-lg hover:bg-red-50 text-red-500">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
                       </div>
+
+                      {/* 설명 */}
                       {activity.description && (
-                        <p className="mt-2 text-sm leading-relaxed text-gray-700">
+                        <p className="mt-3 text-sm leading-relaxed text-gray-700">
                           {activity.description}
                         </p>
                       )}

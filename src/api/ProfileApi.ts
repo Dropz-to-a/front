@@ -43,6 +43,31 @@ export type UpdateProfileRequest = {
   motivation?: string
 }
 
+export type Activity = {
+  id: number
+  userPosition: string
+  companyName: string
+  description: string
+  startDate: string
+  endDate: string
+}
+
+export type CreateActivityRequest = {
+  userPosition: string
+  companyName: string
+  description: string
+  startDate: string
+  endDate: string
+}
+
+export type UpdateActivityRequest = {
+  userPosition?: string
+  companyName?: string
+  description?: string
+  startDate?: string
+  endDate?: string
+}
+
 // 프로필 API
 export const profileApi = {
   // 내 프로필 조회
@@ -76,6 +101,41 @@ export const profileApi = {
         message: error.message,
         response: (e as AxiosError)?.response?.data,
       })
+      throw error
+    }
+  },
+
+  // 경력 추가
+  async createActivity(body: CreateActivityRequest) {
+    try {
+      const { data } = await apiClient.post<Activity>('/api/profile/me/activities', body)
+      return data
+    } catch (e) {
+      const error = parseAxiosError(e)
+      console.error('[profileApi.createActivity]', error)
+      throw error
+    }
+  },
+
+  // 경력 수정
+  async updateActivity(activityId: number, body: UpdateActivityRequest) {
+    try {
+      const { data } = await apiClient.patch<Activity>(`/api/profile/me/activities/${activityId}`, body)
+      return data
+    } catch (e) {
+      const error = parseAxiosError(e)
+      console.error('[profileApi.updateActivity]', error)
+      throw error
+    }
+  },
+
+  // 경력 삭제
+  async deleteActivity(activityId: number) {
+    try {
+      await apiClient.delete(`/api/profile/me/activities/${activityId}`)
+    } catch (e) {
+      const error = parseAxiosError(e)
+      console.error('[profileApi.deleteActivity]', error)
       throw error
     }
   },

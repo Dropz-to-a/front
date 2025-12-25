@@ -24,7 +24,7 @@ export type Profile = {
   skills?: string[]
   licenses?: string[]
   foreignLangs?: string[]
-  activities?: string[]
+  activities?: Activities[]
   motivation?: string
 }
 
@@ -43,7 +43,7 @@ export type UpdateProfileRequest = {
   motivation?: string
 }
 
-export type Activity = {
+export type Activities = {
   id: number
   userPosition: string
   companyName: string
@@ -52,7 +52,7 @@ export type Activity = {
   endDate: string
 }
 
-export type CreateActivityRequest = {
+export type CreateActivitiesRequest = {
   userPosition: string
   companyName: string
   description: string
@@ -60,7 +60,7 @@ export type CreateActivityRequest = {
   endDate: string
 }
 
-export type UpdateActivityRequest = {
+export type UpdateActivitiesRequest = {
   userPosition?: string
   companyName?: string
   description?: string
@@ -90,7 +90,7 @@ export const profileApi = {
       const token = localStorage.getItem('jwtToken')
       console.log('[profileApi.updateMyProfile] 토큰 존재:', !!token)
       console.log('[profileApi.updateMyProfile] 요청 본문:', body)
-      
+
       const { data } = await apiClient.patch<Profile>('/api/profile/me', body)
       return data
     } catch (e) {
@@ -106,36 +106,39 @@ export const profileApi = {
   },
 
   // 경력 추가
-  async createActivity(body: CreateActivityRequest) {
+  async createActivities(body: CreateActivitiesRequest) {
     try {
-      const { data } = await apiClient.post<Activity>('/api/profile/me/activities', body)
+      const { data } = await apiClient.post<Activities>('/api/profile/me/activities', body)
       return data
     } catch (e) {
       const error = parseAxiosError(e)
-      console.error('[profileApi.createActivity]', error)
+      console.error('[profileApi.createActivities]', error)
       throw error
     }
   },
 
   // 경력 수정
-  async updateActivity(activityId: number, body: UpdateActivityRequest) {
+  async updateActivities(activityId: number, body: UpdateActivitiesRequest) {
     try {
-      const { data } = await apiClient.patch<Activity>(`/api/profile/me/activities/${activityId}`, body)
+      const { data } = await apiClient.patch<Activities>(
+        `/api/profile/me/activities/${activityId}`,
+        body
+      )
       return data
     } catch (e) {
       const error = parseAxiosError(e)
-      console.error('[profileApi.updateActivity]', error)
+      console.error('[profileApi.updateActivities]', error)
       throw error
     }
   },
 
   // 경력 삭제
-  async deleteActivity(activityId: number) {
+  async deleteActivities(activityId: number) {
     try {
       await apiClient.delete(`/api/profile/me/activities/${activityId}`)
     } catch (e) {
       const error = parseAxiosError(e)
-      console.error('[profileApi.deleteActivity]', error)
+      console.error('[profileApi.deleteActivities]', error)
       throw error
     }
   },

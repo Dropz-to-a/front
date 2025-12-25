@@ -11,6 +11,7 @@ import Modal from "../../../components/contracts/Modal";
 import EmployeeCard from "../../../components/contracts/EmployeeCard";
 
 import type { Department, Employee } from "../../../types/contracts";
+import { companyApi } from "../../../api/companyApi";
 import { Plus } from "lucide-react";
 
 export default function Contracts() {
@@ -106,7 +107,7 @@ export default function Contracts() {
     }
   };
 
-  const onDragEnd = (event: DragEndEvent) => {
+  const onDragEnd = async (event: DragEndEvent) => {
     setActiveEmployee(null);
     setActiveDeptId(null);
 
@@ -147,43 +148,110 @@ export default function Contracts() {
 
     // 다른 부서로 이동 (부서 영역에 드롭한 경우)
     if (toDept && fromDept !== toDept) {
-      setDepartments((prev) => {
-        const next = prev.map((d) => ({ ...d, employees: [...d.employees] }));
-        let moving: Employee | null = null;
+      const movingEmployee = departments
+        .find((d) => d.id === fromDept)
+        ?.employees.find((e) => e.id === empId);
 
-        // 원래 부서에서 제거
-        next.forEach((dept) => {
-          if (dept.id === fromDept) {
-            const index = dept.employees.findIndex((emp) => emp.id === empId);
-            if (index !== -1) {
-              moving = dept.employees[index];
-              dept.employees.splice(index, 1);
-            }
-          }
-        });
+      if (!movingEmployee) return;
 
-        // 새 부서에 추가
-        if (moving) {
+      // employeeId와 teamId를 숫자로 변환
+      const employeeIdNum = Number(empId);
+      const toTeamIdNum = Number(toDept);
+
+      // "unassigned" 같은 특수 ID는 숫자로 변환 불가
+      if (isNaN(employeeIdNum) || isNaN(toTeamIdNum)) {
+        // 로컬 처리만 수행
+        setDepartments((prev) => {
+          const next = prev.map((d) => ({ ...d, employees: [...d.employees] }));
+          let moving: Employee | null = null;
+
           next.forEach((dept) => {
-            if (dept.id === toDept && moving) {
-              // 다른 직원 위에 드롭한 경우 해당 위치에 삽입
-              if (overData?.type === "EMPLOYEE") {
-                const overIndex = dept.employees.findIndex((e) => e.id === String(over.id));
-                if (overIndex !== -1) {
-                  dept.employees.splice(overIndex, 0, moving);
-                } else {
-                  dept.employees.push(moving);
-                }
-              } else {
-                // 부서 영역에 드롭한 경우 맨 끝에 추가
-                dept.employees.push(moving);
+            if (dept.id === fromDept) {
+              const index = dept.employees.findIndex((emp) => emp.id === empId);
+              if (index !== -1) {
+                moving = dept.employees[index];
+                dept.employees.splice(index, 1);
               }
             }
           });
+
+          if (moving) {
+            next.forEach((dept) => {
+              if (dept.id === toDept && moving) {
+                if (overData?.type === "EMPLOYEE") {
+                  const overIndex = dept.employees.findIndex((e) => e.id === String(over.id));
+                  if (overIndex !== -1) {
+                    dept.employees.splice(overIndex, 0, moving);
+                  } else {
+                    dept.employees.push(moving);
+                  }
+                } else {
+                  dept.employees.push(moving);
+                }
+              }
+            });
+          }
+
+          return next;
+        });
+        return;
+      }
+
+      // API 호출
+      try {
+        // fromDept가 "unassigned"가 아니면 change API 사용 (기존 부서가 있음)
+        // fromDept가 "unassigned"면 assign API 사용 (최초 지정)
+        if (fromDept !== "unassigned") {
+          await companyApi.changeEmployeeTeam({
+            employeeId: employeeIdNum,
+            teamId: toTeamIdNum,
+          });
+        } else {
+          await companyApi.assignEmployee({
+            employeeId: employeeIdNum,
+            teamId: toTeamIdNum,
+          });
         }
 
-        return next;
-      });
+        // 성공 시 로컬 상태 업데이트
+        setDepartments((prev) => {
+          const next = prev.map((d) => ({ ...d, employees: [...d.employees] }));
+          let moving: Employee | null = null;
+
+          next.forEach((dept) => {
+            if (dept.id === fromDept) {
+              const index = dept.employees.findIndex((emp) => emp.id === empId);
+              if (index !== -1) {
+                moving = dept.employees[index];
+                dept.employees.splice(index, 1);
+              }
+            }
+          });
+
+          if (moving) {
+            next.forEach((dept) => {
+              if (dept.id === toDept && moving) {
+                if (overData?.type === "EMPLOYEE") {
+                  const overIndex = dept.employees.findIndex((e) => e.id === String(over.id));
+                  if (overIndex !== -1) {
+                    dept.employees.splice(overIndex, 0, moving);
+                  } else {
+                    dept.employees.push(moving);
+                  }
+                } else {
+                  dept.employees.push(moving);
+                }
+              }
+            });
+          }
+
+          return next;
+        });
+      } catch (e: unknown) {
+        const error = e as { message?: string };
+        alert(error?.message ?? "직원 부서 변경에 실패했습니다.");
+        console.error("직원 부서 변경 실패:", e);
+      }
     }
   };
 
@@ -236,50 +304,83 @@ export default function Contracts() {
 
   const [deleteDept, setDeleteDept] = useState<Department | null>(null);
 
-  const addDepartment = () => {
+  const addDepartment = async () => {
     if (!newDeptName.trim()) return;
 
-    const id = Date.now().toString();
-    setDepartments((prev) => [...prev, { id, name: newDeptName, employees: [] }]);
+    try {
+      const newTeam = await companyApi.createTeam({
+        name: newDeptName.trim(),
+        description: "",
+      });
 
-    setNewDeptName("");
-    setNewDeptOpen(false);
+      // API 응답의 teamId를 문자열로 변환하여 사용
+      setDepartments((prev) => [
+        ...prev,
+        { id: String(newTeam.teamId), name: newTeam.name, employees: [] },
+      ]);
+
+      setNewDeptName("");
+      setNewDeptOpen(false);
+      alert("부서가 추가되었습니다!");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message ?? "부서 추가에 실패했습니다.");
+      console.error("부서 추가 실패:", e);
+    }
   };
 
 
-  const confirmDeleteDept = () => {
+  const confirmDeleteDept = async () => {
     if (!deleteDept) return;
 
-    setDepartments((prev) => {
-      // 기존 구조 복사
-      let updated = prev.filter((d) => d.id !== deleteDept.id);
-
-      // 미배정 부서 찾기
-      const unassignedIndex = updated.findIndex((d) => d.id === "unassigned");
-
-      if (unassignedIndex === -1) {
-        // 미배정 부서 없으면 생성
-        updated = [
-          ...updated,
-          {
-            id: "unassigned",
-            name: "미배정 부서",
-            employees: [...deleteDept.employees], // ⭐ 새 배열로 생성
-          },
-        ];
-      } else {
-        // 이미 미배정 부서 있음 → 기존 employees에 추가
-        const old = updated[unassignedIndex];
-        updated[unassignedIndex] = {
-          ...old,
-          employees: [...old.employees, ...deleteDept.employees], // ⭐ push 금지
-        };
+    try {
+      // teamId가 숫자인지 확인 (문자열로 저장되어 있을 수 있음)
+      const teamId = Number(deleteDept.id);
+      if (isNaN(teamId)) {
+        // "unassigned" 같은 특수 ID는 로컬 처리
+        setDepartments((prev) => prev.filter((d) => d.id !== deleteDept.id));
+        setDeleteDept(null);
+        return;
       }
 
-      return updated;
-    });
+      await companyApi.deleteTeam(teamId);
 
-    setDeleteDept(null);
+      // API에서 부서 삭제 시 직원들은 자동으로 부서 해제되므로, 미배정 부서로 이동
+      setDepartments((prev) => {
+        let updated = prev.filter((d) => d.id !== deleteDept.id);
+
+        // 미배정 부서 찾기
+        const unassignedIndex = updated.findIndex((d) => d.id === "unassigned");
+
+        if (unassignedIndex === -1) {
+          // 미배정 부서 없으면 생성
+          updated = [
+            ...updated,
+            {
+              id: "unassigned",
+              name: "미배정 부서",
+              employees: [...deleteDept.employees],
+            },
+          ];
+        } else {
+          // 이미 미배정 부서 있음 → 기존 employees에 추가
+          const old = updated[unassignedIndex];
+          updated[unassignedIndex] = {
+            ...old,
+            employees: [...old.employees, ...deleteDept.employees],
+          };
+        }
+
+        return updated;
+      });
+
+      setDeleteDept(null);
+      alert("부서가 삭제되었습니다!");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message ?? "부서 삭제에 실패했습니다.");
+      console.error("부서 삭제 실패:", e);
+    }
   };
 
 

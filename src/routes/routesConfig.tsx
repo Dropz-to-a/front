@@ -27,6 +27,9 @@ import PayrollPage from '@/pages/payroll/company/Payroll'
 import JobApplyForm from '@/pages/jobs/user/JobApplyForm'
 import ResumeViewPage from '@/pages/jobs/ResumeView'
 import Start from '@/pages/auth/Start'
+import PaymentPage from '@/pages/payment/PaymentPage'
+import PaymentSuccess from '@/pages/payment/PaymentSuccess'
+import PaymentFail from '@/pages/payment/PaymentFail'
 
 import Inquire from '@/pages/common/Inquire'
 import UserOnBoard from '@/pages/auth/user/OnBoarding'
@@ -76,6 +79,11 @@ export const publicRoutes: RouteItem[] = [
   { path: '/contact', element: <Contact /> },
   { path: '/privacy', element: <Privacy /> },
   { path: '/terms', element: <Terms /> },
+
+  // 결제 페이지
+  { path: '/payment', element: <PaymentPage /> },
+  { path: '/payment/success', element: <PaymentSuccess /> },
+  { path: '/payment/fail', element: <PaymentFail /> },
 ]
 
 // 보호된 라우트 설정

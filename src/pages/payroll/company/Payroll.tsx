@@ -1,6 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Header from '@/components/Header'
-import { Settings, Plus, Filter, Calendar, TrendingUp, AlertCircle } from 'lucide-react'
+import { Settings, Plus, Filter, Calendar, TrendingUp, AlertCircle, CreditCard } from 'lucide-react'
+import { companyApi, type EmployeeInfo } from '@/api/companyApi'
 
 // 급여 항목 타입
 interface Deduction {
@@ -69,40 +71,10 @@ const createDefaultDeductions = (baseSalary: number): Deduction[] => {
 }
 
 const PayrollPage: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([
-    {
-      id: 1,
-      name: '김민수',
-      position: '개발팀',
-      baseSalary: 4200000,
-      deductions: createDefaultDeductions(4200000),
-      additions: [],
-      paid: false,
-      dueDate: '2025-01-25',
-    },
-    {
-      id: 2,
-      name: '이서연',
-      position: '디자인팀',
-      baseSalary: 3900000,
-      deductions: createDefaultDeductions(3900000),
-      additions: [],
-      paid: false,
-      dueDate: '2025-01-25',
-    },
-    {
-      id: 3,
-      name: '박지훈',
-      position: '마케팅팀',
-      baseSalary: 3500000,
-      deductions: createDefaultDeductions(3500000),
-      additions: [{ name: '성과금', amount: 500000, reason: '2024년 4분기 성과 우수' }],
-      paid: true,
-      paidDate: '2025-01-20',
-      dueDate: '2025-01-25',
-    },
-  ])
-
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<FilterType>('all')
   const [selectedMonth, setSelectedMonth] = useState<string>(
     new Date().toISOString().slice(0, 7) // YYYY-MM 형식
@@ -111,6 +83,82 @@ const PayrollPage: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [detailEmployee, setDetailEmployee] = useState<Employee | null>(null)
+
+  /* ============================
+      초기 데이터 로드
+  ============================ */
+  useEffect(() => {
+    const loadEmployees = async () => {
+      try {
+        setLoading(true)
+        
+        // 직원 목록 가져오기
+        const employeeList = await companyApi.getEmployees()
+        
+        // API 응답을 Employee 타입으로 변환
+        const convertedEmployees: Employee[] = employeeList.map((empInfo: EmployeeInfo) => {
+          // 기본 급여는 0으로 시작 (사용자가 설정해야 함)
+          const defaultBaseSalary = 0
+          
+          return {
+            id: empInfo.employeeAccountId,
+            name: `직원 ${empInfo.employeeAccountId}`, // API에 name이 없으므로 임시로 사용
+            position: empInfo.teamName || '미배정', // 부서명 또는 미배정
+            baseSalary: defaultBaseSalary,
+            deductions: createDefaultDeductions(defaultBaseSalary),
+            additions: [],
+            paid: false,
+            dueDate: new Date().toISOString().split('T')[0], // 기본값: 오늘 날짜
+          }
+        })
+        
+        setEmployees(convertedEmployees)
+      } catch (e: unknown) {
+        const error = e as { message?: string }
+        alert(error?.message ?? '직원 목록을 불러오는데 실패했습니다.')
+        console.error('직원 목록 로드 실패:', e)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadEmployees()
+  }, [])
+
+  // 결제 성공 후 돌아왔을 때 처리
+  useEffect(() => {
+    const paymentResult = (location.state as { paymentResult?: { employeeId?: number; employeeIds?: number[] } })?.paymentResult
+    if (paymentResult) {
+      const { employeeId, employeeIds } = paymentResult
+      
+      const today = new Date().toISOString().split('T')[0]
+      
+      if (employeeId) {
+        // 개별 지급 완료 처리
+        setEmployees(prev =>
+          prev.map(e =>
+            e.id === employeeId
+              ? { ...e, paid: true, paidDate: today, isDelayed: false }
+              : e
+          )
+        )
+        alert('급여 지급이 완료되었습니다!')
+      } else if (employeeIds && employeeIds.length > 0) {
+        // 일괄 지급 완료 처리
+        setEmployees(prev =>
+          prev.map(e =>
+            employeeIds.includes(e.id)
+              ? { ...e, paid: true, paidDate: today, isDelayed: false }
+              : e
+          )
+        )
+        alert(`${employeeIds.length}명의 직원에게 급여 지급이 완료되었습니다!`)
+      }
+      
+      // state 초기화
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [location.state, navigate, location.pathname])
 
   // 필터링된 직원 목록
   const filteredEmployees = useMemo(() => {
@@ -219,26 +267,59 @@ const PayrollPage: React.FC = () => {
     setSelectedEmployee(null)
   }
 
-  // 개별 지급
+  // 개별 지급 (결제 플로우로 이동)
   const handlePayEmployee = (employee: Employee) => {
-    const today = new Date().toISOString().split('T')[0]
-    setEmployees(prev =>
-      prev.map(e =>
-        e.id === employee.id
-          ? { ...e, paid: true, paidDate: today, isDelayed: false }
-          : e
-      )
-    )
-    alert(`${employee.name}에게 급여 지급 완료!`)
+    const calc = calculatePayroll(employee)
+    const netSalary = calc.netSalary
+
+    if (netSalary <= 0) {
+      alert('지급할 금액이 없습니다. 급여를 설정해주세요.')
+      return
+    }
+
+    // 결제 페이지로 이동 (급여 정보 전달)
+    navigate('/payment', {
+      state: {
+        type: 'salary',
+        employeeId: employee.id,
+        employeeName: employee.name,
+        amount: netSalary,
+        orderName: `${employee.name}님 ${selectedMonth} 급여`,
+        returnPath: '/payroll',
+      },
+    })
   }
 
-  // 월별 일괄 지급
+  // 월별 일괄 지급 (결제 플로우로 이동)
   const handlePayAll = () => {
-    const today = new Date().toISOString().split('T')[0]
-    setEmployees(prev =>
-      prev.map(e => ({ ...e, paid: true, paidDate: today, isDelayed: false }))
-    )
-    alert('모든 직원 급여 일괄 지급 완료!')
+    const unpaidEmployees = employees.filter(e => !e.paid)
+    
+    if (unpaidEmployees.length === 0) {
+      alert('지급할 직원이 없습니다.')
+      return
+    }
+
+    const totalAmount = unpaidEmployees.reduce((sum, emp) => {
+      const calc = calculatePayroll(emp)
+      return sum + calc.netSalary
+    }, 0)
+
+    if (totalAmount <= 0) {
+      alert('지급할 총 금액이 없습니다.')
+      return
+    }
+
+    // 결제 페이지로 이동 (일괄 지급 정보 전달)
+    navigate('/payment', {
+      state: {
+        type: 'batch_salary',
+        employeeIds: unpaidEmployees.map(e => e.id),
+        employeeNames: unpaidEmployees.map(e => e.name),
+        amount: totalAmount,
+        orderName: `${selectedMonth} 급여 일괄 지급 (${unpaidEmployees.length}명)`,
+        returnPath: '/payroll',
+      },
+    })
   }
 
   // 보너스 추가
@@ -279,6 +360,19 @@ const PayrollPage: React.FC = () => {
     }
     return options
   }, [])
+
+  if (loading) {
+    return (
+      <div>
+        <Header />
+        <div className="min-h-screen p-8 bg-gray-50">
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">직원 목록을 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -357,29 +451,37 @@ const PayrollPage: React.FC = () => {
               </select>
               <button
                 onClick={handlePayAll}
-                className="px-4 py-2 text-white transition bg-green-600 rounded-lg hover:bg-green-700">
+                className="flex items-center gap-2 px-4 py-2 text-white transition bg-green-600 rounded-lg hover:bg-green-700">
+                <CreditCard className="w-4 h-4" />
                 월별 일괄 지급
               </button>
             </div>
           </div>
 
           {/* 직원 목록 테이블 */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="text-gray-700 bg-gray-100">
-                  <th className="p-3 border-b">이름</th>
-                  <th className="p-3 border-b">부서</th>
-                  <th className="p-3 border-b">기본급</th>
-                  <th className="p-3 border-b">공제액</th>
-                  <th className="p-3 border-b">추가액</th>
-                  <th className="p-3 border-b">실지급액</th>
-                  <th className="p-3 text-center border-b">지급 상태</th>
-                  <th className="p-3 text-center border-b">액션</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredEmployees.map(e => {
+          {filteredEmployees.length === 0 ? (
+            <div className="py-20 text-center text-gray-500">
+              {employees.length === 0
+                ? '등록된 직원이 없습니다. 직원을 추가해주세요.'
+                : '해당 조건에 맞는 직원이 없습니다.'}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="text-gray-700 bg-gray-100">
+                    <th className="p-3 border-b">이름</th>
+                    <th className="p-3 border-b">부서</th>
+                    <th className="p-3 border-b">기본급</th>
+                    <th className="p-3 border-b">공제액</th>
+                    <th className="p-3 border-b">추가액</th>
+                    <th className="p-3 border-b">실지급액</th>
+                    <th className="p-3 text-center border-b">지급 상태</th>
+                    <th className="p-3 text-center border-b">액션</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredEmployees.map(e => {
                   const calc = calculatePayroll(e)
                   return (
                     <tr key={e.id} className="hover:bg-gray-50">
@@ -430,7 +532,8 @@ const PayrollPage: React.FC = () => {
                             </button>
                             <button
                               onClick={() => handlePayEmployee(e)}
-                              className="px-3 py-1.5 text-sm text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition">
+                              className="flex items-center gap-1 px-3 py-1.5 text-sm text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 transition">
+                              <CreditCard className="w-3 h-3" />
                               지급
                             </button>
                           </>
@@ -439,9 +542,10 @@ const PayrollPage: React.FC = () => {
                     </tr>
                   )
                 })}
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* 총 급여액 */}
           <div className="mt-6 font-medium text-right text-gray-700">

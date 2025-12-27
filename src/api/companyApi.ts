@@ -32,11 +32,43 @@ export type RegisterEmployeeRequest = {
   employeeId: number
 }
 
+export type EmployeeInfo = {
+  employeeAccountId: number
+  name: string
+  teamId: number | null
+  teamName: string | null
+  joinedAt: string
+}
+
 export const companyApi = {
+  /** 부서(팀) 목록 조회 */
+  async getTeams() {
+    try {
+      const { data } = await apiClient.get<Team[]>('/api/company/manage/teams')
+      return data
+    } catch (e) {
+      const error = parseAxiosError(e)
+      console.error('[companyApi.getTeams]', error)
+      throw error
+    }
+  },
+
+  /** 직원 목록 조회 (부서 포함) */
+  async getEmployees() {
+    try {
+      const { data } = await apiClient.get<EmployeeInfo[]>('/api/company/manage/employees')
+      return data
+    } catch (e) {
+      const error = parseAxiosError(e)
+      console.error('[companyApi.getEmployees]', error)
+      throw error
+    }
+  },
+
   /** 부서(팀) 생성 */
   async createTeam(body: CreateTeamRequest) {
     try {
-      const { data } = await apiClient.post<Team>('/api/company/teams', body)
+      const { data } = await apiClient.post<Team>('/api/company/manage/teams', body)
       return data
     } catch (e) {
       const error = parseAxiosError(e)
@@ -48,7 +80,7 @@ export const companyApi = {
   /** 직원 부서 최초 지정 */
   async assignEmployee(body: AssignEmployeeRequest) {
     try {
-      const { data } = await apiClient.post<string>('/api/company/teams/assign', body)
+      const { data } = await apiClient.post<string>('/api/company/manage/teams/assign', body)
       return data
     } catch (e) {
       const error = parseAxiosError(e)
@@ -72,7 +104,7 @@ export const companyApi = {
   /** 직원 부서 변경 */
   async changeEmployeeTeam(body: AssignEmployeeRequest) {
     try {
-      const { data } = await apiClient.patch<string>('/api/company/teams/change', body)
+      const { data } = await apiClient.patch<string>('/api/company/manage/teams/change', body)
       return data
     } catch (e) {
       const error = parseAxiosError(e)
@@ -84,7 +116,7 @@ export const companyApi = {
   /** 부서(팀) 삭제 */
   async deleteTeam(teamId: number) {
     try {
-      const { data } = await apiClient.delete<string>(`/api/company/teams/${teamId}`)
+      const { data } = await apiClient.delete<string>(`/api/company/manage/teams/${teamId}`)
       return data
     } catch (e) {
       const error = parseAxiosError(e)

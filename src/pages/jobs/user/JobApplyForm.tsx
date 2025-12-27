@@ -15,9 +15,12 @@ const convertToJob = (posting: PublicJobPosting): Job => {
     title: posting.title,
     description: '',
     location: posting.locationText,
-    salaryNote: posting.salaryMin > 0 || posting.salaryMax > 0
-      ? `${posting.salaryMin > 0 ? posting.salaryMin.toLocaleString() : '협의'} ~ ${posting.salaryMax > 0 ? posting.salaryMax.toLocaleString() : '협의'}만원`
-      : undefined,
+    salaryNote:
+      posting.salaryMin > 0 || posting.salaryMax > 0
+        ? `${posting.salaryMin > 0 ? posting.salaryMin.toLocaleString() : '협의'} ~ ${
+            posting.salaryMax > 0 ? posting.salaryMax.toLocaleString() : '협의'
+          }만원`
+        : undefined,
     status: '모집 중',
     category: '기타',
     applyUrl: `/jobs/${posting.postingId}`,
@@ -59,7 +62,7 @@ const ApplyFormPage = () => {
       setLoading(true)
       const data = await jobPostingApi.getPublicList()
       const foundPosting = data.find(p => String(p.postingId) === id)
-      
+
       if (foundPosting) {
         const convertedJob = convertToJob(foundPosting)
         setJob(convertedJob)
@@ -140,7 +143,7 @@ const ApplyFormPage = () => {
         hobby: form.hobby || undefined,
         motivation: form.motivation,
       })
-      
+
       navigate(`/jobs/${id}/completed`)
     } catch (e: unknown) {
       const error = e as { message?: string }

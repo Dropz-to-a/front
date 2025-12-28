@@ -23,11 +23,6 @@ export default function PaymentPage() {
     orderNameFromUrl || paymentData?.orderName || '주문'
   )
 
-  const handleSuccess = (paymentKey: string, orderId: string) => {
-    console.log('결제 성공:', { paymentKey, orderId })
-    // 성공 페이지로 리디렉션은 PaymentWidget에서 처리
-  }
-
   const handleError = (error: Error) => {
     console.error('결제 에러:', error)
     alert(`결제 중 오류가 발생했습니다: ${error.message}`)
@@ -119,7 +114,6 @@ export default function PaymentPage() {
           orderName={orderName}
           returnPath={paymentData?.returnPath}
           paymentData={paymentData}
-          onSuccess={handleSuccess}
           onError={handleError}
         />
       </div>

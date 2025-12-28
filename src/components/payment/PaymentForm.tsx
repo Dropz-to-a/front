@@ -6,7 +6,6 @@ interface PaymentFormProps {
   orderName: string
   returnPath?: string
   paymentData?: any // 급여 지급 정보 등 추가 데이터
-  onSuccess?: (paymentKey: string, orderId: string) => void
   onError?: (error: Error) => void
 }
 
@@ -15,7 +14,6 @@ export default function PaymentForm({
   orderName,
   returnPath,
   paymentData,
-  onSuccess,
   onError,
 }: PaymentFormProps) {
   const [cardNumber, setCardNumber] = useState('')

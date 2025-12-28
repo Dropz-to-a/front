@@ -49,7 +49,6 @@ interface PaymentWidgetProps {
   customerKey?: string
   returnPath?: string
   paymentData?: any // 급여 지급 정보 등 추가 데이터
-  onSuccess?: (paymentKey: string, orderId: string) => void
   onError?: (error: Error) => void
 }
 
@@ -59,7 +58,6 @@ export default function PaymentWidget({
   customerKey,
   returnPath,
   paymentData,
-  onSuccess,
   onError,
 }: PaymentWidgetProps) {
   const paymentWidgetRef = useRef<PaymentWidget | null>(null)
@@ -122,7 +120,7 @@ export default function PaymentWidget({
 
           // renderPaymentMethods가 Promise를 반환하는 경우 대기
           if (paymentMethodsWidget && typeof (paymentMethodsWidget as any).then === 'function') {
-            await (paymentMethodsWidget as Promise<any>)
+            await (paymentMethodsWidget as unknown as Promise<any>)
           }
 
           console.log('[PaymentWidget] 결제 수단 UI 렌더링 완료')
@@ -141,7 +139,7 @@ export default function PaymentWidget({
           
           // renderAgreement가 Promise를 반환하는 경우 대기
           if (agreementWidget && typeof (agreementWidget as any).then === 'function') {
-            await (agreementWidget as Promise<any>)
+            await (agreementWidget as unknown as Promise<any>)
           }
 
           console.log('[PaymentWidget] 약관 UI 렌더링 완료')
@@ -170,7 +168,7 @@ export default function PaymentWidget({
             agreementElement.querySelector('iframe') !== null
           )
           
-          return isPaymentWidgetReady && isAgreementReady
+          return (isPaymentWidgetReady ?? false) && (isAgreementReady ?? false)
         }
 
         // 위젯이 실제로 렌더링될 때까지 대기 (최대 5초)

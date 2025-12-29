@@ -1,6 +1,6 @@
 import { useRef, type FC } from 'react'
 import { useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 
 import { FormInput } from './FormInput'
@@ -28,11 +28,8 @@ const formatPhone = (value: string) => {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
 }
 
-const RegisterForm: FC = () => {
-  const location = useLocation()
+const RegisterForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
-  const queryParams = new URLSearchParams(location.search)
-  const type = queryParams.get('type') || 'personal'
 
   const toastShownRef = useRef(false)
 
@@ -172,7 +169,7 @@ const RegisterForm: FC = () => {
 
         <span className="mt-6">
           계정이 있으신가요?{' '}
-          <a href={`/login?type=${type}`} className="text-blue-500 hover:underline">
+          <a href={`/login`} className="text-blue-500 hover:underline">
             로그인
           </a>
         </span>

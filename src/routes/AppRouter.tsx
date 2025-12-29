@@ -20,7 +20,7 @@ const AppRouter: React.FC = () => {
         {publicRoutes.map(({ path, element }) => (
           <Route key={`public-${path}`} path={path} element={element} />
         ))}
-  
+
         {/* 로그인 필요 라우트 */}
         {privateRoutes.map(({ path, element }) => (
           <Route key={`private-${path}`} path={path} element={<AuthGuard>{element}</AuthGuard>} />

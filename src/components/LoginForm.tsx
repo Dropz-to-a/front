@@ -14,7 +14,7 @@ type LoginFormValue = {
   password: string
 }
 
-const LoginForm: FC = () => {
+const LoginForm: FC<{ type: string }> = ({ type }) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
@@ -108,7 +108,7 @@ const LoginForm: FC = () => {
 
         <span className="mt-6">
           계정이 없으신가요?{' '}
-          <a href={`/register`} className="text-blue-500 hover:underline">
+          <a href={`/register?type=${type}`} className="text-blue-500 hover:underline">
             회원가입
           </a>
         </span>

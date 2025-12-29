@@ -58,7 +58,7 @@ export default defineConfig(({ mode }) => {
       // 일반 API는 백엔드로
       '/api': {
         target: env.VITE_API_BASE_URL || 'http://localhost:8080', // 환경 변수 또는 기본값
-        changeOrigin: true, // 호스트 헤더를 변경하여 요청 전송
+        changeOrigin: true, // 호스트 헤더를 변경하여 요청 전송 
         secure: false, // HTTPS 사용 시 필요
         configure: (proxy) => {
           // CORS preflight 요청 처리

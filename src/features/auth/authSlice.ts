@@ -64,15 +64,13 @@ export const loginThunk = createAsyncThunk(
       else localStorage.removeItem('username')
 
       //  onboarded 저장
-      if (onboarded !== null) {
-        localStorage.setItem('onboarded', String(onboarded))
-        console.log('[AuthSlice] 온보딩 상태 저장:', onboarded)
-      } else {
-        localStorage.removeItem('onboarded')
-        console.warn('[AuthSlice] 온보딩 상태를 추출할 수 없음')
-      }
+      // 새로 회원가입한 계정의 경우 onboarded가 null일 수 있으므로, null이면 false로 처리
+      const finalOnboarded = onboarded !== null ? onboarded : false
+      
+      localStorage.setItem('onboarded', String(finalOnboarded))
+      console.log('[AuthSlice] 온보딩 상태 저장:', finalOnboarded, '(원본:', onboarded, ')')
 
-      return { token, userType, username, onboarded }
+      return { token, userType, username, onboarded: finalOnboarded }
     } catch (e: any) {
       return rejectWithValue(e?.message ?? '로그인 실패')
     }
@@ -87,6 +85,25 @@ const authSlice = createSlice({
       state.token = action.payload
       if (action.payload) localStorage.setItem('jwtToken', action.payload)
       else localStorage.removeItem('jwtToken')
+    },
+
+    // 온보딩 완료 후 토큰에서 온보딩 상태를 다시 읽어서 업데이트
+    updateOnboardedFromToken(state) {
+      const token = state.token
+      if (!token) return
+
+      const onboarded = getOnBoardedFromToken(token)
+      if (onboarded !== null) {
+        state.onboarded = onboarded
+        localStorage.setItem('onboarded', String(onboarded))
+        console.log('[AuthSlice] 온보딩 상태 업데이트:', onboarded)
+      }
+    },
+
+    // 온보딩 상태를 직접 설정
+    setOnboarded(state, action: PayloadAction<boolean>) {
+      state.onboarded = action.payload
+      localStorage.setItem('onboarded', String(action.payload))
     },
 
     logout(state) {
@@ -115,7 +132,8 @@ const authSlice = createSlice({
         state.token = action.payload.token
         state.userType = action.payload.userType
         state.username = action.payload.username ?? null
-        state.onboarded = action.payload.onboarded ?? null
+        // onboarded가 null이면 false로 처리 (새로 회원가입한 계정)
+        state.onboarded = action.payload.onboarded ?? false
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false
@@ -124,5 +142,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { logout, setToken } = authSlice.actions
+export const { logout, setToken, updateOnboardedFromToken, setOnboarded } = authSlice.actions
 export default authSlice.reducer

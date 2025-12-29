@@ -19,11 +19,22 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   // 온보딩 미완료 사용자를 온보딩 페이지로 리디렉션
   useEffect(() => {
     if (token && onboarded !== true && !isOnboardingPage) {
+      // userType이 없으면 리디렉션하지 않음 (로그인 중일 수 있음)
+      if (!userType) {
+        console.log('[AuthGuard] userType이 없어서 리디렉션 건너뜀')
+        return
+      }
+      
       const onboardingPath = userType === 'company' ? '/company/onboarding' : '/user/onboarding';
-      console.log('[AuthGuard] 온보딩 미완료 → 온보딩 페이지로 리디렉션:', onboardingPath);
+      console.log('[AuthGuard] 온보딩 미완료 → 온보딩 페이지로 리디렉션:', {
+        onboardingPath,
+        onboarded,
+        userType,
+        currentPath,
+      });
       navigate(onboardingPath, { replace: true });
     }
-  }, [token, onboarded, userType, isOnboardingPage, navigate]);
+  }, [token, onboarded, userType, isOnboardingPage, navigate, currentPath]);
 
   // 1. 토큰이 없으면 → 로그인 필요 (모달 표시하되 뒤 화면은 보여줌)
   if (!token) {

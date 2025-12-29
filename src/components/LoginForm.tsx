@@ -39,13 +39,28 @@ const LoginForm: FC<{ type: string }> = ({ type }) => {
     if (loginThunk.fulfilled.match(result)) {
       const { userType, onboarded } = result.payload
 
+      console.log('[LoginForm] 로그인 성공, 리디렉션 결정:', { userType, onboarded })
+
       toastShownRef.current = true
       showSuccessToast('로그인에 성공했습니다!')
 
+      // onboarded가 true가 아니면 (false 또는 null) 온보딩 페이지로 이동
       if (onboarded === true) {
+        console.log('[LoginForm] 온보딩 완료 → 홈으로 이동')
         navigate('/', { replace: true })
       } else {
-        navigate(userType === 'company' ? '/company/onboarding' : '/user/onboarding', {
+        // onboarded가 false 또는 null인 경우 온보딩 페이지로 이동
+        // userType이 없으면 type 파라미터를 사용 (회원가입 시 전달된 type)
+        const finalUserType = userType || (type === 'company' ? 'company' : 'user')
+        const onboardingPath = finalUserType === 'company' ? '/company/onboarding' : '/user/onboarding'
+        console.log('[LoginForm] 온보딩 미완료 → 온보딩 페이지로 이동:', {
+          onboardingPath,
+          userType,
+          type,
+          finalUserType,
+          onboarded,
+        })
+        navigate(onboardingPath, {
           replace: true,
         })
       }

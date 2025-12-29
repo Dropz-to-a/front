@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form'
 import { FormInput } from '../../../components/FormInput'
 import { OnBoardCompany, checkBusinessExists, type BusinessExistsResponse } from '../../../api'
 
-import { useAppSelector } from '@/store'
+import { useAppSelector, useAppDispatch } from '@/store'
+import { updateOnboardedFromToken, setOnboarded } from '@/features/auth/authSlice'
 
 import DaumPostcode from 'react-daum-postcode'
 import { showSuccessToast, showErrorToast } from '@/components/Toast/toast'
@@ -20,6 +21,7 @@ type OnBoardFormValue = {
 
 const CompanyOnBoardForm: FC = () => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [step, setStep] = useState(1)
   const [isPostOpen, setIsPostOpen] = useState(false)
   const [businessValidation, setBusinessValidation] = useState<{
@@ -142,7 +144,18 @@ const CompanyOnBoardForm: FC = () => {
     if (toastShownRef.current) return
 
     try {
-      await OnBoardCompany(values)
+      const response = await OnBoardCompany(values)
+
+      // 온보딩 완료 후 새로운 토큰이 있으면 토큰을 업데이트하고 온보딩 상태를 다시 읽음
+      if (response?.accessToken) {
+        // TODO: 새로운 토큰을 Redux에 저장하는 로직이 필요할 수 있음
+        // 일단 현재 토큰에서 온보딩 상태를 다시 읽어서 업데이트
+        dispatch(updateOnboardedFromToken())
+      } else {
+        // 새로운 토큰이 없으면 온보딩 완료 상태를 직접 설정
+        // (백엔드에서 토큰을 재발급하지 않는 경우)
+        dispatch(setOnboarded(true))
+      }
 
       toastShownRef.current = true
       showSuccessToast('온보딩이 완료되었습니다!')
@@ -154,6 +167,11 @@ const CompanyOnBoardForm: FC = () => {
       const status = err.response?.status
 
       if (status === 409) {
+        // 이미 온보딩이 완료된 경우, 온보딩 상태를 업데이트
+        dispatch(updateOnboardedFromToken())
+        // 또는 직접 true로 설정
+        dispatch(setOnboarded(true))
+        
         toastShownRef.current = true
         showErrorToast('이미 온보딩이 완료된 회사입니다!\n잠시 뒤 홈으로 이동합니다.')
 

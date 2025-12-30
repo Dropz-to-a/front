@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '@/components/Header'
-import { Trash2, FileText, CalendarDays, Search } from 'lucide-react'
+import { FileText, CalendarDays, Search } from 'lucide-react'
 import type { AppliedJob } from '@/types/Application'
 import { applicationApi, type Application } from '@/api/applicationApi'
 import { jobPostingApi, type PublicJobPosting } from '@/api/jobPostingApi'

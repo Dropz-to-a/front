@@ -47,7 +47,8 @@ pipeline {
                         
                         // SSH 명령어를 세미콜론으로 연결하여 한 줄로 구성
                         // TypeScript 빌드 캐시 삭제 후 빌드
-                        def deployCommand = "cd ${appDir} && echo 'Current directory:' && pwd && echo 'Git pull...' && git pull origin main && echo 'Cleaning build cache...' && rm -rf node_modules/.tmp && rm -rf dist && echo 'Installing dependencies...' && npm install && echo 'Building application...' && npm run build && echo 'Restarting nginx...' && sudo systemctl restart nginx && echo 'Deployment completed successfully!'"
+                        // git pull 전에 로컬 변경사항을 강제로 덮어쓰기 (배포 환경에서는 원격 저장소가 항상 최신)
+                        def deployCommand = "cd ${appDir} && echo 'Current directory:' && pwd && echo 'Resetting local changes...' && git fetch origin && git reset --hard origin/main && echo 'Cleaning build cache...' && rm -rf node_modules/.tmp && rm -rf dist && echo 'Installing dependencies...' && npm install && echo 'Building application...' && npm run build && echo 'Restarting nginx...' && sudo systemctl restart nginx && echo 'Deployment completed successfully!'"
                         
                         // SSH_KEY는 bat 블록 내에서 직접 참조 (보안 변수 보간 경고 방지)
                         bat """

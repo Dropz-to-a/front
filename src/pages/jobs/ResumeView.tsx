@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas'
 
 import Header from '@/components/Header'
 import { jobPostingApi, type PublicJobPosting } from '@/api/jobPostingApi'
+import { applicationApi, type CompanyApplicationDetail } from '@/api/applicationApi'
 import type { Job } from '@/pages/jobs/user/Jobs'
 
 // API 응답을 Job 타입으로 변환
@@ -25,58 +26,152 @@ const convertToJob = (posting: PublicJobPosting): Job => {
   }
 }
 
-const DUMMY_APPLICATION = {
-  name: '박지우',
-  email: 'jiwoo@example.com',
-  phone: '010-1234-5678',
-  birth: '2005-03-12',
-  address: '경상북도 의성군 봉양면...',
-  height: '172',
-  weight: '60',
-  blood: 'A형',
-  education: '경북소프트고등학교 재학 중 (소프트웨어개발과)',
-  military: '해당 없음',
-  license: '정보처리기능사, GTQ 1급',
-  foreignLang: '영어 회화 가능 (TOEIC 780)',
-  activity: "AI 프로젝트 'Jobit' 참여, 교내 해커톤 2위",
-  family: '부모님, 여동생 1명',
-  hobby: 'UI 디자인, 음악 감상',
-  motivation:
-    '끊임없이 배우며 성장하는 개발자가 되고 싶습니다. 새로운 기술을 빠르게 습득하고, 팀 프로젝트에서 협업을 통해 문제를 해결하는 과정에서 큰 보람을 느낍니다.',
+// 학력 정보 포맷팅
+const formatEducation = (app: CompanyApplicationDetail): string => {
+  const parts: string[] = []
+  
+  if (app.middleSchoolName) {
+    const grad = app.middleSchoolGraduated ? '졸업' : '재학'
+    parts.push(`${app.middleSchoolName} ${grad}`)
+  }
+  
+  if (app.highSchoolName) {
+    const major = app.highSchoolMajor ? ` (${app.highSchoolMajor})` : ''
+    const grad = app.highSchoolGraduated ? '졸업' : '재학'
+    parts.push(`${app.highSchoolName}${major} ${grad}`)
+  }
+  
+  if (app.universityName) {
+    const major = app.universityMajor ? ` (${app.universityMajor})` : ''
+    const grad = app.universityGraduated ? '졸업' : '재학'
+    parts.push(`${app.universityName}${major} ${grad}`)
+  }
+  
+  return parts.length > 0 ? parts.join(', ') : '학력 정보 없음'
+}
+
+// 병역 정보 포맷팅
+const formatMilitary = (app: CompanyApplicationDetail): string => {
+  if (!app.militaryStatus || app.militaryStatus === '면제' || app.militaryStatus === '해당 없음') {
+    return app.militaryExemptReason || '해당 없음'
+  }
+  
+  if (app.militaryStatus === '군필') {
+    const parts: string[] = []
+    if (app.militaryBranch) parts.push(app.militaryBranch)
+    if (app.militaryType) parts.push(app.militaryType)
+    if (app.militaryRank) parts.push(app.militaryRank)
+    return parts.length > 0 ? parts.join(' ') : '군필'
+  }
+  
+  return app.militaryStatus
+}
+
+// 자격증 정보 포맷팅
+const formatLicenses = (app: CompanyApplicationDetail): string => {
+  const licenses: string[] = []
+  
+  if (app.licenseType1) {
+    const level = app.licenseLevel1 ? ` ${app.licenseLevel1}` : ''
+    licenses.push(`${app.licenseType1}${level}`)
+  }
+  if (app.licenseType2) {
+    const level = app.licenseLevel2 ? ` ${app.licenseLevel2}` : ''
+    licenses.push(`${app.licenseType2}${level}`)
+  }
+  if (app.licenseType3) {
+    const level = app.licenseLevel3 ? ` ${app.licenseLevel3}` : ''
+    licenses.push(`${app.licenseType3}${level}`)
+  }
+  
+  return licenses.length > 0 ? licenses.join(', ') : '자격증 정보 없음'
+}
+
+// 외국어 정보 포맷팅
+const formatForeignLang = (app: CompanyApplicationDetail): string => {
+  const langs: string[] = []
+  
+  if (app.foreignLangAbility1) {
+    const test = app.foreignLangTest1 ? ` (${app.foreignLangTest1}` : ''
+    const score = app.foreignLangScore1 ? ` ${app.foreignLangScore1}` : ''
+    const closing = test ? ')' : ''
+    langs.push(`${app.foreignLangAbility1}${test}${score}${closing}`)
+  }
+  if (app.foreignLangAbility2) {
+    const test = app.foreignLangTest2 ? ` (${app.foreignLangTest2}` : ''
+    const score = app.foreignLangScore2 ? ` ${app.foreignLangScore2}` : ''
+    const closing = test ? ')' : ''
+    langs.push(`${app.foreignLangAbility2}${test}${score}${closing}`)
+  }
+  
+  return langs.length > 0 ? langs.join(', ') : '외국어 정보 없음'
+}
+
+// 가족 정보 포맷팅
+const formatFamily = (app: CompanyApplicationDetail): string => {
+  const family: string[] = []
+  
+  if (app.familyRelation1 && app.familyName1) {
+    family.push(`${app.familyRelation1} ${app.familyName1}`)
+  }
+  if (app.familyRelation2 && app.familyName2) {
+    family.push(`${app.familyRelation2} ${app.familyName2}`)
+  }
+  if (app.familyRelation3 && app.familyName3) {
+    family.push(`${app.familyRelation3} ${app.familyName3}`)
+  }
+  if (app.familyRelation4 && app.familyName4) {
+    family.push(`${app.familyRelation4} ${app.familyName4}`)
+  }
+  
+  return family.length > 0 ? family.join(', ') : '가족 정보 없음'
 }
 
 const ResumeViewPage = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const [job, setJob] = useState<Job | null>(null)
+  const [application, setApplication] = useState<CompanyApplicationDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const resumeRef = useRef<HTMLDivElement>(null)
 
-  const loadJob = useCallback(async () => {
+  const loadData = useCallback(async () => {
     if (!id) {
       setLoading(false)
+      setError('지원서 ID가 없습니다.')
       return
     }
 
     try {
       setLoading(true)
-      const data = await jobPostingApi.getPublicList()
-      const foundPosting = data.find(p => String(p.postingId) === id)
+      setError(null)
+      
+      // applicationId로 지원서 상세 조회
+      const applicationId = Number(id)
+      const appDetail = await applicationApi.getCompanyApplicationDetail(applicationId)
+      setApplication(appDetail)
+      
+      // postingId로 공고 정보 조회
+      const postingData = await jobPostingApi.getPublicList()
+      const foundPosting = postingData.find(p => p.postingId === appDetail.postingId)
       
       if (foundPosting) {
         const convertedJob = convertToJob(foundPosting)
         setJob(convertedJob)
       }
     } catch (e: unknown) {
-      console.error('[ResumeView] 공고 조회 실패:', e)
+      console.error('[ResumeView] 데이터 조회 실패:', e)
+      const error = e as { message?: string }
+      setError(error?.message ?? '지원서 정보를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)
     }
   }, [id])
 
   useEffect(() => {
-    loadJob()
-  }, [loadJob])
+    loadData()
+  }, [loadData])
 
   /** ✅ 색상 oklch → 안전한 rgb로 변환 */
   const sanitizeColors = () => {
@@ -99,7 +194,7 @@ const ResumeViewPage = () => {
   /** ✅ PDF 저장 함수 (개선 + 안전) */
   const handleDownloadPDF = async () => {
     const element = resumeRef.current
-    if (!element) return
+    if (!element || !application) return
 
     // ⚡ 캡처 전에 색상 안전화
     sanitizeColors()
@@ -129,7 +224,7 @@ const ResumeViewPage = () => {
       heightLeft -= pageHeight
     }
 
-    pdf.save(`${DUMMY_APPLICATION.name}_이력서.pdf`)
+    pdf.save(`${application.name}_이력서.pdf`)
   }
 
   if (loading) {
@@ -137,18 +232,18 @@ const ResumeViewPage = () => {
       <div className="flex flex-col min-h-screen text-gray-800 bg-gray-50">
         <Header />
         <div className="flex items-center justify-center flex-1">
-          <p className="text-gray-500">공고 정보를 불러오는 중...</p>
+          <p className="text-gray-500">지원서 정보를 불러오는 중...</p>
         </div>
       </div>
     )
   }
 
-  if (!job) {
+  if (error || !application) {
     return (
       <div className="flex flex-col min-h-screen text-gray-800 bg-gray-50">
         <Header />
         <div className="flex flex-col items-center justify-center flex-1">
-          <p className="text-lg text-gray-600">공고를 찾을 수 없습니다.</p>
+          <p className="text-lg text-gray-600">{error || '지원서를 찾을 수 없습니다.'}</p>
           <button
             onClick={() => navigate(-1)}
             className="mt-4 px-4 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
@@ -199,61 +294,128 @@ const ResumeViewPage = () => {
               <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">기본 정보</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <p>
-                  <b>이름:</b> {DUMMY_APPLICATION.name}
+                  <b>이름:</b> {application.name}
                 </p>
                 <p>
-                  <b>생년월일:</b> {DUMMY_APPLICATION.birth}
+                  <b>연락처:</b> {application.phone || '-'}
                 </p>
                 <p>
-                  <b>연락처:</b> {DUMMY_APPLICATION.phone}
-                </p>
-                <p>
-                  <b>이메일:</b> {DUMMY_APPLICATION.email}
+                  <b>이메일:</b> {application.email || '-'}
                 </p>
                 <p className="col-span-2">
-                  <b>주소:</b> {DUMMY_APPLICATION.address}
+                  <b>주소:</b> {application.address || '-'}
                 </p>
               </div>
             </section>
 
-            <section>
-              <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">신체사항</h4>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <p>
-                  <b>신장:</b> {DUMMY_APPLICATION.height} cm
-                </p>
-                <p>
-                  <b>체중:</b> {DUMMY_APPLICATION.weight} kg
-                </p>
-                <p>
-                  <b>혈액형:</b> {DUMMY_APPLICATION.blood}
-                </p>
-              </div>
-            </section>
+            {(application.height || application.weight || application.blood) && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">신체사항</h4>
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  {application.height && (
+                    <p>
+                      <b>신장:</b> {application.height} cm
+                    </p>
+                  )}
+                  {application.weight && (
+                    <p>
+                      <b>체중:</b> {application.weight} kg
+                    </p>
+                  )}
+                  {application.blood && (
+                    <p>
+                      <b>혈액형:</b> {application.blood}형
+                    </p>
+                  )}
+                </div>
+              </section>
+            )}
 
             <section>
               <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">학력 및 병역</h4>
-              <p>{DUMMY_APPLICATION.education}</p>
+              <p className="mb-2">{formatEducation(application)}</p>
+              <p>{formatMilitary(application)}</p>
             </section>
 
             <section>
               <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">자격증 및 외국어</h4>
               <p>
-                {DUMMY_APPLICATION.license}
+                {formatLicenses(application)}
                 <br />
-                {DUMMY_APPLICATION.foreignLang}
+                {formatForeignLang(application)}
               </p>
             </section>
 
-            <section>
-              <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">연수 및 봉사활동</h4>
-              <p>{DUMMY_APPLICATION.activity}</p>
-            </section>
+            {application.activities && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">연수 및 봉사활동</h4>
+                <p>{application.activities}</p>
+              </section>
+            )}
 
-            <section>
-              <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">지원 동기</h4>
-              <p>{DUMMY_APPLICATION.motivation}</p>
-            </section>
+            {application.introduction && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">자기소개</h4>
+                <p>{application.introduction}</p>
+              </section>
+            )}
+
+            {application.motivation && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">지원 동기</h4>
+                <p>{application.motivation}</p>
+              </section>
+            )}
+
+            {application.personality && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">성격의 장단점</h4>
+                <p>{application.personality}</p>
+              </section>
+            )}
+
+            {application.futureGoal && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">포부</h4>
+                <p>{application.futureGoal}</p>
+              </section>
+            )}
+
+            {application.hobby && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">취미</h4>
+                <p>{application.hobby}</p>
+              </section>
+            )}
+
+            {application.specialty && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">특기</h4>
+                <p>{application.specialty}</p>
+              </section>
+            )}
+
+            {formatFamily(application) !== '가족 정보 없음' && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">가족사항</h4>
+                <p>{formatFamily(application)}</p>
+              </section>
+            )}
+
+            {application.portfolioUrl && (
+              <section>
+                <h4 className="pb-1 mb-2 font-semibold text-gray-800 border-b">포트폴리오</h4>
+                <p>
+                  <a
+                    href={application.portfolioUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline">
+                    {application.portfolioUrl}
+                  </a>
+                </p>
+              </section>
+            )}
           </div>
         </div>
 

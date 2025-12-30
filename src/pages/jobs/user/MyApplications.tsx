@@ -95,21 +95,21 @@ export default function MyApplications() {
     loadApplications()
   }, [loadApplications])
 
-  // 지원 삭제
-  const handleRemove = async (applicationId: number) => {
-    if (!confirm('정말로 이 지원을 삭제하시겠습니까?')) {
-      return
-    }
+  // // 지원 삭제
+  // const handleRemove = async (applicationId: number) => {
+  //   if (!confirm('정말로 이 지원을 삭제하시겠습니까?')) {
+  //     return
+  //   }
 
-    try {
-      await applicationApi.delete(applicationId)
-      // 삭제 후 목록 새로고침
-      await loadApplications()
-    } catch (e: unknown) {
-      const error = e as { message?: string }
-      alert(error?.message ?? '지원 삭제에 실패했습니다.')
-    }
-  }
+  //   try {
+  //     await applicationApi.delete(applicationId)
+  //     // 삭제 후 목록 새로고침
+  //     await loadApplications()
+  //   } catch (e: unknown) {
+  //     const error = e as { message?: string }
+  //     alert(error?.message ?? '지원 삭제에 실패했습니다.')
+  //   }
+  // }
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -197,12 +197,12 @@ export default function MyApplications() {
                       지원서 보기
                     </Link>
 
-                    <button
+                    {/* <button
                       onClick={() => handleRemove(job.applicationId)}
                       className="flex items-center gap-1 text-sm text-rose-600 hover:text-rose-700">
                       <Trash2 className="w-4 h-4" />
                       삭제
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               )

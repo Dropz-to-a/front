@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom'
 import { CheckCircle2, Briefcase, Home, FileText, AlertCircle } from 'lucide-react'
 import Header from '@/components/Header'
 import { jobPostingApi, type PublicJobPosting } from '@/api/jobPostingApi'
+import { applicationApi, type CompanyApplicationListItem } from '@/api/applicationApi'
+import { decodeJwt, type JobitJwtPayload } from '@/utils/jwt'
+import { useAppSelector } from '@/store'
 import type { Job } from './Jobs'
 
 // API 응답을 Job 타입으로 변환
@@ -25,8 +28,10 @@ const convertToJob = (posting: PublicJobPosting): Job => {
 export default function JobCompleted() {
   const { id } = useParams<{ id: string }>()
   const [job, setJob] = useState<Job | null>(null)
+  const [application, setApplication] = useState<CompanyApplicationListItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const token = useAppSelector(state => state.auth.token)
 
   const loadJob = useCallback(async () => {
     if (!id) {
@@ -38,8 +43,10 @@ export default function JobCompleted() {
     try {
       setLoading(true)
       setError(null)
-      const data = await jobPostingApi.getPublicList()
-      const foundPosting = data.find(p => String(p.postingId) === id)
+      
+      // 공고 정보 조회
+      const postingData = await jobPostingApi.getPublicList()
+      const foundPosting = postingData.find(p => String(p.postingId) === id)
       
       if (!foundPosting) {
         setError('해당 공고를 찾을 수 없습니다.')
@@ -48,6 +55,28 @@ export default function JobCompleted() {
 
       const convertedJob = convertToJob(foundPosting)
       setJob(convertedJob)
+
+      // 지원서 정보 조회
+      try {
+        const postingId = Number(id)
+        const applications = await applicationApi.getCompanyApplicationsByPosting(postingId)
+        
+        // 현재 사용자의 지원서 찾기
+        if (token) {
+          const payload = decodeJwt<JobitJwtPayload>(token)
+          const currentUserId = payload?.sub ? Number(payload.sub) : null
+          
+          if (currentUserId) {
+            const userApplication = applications.find(app => app.writerId === currentUserId)
+            if (userApplication) {
+              setApplication(userApplication)
+            }
+          }
+        }
+      } catch (appError) {
+        console.error('[JobCompleted] 지원서 조회 실패:', appError)
+        // 지원서 조회 실패는 치명적이지 않으므로 계속 진행
+      }
     } catch (e: unknown) {
       console.error('[JobCompleted] 공고 조회 실패:', e)
       const error = e as { message?: string }
@@ -55,7 +84,7 @@ export default function JobCompleted() {
     } finally {
       setLoading(false)
     }
-  }, [id])
+  }, [id, token])
 
   useEffect(() => {
     loadJob()
@@ -129,7 +158,16 @@ export default function JobCompleted() {
             </div>
           </div>
           <p className="text-sm text-gray-700">
-            <span className="font-semibold">지원 일시:</span> {new Date().toLocaleString('ko-KR')}
+            <span className="font-semibold">지원 일시:</span>{' '}
+            {application?.appliedAt
+              ? new Date(application.appliedAt).toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : new Date().toLocaleString('ko-KR')}
           </p>
         </div>
 
